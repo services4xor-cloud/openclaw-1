@@ -1,5 +1,5 @@
 {
-  "name": "Dashboard Webhooks — Serve Dashboard Data Requests",
+  "name": "Dashboard Webhooks \u00e2\u20ac\u201d Serve Dashboard Data Requests",
   "nodes": [
     {
       "parameters": {
@@ -7,31 +7,43 @@
         "path": "get-queue",
         "responseMode": "responseNode"
       },
-      "id": "get-queue-webhook",
+      "id": "30e61715-85ec-4133-a1e9-2f8a97dff17d",
       "name": "GET Queue",
       "type": "n8n-nodes-base.webhook",
-      "position": [0, 0],
-      "notes": "CALLED BY: Dashboard Queue page\nRETURNS: Current content queue"
+      "position": [
+        0,
+        0
+      ],
+      "notes": "CALLED BY: Dashboard Queue page\nRETURNS: Current content queue",
+      "typeVersion": 1
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT * FROM content_queue WHERE status IN ('pending','approved','scheduled') ORDER BY scheduled_at ASC LIMIT 50"
+        "query": "SELECT * FROM content_queue ORDER BY created_at DESC LIMIT 100"
       },
-      "id": "query-queue",
+      "id": "3c76dfd5-b6ea-4760-a01c-295bdf52a024",
       "name": "Query Queue",
       "type": "n8n-nodes-base.postgres",
-      "position": [250, 0]
+      "position": [
+        250,
+        0
+      ],
+      "typeVersion": 1
     },
     {
       "parameters": {
         "respondWith": "json",
         "responseBody": "={{ JSON.stringify({ queue: $json }) }}"
       },
-      "id": "respond-queue",
+      "id": "53775d2e-b251-4915-b3cc-59d6f9dc7fd8",
       "name": "Respond Queue",
       "type": "n8n-nodes-base.respondToWebhook",
-      "position": [500, 0]
+      "position": [
+        500,
+        0
+      ],
+      "typeVersion": 1
     },
     {
       "parameters": {
@@ -39,31 +51,43 @@
         "path": "approve-post",
         "responseMode": "responseNode"
       },
-      "id": "approve-webhook",
+      "id": "26a5e1e5-71fd-434a-b1a4-6303f3f98522",
       "name": "POST Approve Post",
       "type": "n8n-nodes-base.webhook",
-      "position": [0, 250],
-      "notes": "CALLED BY: Dashboard approve button\nUPDATES: Post status to approved"
+      "position": [
+        0,
+        250
+      ],
+      "notes": "CALLED BY: Dashboard approve button\nUPDATES: Post status to approved",
+      "typeVersion": 1
     },
     {
       "parameters": {
         "operation": "executeQuery",
         "query": "UPDATE content_queue SET status = 'approved' WHERE id = {{ $json.body.id }} AND status = 'pending'"
       },
-      "id": "approve-query",
+      "id": "59b7e88f-5b98-42ac-9411-ae9dbb5cd5db",
       "name": "Approve in DB",
       "type": "n8n-nodes-base.postgres",
-      "position": [250, 250]
+      "position": [
+        250,
+        250
+      ],
+      "typeVersion": 1
     },
     {
       "parameters": {
         "respondWith": "json",
         "responseBody": "={{ JSON.stringify({ ok: true }) }}"
       },
-      "id": "respond-approve",
+      "id": "f2140bed-b127-4eaf-b505-805a5bc08094",
       "name": "Respond Approve",
       "type": "n8n-nodes-base.respondToWebhook",
-      "position": [500, 250]
+      "position": [
+        500,
+        250
+      ],
+      "typeVersion": 1
     },
     {
       "parameters": {
@@ -71,30 +95,42 @@
         "path": "approve-all",
         "responseMode": "responseNode"
       },
-      "id": "approve-all-webhook",
+      "id": "ac853ea9-2183-444f-9b49-385a35e7beea",
       "name": "POST Approve All",
       "type": "n8n-nodes-base.webhook",
-      "position": [0, 500]
+      "position": [
+        0,
+        500
+      ],
+      "typeVersion": 1
     },
     {
       "parameters": {
         "operation": "executeQuery",
         "query": "UPDATE content_queue SET status = 'approved' WHERE status = 'pending'"
       },
-      "id": "approve-all-query",
+      "id": "cf7601e3-e4e8-4131-9245-165b638058a0",
       "name": "Approve All in DB",
       "type": "n8n-nodes-base.postgres",
-      "position": [250, 500]
+      "position": [
+        250,
+        500
+      ],
+      "typeVersion": 1
     },
     {
       "parameters": {
         "respondWith": "json",
         "responseBody": "={{ JSON.stringify({ ok: true }) }}"
       },
-      "id": "respond-approve-all",
+      "id": "8b943f56-69a4-4286-a7a5-300b4c4d5eb7",
       "name": "Respond Approve All",
       "type": "n8n-nodes-base.respondToWebhook",
-      "position": [500, 500]
+      "position": [
+        500,
+        500
+      ],
+      "typeVersion": 1
     },
     {
       "parameters": {
@@ -102,11 +138,15 @@
         "path": "add-goal",
         "responseMode": "responseNode"
       },
-      "id": "add-goal-webhook",
+      "id": "1918b758-d35d-4a4b-abce-3b8eb34848af",
       "name": "POST Add Goal",
       "type": "n8n-nodes-base.webhook",
-      "position": [0, 750],
-      "notes": "CALLED BY: Dashboard Goals page\nINSERTS: New goal into database"
+      "position": [
+        0,
+        750
+      ],
+      "notes": "CALLED BY: Dashboard Goals page\nINSERTS: New goal into database",
+      "typeVersion": 1
     },
     {
       "parameters": {
@@ -114,20 +154,28 @@
         "table": "goals",
         "columns": "type,title,target,status"
       },
-      "id": "insert-goal",
+      "id": "47133260-8a40-462e-9f65-b522cf635ee9",
       "name": "Insert Goal",
       "type": "n8n-nodes-base.postgres",
-      "position": [250, 750]
+      "position": [
+        250,
+        750
+      ],
+      "typeVersion": 1
     },
     {
       "parameters": {
         "respondWith": "json",
         "responseBody": "={{ JSON.stringify({ ok: true }) }}"
       },
-      "id": "respond-goal",
+      "id": "7005def7-ab1e-42d3-8c12-f420cb4d3619",
       "name": "Respond Goal",
       "type": "n8n-nodes-base.respondToWebhook",
-      "position": [500, 750]
+      "position": [
+        500,
+        750
+      ],
+      "typeVersion": 1
     },
     {
       "parameters": {
@@ -135,34 +183,141 @@
         "path": "update-campaign",
         "responseMode": "responseNode"
       },
-      "id": "update-campaign-webhook",
+      "id": "518877dd-4188-4004-b6b2-48ef73c398f1",
       "name": "POST Update Campaign",
       "type": "n8n-nodes-base.webhook",
-      "position": [0, 1000],
-      "notes": "CALLED BY: Dashboard Campaign page\nUPDATES: Platform posting intervals"
+      "position": [
+        0,
+        1000
+      ],
+      "notes": "CALLED BY: Dashboard Campaign page\nUPDATES: Platform posting intervals",
+      "typeVersion": 1
     },
     {
       "parameters": {
         "respondWith": "json",
         "responseBody": "={{ JSON.stringify({ ok: true }) }}"
       },
-      "id": "respond-campaign",
+      "id": "a0846fec-2e8f-47cc-bcaa-e96b78124fef",
       "name": "Respond Campaign",
       "type": "n8n-nodes-base.respondToWebhook",
-      "position": [500, 1000]
+      "position": [
+        500,
+        1000
+      ],
+      "typeVersion": 1
     }
   ],
   "connections": {
-    "GET Queue": { "main": [[{ "node": "Query Queue", "type": "main", "index": 0 }]] },
-    "Query Queue": { "main": [[{ "node": "Respond Queue", "type": "main", "index": 0 }]] },
-    "POST Approve Post": { "main": [[{ "node": "Approve in DB", "type": "main", "index": 0 }]] },
-    "Approve in DB": { "main": [[{ "node": "Respond Approve", "type": "main", "index": 0 }]] },
-    "POST Approve All": { "main": [[{ "node": "Approve All in DB", "type": "main", "index": 0 }]] },
-    "Approve All in DB": { "main": [[{ "node": "Respond Approve All", "type": "main", "index": 0 }]] },
-    "POST Add Goal": { "main": [[{ "node": "Insert Goal", "type": "main", "index": 0 }]] },
-    "Insert Goal": { "main": [[{ "node": "Respond Goal", "type": "main", "index": 0 }]] },
-    "POST Update Campaign": { "main": [[{ "node": "Respond Campaign", "type": "main", "index": 0 }]] }
+    "GET Queue": {
+      "main": [
+        [
+          {
+            "node": "Query Queue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query Queue": {
+      "main": [
+        [
+          {
+            "node": "Respond Queue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST Approve Post": {
+      "main": [
+        [
+          {
+            "node": "Approve in DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve in DB": {
+      "main": [
+        [
+          {
+            "node": "Respond Approve",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST Approve All": {
+      "main": [
+        [
+          {
+            "node": "Approve All in DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve All in DB": {
+      "main": [
+        [
+          {
+            "node": "Respond Approve All",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST Add Goal": {
+      "main": [
+        [
+          {
+            "node": "Insert Goal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Goal": {
+      "main": [
+        [
+          {
+            "node": "Respond Goal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST Update Campaign": {
+      "main": [
+        [
+          {
+            "node": "Respond Campaign",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
-  "settings": { "executionOrder": "v1" },
-  "tags": [{ "name": "dashboard" }, { "name": "webhooks" }]
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "dashboard"
+    },
+    {
+      "name": "webhooks"
+    }
+  ]
 }

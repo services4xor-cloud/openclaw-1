@@ -1,55 +1,78 @@
 {
-  "name": "Stash Reminder — Alert When Content Running Low",
+  "name": "Stash Reminder \u00e2\u20ac\u201d Alert When Content Running Low",
   "nodes": [
     {
       "parameters": {
         "rule": {
-          "interval": [{ "field": "cronExpression", "expression": "0 9,18 * * *" }]
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9,18 * * *"
+            }
+          ]
         }
       },
-      "id": "check-twice-daily",
+      "id": "a2920885-da1d-4184-8245-cc01a102ad23",
       "name": "Check Stash 9AM & 6PM",
       "type": "n8n-nodes-base.scheduleTrigger",
-      "position": [0, 0],
-      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nCheck content runway twice daily"
+      "position": [
+        0,
+        0
+      ],
+      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nCheck content runway twice daily",
+      "typeVersion": 1
     },
     {
       "parameters": {
         "operation": "executeQuery",
         "query": "SELECT * FROM stash_runway"
       },
-      "id": "get-runway",
+      "id": "f1d8de22-438b-4a13-9fd2-d470eb408773",
       "name": "Get Stash Runway",
       "type": "n8n-nodes-base.postgres",
-      "position": [250, 0],
-      "notes": "Query the stash_runway view for days remaining per platform"
+      "position": [
+        250,
+        0
+      ],
+      "notes": "Query the stash_runway view for days remaining per platform",
+      "typeVersion": 1
     },
     {
       "parameters": {
         "operation": "executeQuery",
         "query": "SELECT stash_warning_days, stash_critical_days, reminder_channel FROM campaigns WHERE is_active = true LIMIT 1"
       },
-      "id": "get-config",
+      "id": "a4cc6ad4-d62e-40c6-af65-1dca11878b22",
       "name": "Get Reminder Config",
       "type": "n8n-nodes-base.postgres",
-      "position": [250, 200],
-      "notes": "Get user's configured warning thresholds"
+      "position": [
+        250,
+        200
+      ],
+      "notes": "Get user's configured warning thresholds",
+      "typeVersion": 1
     },
     {
       "parameters": {
         "conditions": {
-          "number": [{
-            "value1": "={{ Math.min(...$node['Get Stash Runway'].json.map(r => r.days_remaining)) }}",
-            "operation": "smallerEqual",
-            "value2": "={{ $node['Get Reminder Config'].json[0].stash_warning_days || 3 }}"
-          }]
+          "number": [
+            {
+              "value1": "={{ Math.min(...$node['Get Stash Runway'].json.map(r => r.days_remaining)) }}",
+              "operation": "smallerEqual",
+              "value2": "={{ $node['Get Reminder Config'].json[0].stash_warning_days || 3 }}"
+            }
+          ]
         }
       },
-      "id": "check-threshold",
+      "id": "09fa3ddb-1bcd-4dfd-8868-ffa490bb9084",
       "name": "Below Warning Threshold?",
       "type": "n8n-nodes-base.if",
-      "position": [500, 0],
-      "notes": "Only alert if any platform is below warning days"
+      "position": [
+        500,
+        0
+      ],
+      "notes": "Only alert if any platform is below warning days",
+      "typeVersion": 1
     },
     {
       "parameters": {
@@ -58,7 +81,10 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "Authorization", "value": "=Bearer {{ $env.OPENCLAW_HOOKS_TOKEN }}" }
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.OPENCLAW_HOOKS_TOKEN }}"
+            }
           ]
         },
         "sendBody": true,
@@ -68,23 +94,78 @@
               "name": "message",
               "value": "=Generate a brief, friendly WhatsApp/Telegram reminder that the content stash is running low.\n\nRunway data:\n{{ JSON.stringify($node['Get Stash Runway'].json) }}\n\nKeep it short (2-3 lines max), conversational, include the most urgent platform.\nExample: 'Hey! Your Instagram stash runs out tomorrow (0.7 days left). TikTok has 1.3 days. Upload some new media or approve more from the stash!'\n\nReturn plain text only, no JSON."
             },
-            { "name": "deliver", "value": "=true" },
-            { "name": "channel", "value": "=whatsapp" }
+            {
+              "name": "deliver",
+              "value": "=true"
+            },
+            {
+              "name": "channel",
+              "value": "=whatsapp"
+            }
           ]
         }
       },
-      "id": "send-reminder",
+      "id": "4b2ae16a-670f-41b2-b971-ab5fa2c33b13",
       "name": "OpenClaw: Generate & Send Reminder",
       "type": "n8n-nodes-base.httpRequest",
-      "position": [750, 0],
-      "notes": "RESPONSIBILITY: OpenClaw (BRAIN) generates the message\nn8n delivers it via the channel (WhatsApp/Telegram)"
+      "position": [
+        750,
+        0
+      ],
+      "notes": "RESPONSIBILITY: OpenClaw (BRAIN) generates the message\nn8n delivers it via the channel (WhatsApp/Telegram)",
+      "typeVersion": 1
     }
   ],
   "connections": {
-    "Check Stash 9AM & 6PM": { "main": [[{ "node": "Get Stash Runway", "type": "main", "index": 0 }, { "node": "Get Reminder Config", "type": "main", "index": 0 }]] },
-    "Get Stash Runway": { "main": [[{ "node": "Below Warning Threshold?", "type": "main", "index": 0 }]] },
-    "Below Warning Threshold?": { "main": [[{ "node": "OpenClaw: Generate & Send Reminder", "type": "main", "index": 0 }], []] }
+    "Check Stash 9AM & 6PM": {
+      "main": [
+        [
+          {
+            "node": "Get Stash Runway",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Reminder Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Stash Runway": {
+      "main": [
+        [
+          {
+            "node": "Below Warning Threshold?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Below Warning Threshold?": {
+      "main": [
+        [
+          {
+            "node": "OpenClaw: Generate & Send Reminder",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
   },
-  "settings": { "executionOrder": "v1" },
-  "tags": [{ "name": "stash" }, { "name": "reminder" }]
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "stash"
+    },
+    {
+      "name": "reminder"
+    }
+  ]
 }

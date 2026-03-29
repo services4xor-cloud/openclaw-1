@@ -49,42 +49,44 @@ export default function UploadPage() {
   };
 
   const handleUpload = async () => {
-    if (!files.length) return;
+    if (!theme.trim()) return;
     setUploading(true);
     setUploadProgress(0);
 
     try {
-      // 1. Upload files to media-worker
-      const formData = new FormData();
-      files.forEach((f) => formData.append("files", f));
+      // Open n8n executions in new tab so user can watch the pipeline
+      window.open("/n8n/executions", "_blank");
 
-      const uploadRes = await fetch("/media-api/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const uploadData = await uploadRes.json();
-      setUploadProgress(50);
+      setUploadProgress(20);
 
-      // 2. Notify n8n to start content pipeline
-      await fetch("/webhook/content-pipeline", {
+      // Call the content pipeline webhook — this triggers:
+      // n8n → Anthropic AI (captions) → Postgres (stash)
+      const res = await fetch("/webhook/content-pipeline", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          files: uploadData.files,
+          files: files.map((f) => ({ name: f.name, type: f.type })),
           theme,
           brandVoice,
           hasWatermark: !!watermark,
+          uploadId: `upload-${Date.now()}`,
         }),
       });
-      setUploadProgress(100);
 
-      // Reset form
-      setTimeout(() => {
-        setFiles([]);
-        setTheme("");
-        setUploadProgress(0);
+      setUploadProgress(80);
+      const data = await res.json();
+
+      if (data.ok) {
+        setUploadProgress(100);
+        // Redirect to stash after short delay
+        setTimeout(() => {
+          window.location.hash = "#/queue";
+          window.location.reload();
+        }, 1000);
+      } else {
+        console.error("Pipeline error:", data);
         setUploading(false);
-      }, 1500);
+      }
     } catch (err) {
       console.error("Upload failed:", err);
       setUploading(false);
@@ -236,9 +238,9 @@ export default function UploadPage() {
       {/* Upload button */}
       <button
         onClick={handleUpload}
-        disabled={!files.length || uploading}
+        disabled={!theme.trim() || uploading}
         className={`w-full py-3.5 rounded-2xl font-semibold text-sm transition-all ${
-          files.length && !uploading
+          theme.trim() && !uploading
             ? "bg-gradient-to-r from-violet-600 to-cyan-600 text-white active:scale-[0.98] shadow-lg shadow-violet-500/20"
             : "bg-slate-800 text-slate-500 cursor-not-allowed"
         }`}
@@ -246,10 +248,10 @@ export default function UploadPage() {
         {uploading ? (
           <span className="flex items-center justify-center gap-2">
             <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            Processing... {uploadProgress}%
+            {uploadProgress < 80 ? "AI generating captions..." : "Saving to stash..."} {uploadProgress}%
           </span>
         ) : (
-          `Upload & Process ${files.length || ""} file${files.length !== 1 ? "s" : ""}`
+          `Generate Content ${files.length ? `(${files.length} file${files.length !== 1 ? "s" : ""})` : ""}`
         )}
       </button>
 

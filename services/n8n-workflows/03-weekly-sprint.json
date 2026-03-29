@@ -1,39 +1,56 @@
 {
-  "name": "Weekly Sprint — Metrics Analysis → AI Sprint Planning → Task Generation",
+  "name": "Weekly Sprint \u00e2\u20ac\u201d Metrics Analysis \u00e2\u2020\u2019 AI Sprint Planning \u00e2\u2020\u2019 Task Generation",
   "nodes": [
     {
       "parameters": {
         "rule": {
-          "interval": [{ "field": "cronExpression", "expression": "0 8 * * 1" }]
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * 1"
+            }
+          ]
         }
       },
-      "id": "monday-trigger",
+      "id": "3fe71924-d802-43ad-9e96-1e8f6ed4d67f",
       "name": "Every Monday 8:00 AM",
       "type": "n8n-nodes-base.scheduleTrigger",
-      "position": [0, 0],
-      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nTrigger weekly sprint planning every Monday"
+      "position": [
+        0,
+        0
+      ],
+      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nTrigger weekly sprint planning every Monday",
+      "typeVersion": 1
     },
     {
       "parameters": {
         "operation": "executeQuery",
         "query": "SELECT platform, SUM(views) as total_views, SUM(likes) as total_likes, SUM(shares) as total_shares, SUM(comments) as total_comments, SUM(clicks) as total_clicks FROM platform_metrics WHERE metric_date >= CURRENT_DATE - INTERVAL '7 days' GROUP BY platform"
       },
-      "id": "fetch-metrics",
+      "id": "4d7f8594-cdf6-40c8-bf5e-48cdeabbecad",
       "name": "Fetch Last Week Metrics",
       "type": "n8n-nodes-base.postgres",
-      "position": [250, 0],
-      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nCollect platform metrics from database"
+      "position": [
+        250,
+        0
+      ],
+      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nCollect platform metrics from database",
+      "typeVersion": 1
     },
     {
       "parameters": {
         "operation": "executeQuery",
         "query": "SELECT * FROM goals WHERE status = 'active'"
       },
-      "id": "fetch-goals",
+      "id": "68b231aa-52ec-4347-bc6e-8cce2d095047",
       "name": "Fetch Active Goals",
       "type": "n8n-nodes-base.postgres",
-      "position": [250, 200],
-      "notes": "Pull current goals for OpenClaw analysis"
+      "position": [
+        250,
+        200
+      ],
+      "notes": "Pull current goals for OpenClaw analysis",
+      "typeVersion": 1
     },
     {
       "parameters": {
@@ -42,7 +59,10 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "Authorization", "value": "=Bearer {{ $env.OPENCLAW_HOOKS_TOKEN }}" }
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.OPENCLAW_HOOKS_TOKEN }}"
+            }
           ]
         },
         "sendBody": true,
@@ -55,11 +75,15 @@
           ]
         }
       },
-      "id": "openclaw-sprint",
+      "id": "5851ae89-8834-4892-96fb-6ba1601ea666",
       "name": "OpenClaw: Sprint Planning",
       "type": "n8n-nodes-base.httpRequest",
-      "position": [550, 0],
-      "notes": "RESPONSIBILITY: OpenClaw (BRAIN)\nAI analyzes metrics, creates sprint plan, recommends content strategy"
+      "position": [
+        550,
+        0
+      ],
+      "notes": "RESPONSIBILITY: OpenClaw (BRAIN)\nAI analyzes metrics, creates sprint plan, recommends content strategy",
+      "typeVersion": 1
     },
     {
       "parameters": {
@@ -67,11 +91,15 @@
         "table": "sprints",
         "columns": "week_number,year,analysis,recommendations,status"
       },
-      "id": "create-sprint",
+      "id": "d66be300-f3ac-4ea8-90c6-04c4ff31eff1",
       "name": "Create Sprint Record",
       "type": "n8n-nodes-base.postgres",
-      "position": [800, -100],
-      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nStore sprint in database"
+      "position": [
+        800,
+        -100
+      ],
+      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nStore sprint in database",
+      "typeVersion": 1
     },
     {
       "parameters": {
@@ -79,18 +107,71 @@
         "table": "sprint_tasks",
         "columns": "sprint_id,title,platform,priority,status"
       },
-      "id": "create-tasks",
+      "id": "67c85335-0559-4d16-93da-9983d9c3fd5a",
       "name": "Create Sprint Tasks",
       "type": "n8n-nodes-base.postgres",
-      "position": [800, 100],
-      "notes": "Store AI-generated tasks in database"
+      "position": [
+        800,
+        100
+      ],
+      "notes": "Store AI-generated tasks in database",
+      "typeVersion": 1
     }
   ],
   "connections": {
-    "Every Monday 8:00 AM": { "main": [[{ "node": "Fetch Last Week Metrics", "type": "main", "index": 0 }, { "node": "Fetch Active Goals", "type": "main", "index": 0 }]] },
-    "Fetch Last Week Metrics": { "main": [[{ "node": "OpenClaw: Sprint Planning", "type": "main", "index": 0 }]] },
-    "OpenClaw: Sprint Planning": { "main": [[{ "node": "Create Sprint Record", "type": "main", "index": 0 }, { "node": "Create Sprint Tasks", "type": "main", "index": 0 }]] }
+    "Every Monday 8:00 AM": {
+      "main": [
+        [
+          {
+            "node": "Fetch Last Week Metrics",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Active Goals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Last Week Metrics": {
+      "main": [
+        [
+          {
+            "node": "OpenClaw: Sprint Planning",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenClaw: Sprint Planning": {
+      "main": [
+        [
+          {
+            "node": "Create Sprint Record",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create Sprint Tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
-  "settings": { "executionOrder": "v1" },
-  "tags": [{ "name": "scrum" }, { "name": "autonomous" }]
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "scrum"
+    },
+    {
+      "name": "autonomous"
+    }
+  ]
 }

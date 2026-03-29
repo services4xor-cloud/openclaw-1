@@ -7,103 +7,120 @@
         "path": "content-pipeline",
         "responseMode": "responseNode"
       },
-      "id": "webhook-trigger",
+      "id": "1d6969cc-3817-4f7a-93cc-82403ae5c5e1",
       "name": "Dashboard Upload Webhook",
       "type": "n8n-nodes-base.webhook",
       "position": [0, 0],
-      "notes": "TRIGGERED BY: Dashboard upload button\nRESPONSIBILITY: n8n receives upload notification"
+      "typeVersion": 1
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.MEDIA_WORKER_URL }}/api/batch",
+        "url": "http://media-worker:3001/api/batch",
         "sendBody": true,
         "bodyParameters": {
           "parameters": [
-            { "name": "inputPath", "value": "={{ $json.files[0].path }}" },
+            { "name": "inputPath", "value": "={{ $json.body.files && $json.body.files[0] ? $json.body.files[0].path : '/data/media/inbox/test.jpg' }}" },
             { "name": "platforms", "value": "=[\"instagram\",\"tiktok\",\"youtube\",\"facebook\",\"whatsapp\"]" }
           ]
-        }
+        },
+        "options": {}
       },
-      "id": "media-batch",
+      "id": "d3d323f4-f25a-4571-92f1-c8045ed05014",
       "name": "Media Worker: Batch Process",
       "type": "n8n-nodes-base.httpRequest",
       "position": [250, 0],
-      "notes": "RESPONSIBILITY: Media Worker (HANDS)\nWatermark + resize for all platforms via FFmpeg"
-    },
-    {
-      "parameters": {
-        "method": "GET",
-        "url": "={{ $env.MEDIA_WORKER_URL }}/api/jobs/{{ $json.jobId }}",
-        "options": {
-          "retry": {
-            "maxTries": 30,
-            "waitBetweenTries": 5000
-          }
-        }
-      },
-      "id": "poll-job",
-      "name": "Poll Media Job Status",
-      "type": "n8n-nodes-base.httpRequest",
-      "position": [500, 0],
-      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nWait for FFmpeg to finish processing"
+      "typeVersion": 1
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.OPENCLAW_URL }}/hooks/agent",
+        "url": "http://openclaw-gateway:18789/v1/chat/completions",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "Authorization", "value": "=Bearer {{ $env.OPENCLAW_HOOKS_TOKEN }}" }
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "Authorization", "value": "Bearer YOUR_HOOKS_TOKEN_HERE" }
           ]
         },
         "sendBody": true,
         "bodyParameters": {
           "parameters": [
-            {
-              "name": "message",
-              "value": "=Generate social media captions for uploaded content.\n\nTheme: {{ $node['Dashboard Upload Webhook'].json.body.theme || 'General' }}\nBrand voice: {{ $node['Dashboard Upload Webhook'].json.body.brandVoice || 'Professional and engaging' }}\n\nPlatforms: Instagram, TikTok, YouTube Shorts, Facebook, WhatsApp\n\nReturn ONLY valid JSON (no markdown, no code fences) with this exact structure:\n{\n  \"instagram\": { \"caption\": \"...\", \"hashtags\": [\"#tag1\", \"#tag2\"], \"alt_text\": \"...\" },\n  \"tiktok\": { \"caption\": \"...\", \"hashtags\": [\"#tag1\", \"#tag2\"], \"alt_text\": \"...\" },\n  \"youtube\": { \"caption\": \"...\", \"hashtags\": [\"#tag1\", \"#tag2\"], \"alt_text\": \"...\" },\n  \"facebook\": { \"caption\": \"...\", \"hashtags\": [\"#tag1\", \"#tag2\"], \"alt_text\": \"...\" },\n  \"whatsapp\": { \"caption\": \"...\", \"hashtags\": [], \"alt_text\": \"...\" }\n}\n\nRules:\n- Instagram: Max 2200 chars, 20-30 relevant hashtags, engaging hook\n- TikTok: Short punchy caption, trending hashtags, use emojis\n- YouTube: SEO-optimized title style, 5-10 hashtags including #shorts\n- Facebook: Conversational tone, 3-5 hashtags, ask a question\n- WhatsApp: Brief personal message, no hashtags needed"
-            }
+            { "name": "model", "value": "claude-sonnet-4-20250514" },
+            { "name": "messages", "value": "=[{\"role\":\"user\",\"content\":\"Generate social media captions for uploaded content.\\nTheme: {{ $node['Dashboard Upload Webhook'].json.body.theme || 'General' }}\\nBrand voice: {{ $node['Dashboard Upload Webhook'].json.body.brandVoice || 'Professional and engaging' }}\\nPlatforms: Instagram, TikTok, YouTube Shorts, Facebook, WhatsApp\\nReturn ONLY valid JSON with this structure:\\n{\\\"instagram\\\": {\\\"caption\\\": \\\"...\\\", \\\"hashtags\\\": [\\\"#tag1\\\"], \\\"alt_text\\\": \\\"...\\\"},\\\"tiktok\\\": {\\\"caption\\\": \\\"...\\\", \\\"hashtags\\\": [\\\"#tag1\\\"], \\\"alt_text\\\": \\\"...\\\"},\\\"youtube\\\": {\\\"caption\\\": \\\"...\\\", \\\"hashtags\\\": [\\\"#tag1\\\"], \\\"alt_text\\\": \\\"...\\\"},\\\"facebook\\\": {\\\"caption\\\": \\\"...\\\", \\\"hashtags\\\": [\\\"#tag1\\\"], \\\"alt_text\\\": \\\"...\\\"},\\\"whatsapp\\\": {\\\"caption\\\": \\\"...\\\", \\\"hashtags\\\": [], \\\"alt_text\\\": \\\"...\\\"}}\\nRules: Instagram max 2200 chars 20-30 hashtags. TikTok short punchy with emojis. YouTube SEO-optimized with #shorts. Facebook conversational 3-5 hashtags. WhatsApp brief personal no hashtags.\"}]" }
           ]
+        },
+        "options": {
+          "timeout": 60000
         }
       },
-      "id": "openclaw-captions",
+      "id": "2f244d31-9055-49b8-93fa-d4beda787670",
       "name": "OpenClaw: Generate Captions",
       "type": "n8n-nodes-base.httpRequest",
-      "position": [750, 0],
-      "notes": "RESPONSIBILITY: OpenClaw (BRAIN)\nAI generates platform-specific captions and hashtags"
+      "position": [500, 0],
+      "typeVersion": 1
     },
     {
       "parameters": {
-        "operation": "insert",
-        "table": "content_queue",
-        "columns": "upload_id,platform,caption,hashtags,status,scheduled_at"
+        "functionCode": "// Parse AI response into individual platform rows for DB insert\nconst aiResponse = items[0].json;\nlet content;\ntry {\n  const text = aiResponse.choices[0].message.content;\n  const cleaned = text.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  content = JSON.parse(cleaned);\n} catch (e) {\n  content = {\n    instagram: { caption: 'Check this out!', hashtags: ['#content'], alt_text: '' },\n    tiktok: { caption: 'Check this out!', hashtags: ['#fyp'], alt_text: '' },\n    youtube: { caption: 'Check this out!', hashtags: ['#shorts'], alt_text: '' },\n    facebook: { caption: 'Check this out!', hashtags: [], alt_text: '' },\n    whatsapp: { caption: 'Check this out!', hashtags: [], alt_text: '' }\n  };\n}\n\nconst uploadId = $node['Dashboard Upload Webhook'].json.body.uploadId || 'upload-' + Date.now();\nconst theme = $node['Dashboard Upload Webhook'].json.body.theme || 'General';\n\nconst rows = [];\nfor (const [platform, data] of Object.entries(content)) {\n  rows.push({\n    json: {\n      upload_id: uploadId,\n      platform: platform,\n      caption: data.caption || '',\n      hashtags: JSON.stringify(data.hashtags || []),\n      alt_text: data.alt_text || theme,\n      status: 'pending',\n      created_at: new Date().toISOString()\n    }\n  });\n}\n\nreturn rows;"
       },
-      "id": "insert-queue",
+      "id": "a1b2c3d4-parse-ai-response",
+      "name": "Parse AI Response",
+      "type": "n8n-nodes-base.function",
+      "position": [750, 0],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO content_queue (upload_id, platform, caption, hashtags, alt_text, status, created_at) VALUES ('{{ $json.upload_id }}', '{{ $json.platform }}', {{ $json.caption ? \"'\" + $json.caption.replace(/'/g, \"''\") + \"'\" : \"''\" }}, '{{ $json.hashtags }}', {{ $json.alt_text ? \"'\" + $json.alt_text.replace(/'/g, \"''\") + \"'\" : \"''\" }}, '{{ $json.status }}', '{{ $json.created_at }}')"
+      },
+      "id": "ae8f232f-20f9-442e-87cc-04491017d3a5",
       "name": "Insert into Content Queue",
       "type": "n8n-nodes-base.postgres",
       "position": [1000, 0],
-      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nStore generated content in queue for scheduling"
+      "typeVersion": 1,
+      "credentials": {
+        "postgres": {
+          "id": "1",
+          "name": "Postgres account"
+        }
+      }
     },
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ ok: true, message: 'Content pipeline started' }) }}"
+        "responseBody": "={{ JSON.stringify({ ok: true, message: 'Content generated and added to stash' }) }}"
       },
-      "id": "response",
+      "id": "d0e78811-9c00-4bcc-8d16-378f363a636b",
       "name": "Respond to Dashboard",
       "type": "n8n-nodes-base.respondToWebhook",
-      "position": [1250, 0]
+      "position": [1250, 0],
+      "typeVersion": 1
     }
   ],
   "connections": {
-    "Dashboard Upload Webhook": { "main": [[{ "node": "Media Worker: Batch Process", "type": "main", "index": 0 }]] },
-    "Media Worker: Batch Process": { "main": [[{ "node": "Poll Media Job Status", "type": "main", "index": 0 }]] },
-    "Poll Media Job Status": { "main": [[{ "node": "OpenClaw: Generate Captions", "type": "main", "index": 0 }]] },
-    "OpenClaw: Generate Captions": { "main": [[{ "node": "Insert into Content Queue", "type": "main", "index": 0 }]] },
-    "Insert into Content Queue": { "main": [[{ "node": "Respond to Dashboard", "type": "main", "index": 0 }]] }
+    "Dashboard Upload Webhook": {
+      "main": [[{"node": "Media Worker: Batch Process", "type": "main", "index": 0}]]
+    },
+    "Media Worker: Batch Process": {
+      "main": [[{"node": "OpenClaw: Generate Captions", "type": "main", "index": 0}]]
+    },
+    "OpenClaw: Generate Captions": {
+      "main": [[{"node": "Parse AI Response", "type": "main", "index": 0}]]
+    },
+    "Parse AI Response": {
+      "main": [[{"node": "Insert into Content Queue", "type": "main", "index": 0}]]
+    },
+    "Insert into Content Queue": {
+      "main": [[{"node": "Respond to Dashboard", "type": "main", "index": 0}]]
+    }
   },
-  "settings": { "executionOrder": "v1" },
-  "tags": [{ "name": "content-pipeline" }, { "name": "social-media" }]
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {"name": "content-pipeline"},
+    {"name": "social-media"}
+  ]
 }

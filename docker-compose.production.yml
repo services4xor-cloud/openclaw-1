@@ -135,6 +135,9 @@ services:
       - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
       # Regular mode (queue mode needs separate worker for webhooks)
       - EXECUTIONS_MODE=regular
+      - N8N_RESTRICT_ENVIRONMENT_VARIABLES_ACCESS=false
+      - N8N_LOG_LEVEL=debug
+      - N8N_LOG_OUTPUT=console
       # Internal service URLs (Docker DNS)
       - OPENCLAW_URL=http://openclaw-gateway:18789
       - OPENCLAW_HOOKS_TOKEN=${HOOKS_TOKEN}
@@ -184,10 +187,17 @@ services:
       - REDIS_URL=redis://redis:6379
       - MEDIA_DIR=/data/media
       - MAX_FILE_SIZE=${MEDIA_MAX_FILE_SIZE:-500mb}
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=openclaw_automation
+      - DB_USER=openclaw
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
       - TZ=${TZ:-Europe/Berlin}
     volumes:
       - ./data/media:/data/media  # shared media volume
     depends_on:
+      postgres:
+        condition: service_healthy
       redis:
         condition: service_healthy
     healthcheck:

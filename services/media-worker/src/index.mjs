@@ -223,6 +223,36 @@ setInterval(() => {
   }
 }, 60_000);
 
+// ── Queue API (direct DB access for dashboard) ─────────────────────────────
+import pg from "pg";
+const pool = new pg.Pool({
+  host: process.env.DB_HOST || "postgres",
+  port: parseInt(process.env.DB_PORT || "5432"),
+  database: process.env.DB_NAME || "openclaw_automation",
+  user: process.env.DB_USER || "openclaw",
+  password: process.env.DB_PASSWORD || process.env.POSTGRES_PASSWORD,
+});
+
+app.delete("/api/queue/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (!id || isNaN(id)) return res.status(400).json({ ok: false, error: "Invalid ID" });
+    await pool.query("DELETE FROM content_queue WHERE id = $1", [id]);
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.get("/api/queue", async (_req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM content_queue ORDER BY created_at DESC LIMIT 100");
+    res.json({ queue: rows });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`[media-worker] Listening on :${PORT}`);
   console.log(`[media-worker] Media dir: ${MEDIA_DIR}`);

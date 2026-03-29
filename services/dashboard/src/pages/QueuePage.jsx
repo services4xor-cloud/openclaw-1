@@ -17,7 +17,7 @@
  *   Published = Already posted (history)
  */
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Check,
   X,
@@ -100,13 +100,16 @@ const MOCK_GROUPS = [
   },
 ];
 
-const MOCK_RUNWAY = [
-  { platform: "instagram", posts_per_day: 3, days_remaining: 1.3, ready_count: 4 },
-  { platform: "tiktok", posts_per_day: 3, days_remaining: 1.3, ready_count: 4 },
-  { platform: "youtube", posts_per_day: 1, days_remaining: 3.0, ready_count: 3 },
-  { platform: "facebook", posts_per_day: 2, days_remaining: 1.5, ready_count: 3 },
-  { platform: "whatsapp", posts_per_day: 1, days_remaining: 3.0, ready_count: 3 },
-];
+// Default posts-per-day per platform (hardcoded for now — campaign config later)
+const DEFAULT_POSTS_PER_DAY = {
+  instagram: 3,
+  tiktok: 3,
+  youtube: 1,
+  facebook: 2,
+  whatsapp: 1,
+};
+
+const PLATFORMS = ["instagram", "tiktok", "youtube", "facebook", "whatsapp"];
 
 const TABS = [
   { key: "stash", label: "Stash", icon: Inbox },
@@ -115,11 +118,27 @@ const TABS = [
 ];
 
 export default function QueuePage() {
-  const [groups, setGroups] = useState(MOCK_GROUPS);
-  const [runway, setRunway] = useState(MOCK_RUNWAY);
+  const [groups, setGroups] = useState([]);
   const [activeTab, setActiveTab] = useState("stash");
   const [expandedGroup, setExpandedGroup] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Compute runway from actual stash data (resets on refresh — no persistence)
+  const runway = useMemo(() => {
+    return PLATFORMS.map((platform) => {
+      const stashPosts = groups.reduce((count, g) => {
+        if (g.status !== "stash") return count;
+        return count + (g.variants || []).filter((v) => v.platform === platform).length;
+      }, 0);
+      const postsPerDay = DEFAULT_POSTS_PER_DAY[platform];
+      return {
+        platform,
+        posts_per_day: postsPerDay,
+        days_remaining: postsPerDay > 0 ? +(stashPosts / postsPerDay).toFixed(1) : 0,
+        ready_count: stashPosts,
+      };
+    });
+  }, [groups]);
 
   const filteredGroups = useMemo(
     () => groups.filter((g) => g.status === activeTab),
@@ -150,16 +169,17 @@ export default function QueuePage() {
   };
 
   const skipGroup = async (groupId) => {
-    setGroups((prev) =>
-      prev.map((g) => (g.id === groupId ? { ...g, status: "skipped" } : g)),
-    );
-    try {
-      await fetch("/webhook/skip-group", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ groupId }),
-      });
-    } catch {}
+    const group = groups.find((g) => g.id === groupId);
+    // Remove from local state immediately
+    setGroups((prev) => prev.filter((g) => g.id !== groupId));
+    // Delete from DB via media-worker API
+    if (group?.variants) {
+      await Promise.all(
+        group.variants.map((v) =>
+          fetch(`/media-api/api/queue/${v.id}`, { method: "DELETE" }).catch(() => {}),
+        ),
+      );
+    }
   };
 
   const approveAll = async () => {
@@ -183,21 +203,50 @@ export default function QueuePage() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [groupsRes, runwayRes] = await Promise.all([
-        fetch("/webhook/get-stash"),
-        fetch("/webhook/get-runway"),
-      ]);
-      if (groupsRes.ok) {
-        const data = await groupsRes.json();
-        if (data.groups) setGroups(data.groups);
+      const res = await fetch("/media-api/api/queue");
+      if (res.ok) {
+        const data = await res.json();
+        // data is array of {id, platform, caption, hashtags, status, ...}
+        const rows = Array.isArray(data) ? data : data.queue || [];
+        // Group by theme or upload_id or created_at batch
+        const grouped = {};
+        for (const row of rows) {
+          const key = row.upload_id || row.created_at?.slice(0, 16) || "ungrouped";
+          if (!grouped[key]) {
+            grouped[key] = {
+              id: `group-${key}`,
+              upload_id: row.upload_id,
+              theme: row.theme || row.alt_text || "Content",
+              status: row.status === "stash" ? "stash" : row.status === "approved" ? "approved" : row.status === "published" ? "published" : "stash",
+              created_at: row.created_at,
+              approved_at: row.approved_at,
+              published_at: row.published_at,
+              thumbnail: null,
+              variants: [],
+            };
+          }
+          grouped[key].variants.push({
+            id: row.id,
+            platform: row.platform,
+            caption: row.caption || "",
+            hashtags: Array.isArray(row.hashtags) ? row.hashtags : [],
+            scheduled_at: row.scheduled_at,
+            published_at: row.published_at,
+          });
+        }
+        const newGroups = Object.values(grouped);
+        if (newGroups.length > 0) setGroups(newGroups);
       }
-      if (runwayRes.ok) {
-        const data = await runwayRes.json();
-        if (data.runway) setRunway(data.runway);
-      }
-    } catch {}
+    } catch (e) {
+      console.error("Fetch stash failed:", e);
+    }
     setLoading(false);
   };
+
+  // Auto-fetch real data on mount
+  useEffect(() => {
+    fetchData();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Render ──────────────────────────────────────────────────────────────
 

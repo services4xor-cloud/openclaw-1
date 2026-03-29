@@ -1,38 +1,63 @@
 {
-  "name": "Scheduled Publisher — Queue → Platform APIs",
+  "name": "Scheduled Publisher \u00e2\u20ac\u201d Queue \u00e2\u2020\u2019 Platform APIs",
   "nodes": [
     {
       "parameters": {
-        "rule": { "interval": [{ "field": "minutes", "minutesInterval": 15 }] }
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
       },
-      "id": "cron-trigger",
+      "id": "9e810128-5fd2-4746-b908-bab882ea9992",
       "name": "Every 15 Minutes",
       "type": "n8n-nodes-base.scheduleTrigger",
-      "position": [0, 0],
-      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nCheck queue on interval for posts ready to publish"
+      "position": [
+        0,
+        0
+      ],
+      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nCheck queue on interval for posts ready to publish",
+      "typeVersion": 1
     },
     {
       "parameters": {
         "operation": "executeQuery",
         "query": "SELECT cq.*, pm.file_path as media_path FROM content_queue cq LEFT JOIN processed_media pm ON cq.processed_id = pm.id WHERE cq.status = 'approved' AND cq.scheduled_at <= NOW() ORDER BY cq.scheduled_at ASC LIMIT 5"
       },
-      "id": "fetch-queue",
+      "id": "9f6828a4-78fa-47e7-9617-4da52ad48eb5",
       "name": "Fetch Due Posts",
       "type": "n8n-nodes-base.postgres",
-      "position": [250, 0],
-      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nPull approved posts that are due for publishing"
+      "position": [
+        250,
+        0
+      ],
+      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nPull approved posts that are due for publishing",
+      "typeVersion": 1
     },
     {
       "parameters": {
         "conditions": {
-          "string": [{ "value1": "={{ $json.platform }}", "operation": "equal", "value2": "instagram" }]
+          "string": [
+            {
+              "value1": "={{ $json.platform }}",
+              "operation": "equal",
+              "value2": "instagram"
+            }
+          ]
         }
       },
-      "id": "route-instagram",
+      "id": "78c36f41-9bd7-4f9d-a083-de2f2b0c1186",
       "name": "Route: Instagram",
       "type": "n8n-nodes-base.switch",
-      "position": [500, -200],
-      "notes": "Routes to platform-specific publish nodes"
+      "position": [
+        500,
+        -200
+      ],
+      "notes": "Routes to platform-specific publish nodes",
+      "typeVersion": 1
     },
     {
       "parameters": {
@@ -41,48 +66,121 @@
         "sendBody": true,
         "bodyParameters": {
           "parameters": [
-            { "name": "caption", "value": "={{ $json.caption }}\\n\\n{{ $json.hashtags.join(' ') }}" },
-            { "name": "media_type", "value": "REELS" },
-            { "name": "video_url", "value": "={{ $json.media_path }}" },
-            { "name": "access_token", "value": "={{ $env.META_PAGE_ACCESS_TOKEN }}" }
+            {
+              "name": "caption",
+              "value": "={{ $json.caption }}\\n\\n{{ $json.hashtags.join(' ') }}"
+            },
+            {
+              "name": "media_type",
+              "value": "REELS"
+            },
+            {
+              "name": "video_url",
+              "value": "={{ $json.media_path }}"
+            },
+            {
+              "name": "access_token",
+              "value": "={{ $env.META_PAGE_ACCESS_TOKEN }}"
+            }
           ]
         }
       },
-      "id": "publish-instagram",
+      "id": "5a34e0b4-6044-4f29-87d2-903bab6167a3",
       "name": "Publish to Instagram",
       "type": "n8n-nodes-base.httpRequest",
-      "position": [750, -200],
-      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nMeta Graph API — Instagram Reels publishing"
+      "position": [
+        750,
+        -200
+      ],
+      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nMeta Graph API \u00e2\u20ac\u201d Instagram Reels publishing",
+      "typeVersion": 1
     },
     {
       "parameters": {
         "operation": "executeQuery",
         "query": "UPDATE content_queue SET status = 'published', published_at = NOW(), publish_url = '{{ $json.permalink }}' WHERE id = {{ $json.id }}"
       },
-      "id": "mark-published",
+      "id": "9faf853d-a648-4761-a5f0-dcfdf40879c9",
       "name": "Mark as Published",
       "type": "n8n-nodes-base.postgres",
-      "position": [1000, 0],
-      "notes": "Update queue status after successful publish"
+      "position": [
+        1000,
+        0
+      ],
+      "notes": "Update queue status after successful publish",
+      "typeVersion": 1
     },
     {
       "parameters": {
         "operation": "executeQuery",
         "query": "UPDATE content_queue SET status = 'failed', error_message = '{{ $json.error }}' WHERE id = {{ $json.id }}"
       },
-      "id": "mark-failed",
+      "id": "aa8a261b-000b-448a-a46f-9382012ac637",
       "name": "Mark as Failed",
       "type": "n8n-nodes-base.postgres",
-      "position": [1000, 200],
-      "notes": "Update queue status if publish fails"
+      "position": [
+        1000,
+        200
+      ],
+      "notes": "Update queue status if publish fails",
+      "typeVersion": 1
     }
   ],
   "connections": {
-    "Every 15 Minutes": { "main": [[{ "node": "Fetch Due Posts", "type": "main", "index": 0 }]] },
-    "Fetch Due Posts": { "main": [[{ "node": "Route: Instagram", "type": "main", "index": 0 }]] },
-    "Route: Instagram": { "main": [[{ "node": "Publish to Instagram", "type": "main", "index": 0 }]] },
-    "Publish to Instagram": { "main": [[{ "node": "Mark as Published", "type": "main", "index": 0 }]] }
+    "Every 15 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Fetch Due Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Due Posts": {
+      "main": [
+        [
+          {
+            "node": "Route: Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route: Instagram": {
+      "main": [
+        [
+          {
+            "node": "Publish to Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publish to Instagram": {
+      "main": [
+        [
+          {
+            "node": "Mark as Published",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
-  "settings": { "executionOrder": "v1" },
-  "tags": [{ "name": "publisher" }, { "name": "social-media" }]
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "publisher"
+    },
+    {
+      "name": "social-media"
+    }
+  ]
 }

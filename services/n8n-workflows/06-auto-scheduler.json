@@ -1,67 +1,136 @@
 {
-  "name": "Auto-Scheduler — Assign Publish Times to Approved Posts",
+  "name": "Auto-Scheduler \u00e2\u20ac\u201d Assign Publish Times to Approved Posts",
   "nodes": [
     {
       "parameters": {
         "rule": {
-          "interval": [{ "field": "cronExpression", "expression": "*/30 * * * *" }]
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "*/30 * * * *"
+            }
+          ]
         }
       },
-      "id": "every-30-min",
+      "id": "be2aece1-d187-4401-b635-0966a62cf74d",
       "name": "Every 30 Minutes",
       "type": "n8n-nodes-base.scheduleTrigger",
-      "position": [0, 0],
-      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nCheck for approved-but-unscheduled posts and assign publish times"
+      "position": [
+        0,
+        0
+      ],
+      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nCheck for approved-but-unscheduled posts and assign publish times",
+      "typeVersion": 1
     },
     {
       "parameters": {
         "operation": "executeQuery",
         "query": "SELECT cq.id, cq.platform, cq.upload_id FROM content_queue cq WHERE cq.status = 'approved' AND cq.scheduled_at IS NULL ORDER BY cq.approved_at ASC LIMIT 20"
       },
-      "id": "get-unscheduled",
+      "id": "f2236f08-fb00-4363-be44-21536839ef9c",
       "name": "Get Unscheduled Approved Posts",
       "type": "n8n-nodes-base.postgres",
-      "position": [250, 0],
-      "notes": "Find posts that are approved but don't have a publish time yet"
+      "position": [
+        250,
+        0
+      ],
+      "notes": "Find posts that are approved but don't have a publish time yet",
+      "typeVersion": 1
     },
     {
       "parameters": {
         "operation": "executeQuery",
         "query": "SELECT pc.platform, pc.posts_per_day, pc.interval_hours, pc.best_times, COALESCE(MAX(cq.scheduled_at), MAX(cq.published_at), NOW()) as last_scheduled FROM platform_config pc LEFT JOIN content_queue cq ON cq.platform = pc.platform AND cq.status IN ('scheduled', 'publishing') WHERE pc.enabled = true GROUP BY pc.platform, pc.posts_per_day, pc.interval_hours, pc.best_times"
       },
-      "id": "get-schedule-config",
+      "id": "3a05c6c9-33f9-4195-b8b2-a8af24f1f600",
       "name": "Get Platform Schedules",
       "type": "n8n-nodes-base.postgres",
-      "position": [250, 200],
-      "notes": "Get posting intervals and last scheduled time per platform\nUsed to calculate next available slot"
+      "position": [
+        250,
+        200
+      ],
+      "notes": "Get posting intervals and last scheduled time per platform\nUsed to calculate next available slot",
+      "typeVersion": 1
     },
     {
       "parameters": {
         "jsCode": "// Calculate next publish time for each unscheduled post\n// based on interval_hours and last_scheduled time per platform\nconst posts = $input.first().json;\nconst configs = $('Get Platform Schedules').all();\nconst results = [];\n\nfor (const post of $('Get Unscheduled Approved Posts').all()) {\n  const config = configs.find(c => c.json.platform === post.json.platform);\n  if (!config) continue;\n  \n  const intervalMs = (config.json.interval_hours || 8) * 3600000;\n  const lastScheduled = new Date(config.json.last_scheduled).getTime();\n  const nextSlot = new Date(Math.max(lastScheduled + intervalMs, Date.now() + 300000));\n  \n  results.push({\n    id: post.json.id,\n    platform: post.json.platform,\n    scheduled_at: nextSlot.toISOString()\n  });\n  \n  // Move forward so next post of same platform gets later slot\n  config.json.last_scheduled = nextSlot.toISOString();\n}\n\nreturn results.map(r => ({ json: r }));"
       },
-      "id": "calculate-slots",
+      "id": "8d02168e-ddb1-41b6-bdc8-4bebef44b078",
       "name": "Calculate Publish Slots",
       "type": "n8n-nodes-base.code",
-      "position": [500, 0],
-      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nAlgorithm: take interval_hours, find last scheduled time,\ncalculate next available slot. No AI needed — pure math."
+      "position": [
+        500,
+        0
+      ],
+      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nAlgorithm: take interval_hours, find last scheduled time,\ncalculate next available slot. No AI needed \u00e2\u20ac\u201d pure math.",
+      "typeVersion": 1
     },
     {
       "parameters": {
         "operation": "executeQuery",
         "query": "UPDATE content_queue SET status = 'scheduled', scheduled_at = '{{ $json.scheduled_at }}' WHERE id = {{ $json.id }} AND status = 'approved'"
       },
-      "id": "assign-schedule",
+      "id": "7ad5914f-c760-4da5-a2a7-01e736707bad",
       "name": "Assign Schedule to Posts",
       "type": "n8n-nodes-base.postgres",
-      "position": [750, 0],
-      "notes": "Mark posts as scheduled with their calculated publish time"
+      "position": [
+        750,
+        0
+      ],
+      "notes": "Mark posts as scheduled with their calculated publish time",
+      "typeVersion": 1
     }
   ],
   "connections": {
-    "Every 30 Minutes": { "main": [[{ "node": "Get Unscheduled Approved Posts", "type": "main", "index": 0 }, { "node": "Get Platform Schedules", "type": "main", "index": 0 }]] },
-    "Get Unscheduled Approved Posts": { "main": [[{ "node": "Calculate Publish Slots", "type": "main", "index": 0 }]] },
-    "Calculate Publish Slots": { "main": [[{ "node": "Assign Schedule to Posts", "type": "main", "index": 0 }]] }
+    "Every 30 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Get Unscheduled Approved Posts",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Platform Schedules",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Unscheduled Approved Posts": {
+      "main": [
+        [
+          {
+            "node": "Calculate Publish Slots",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Publish Slots": {
+      "main": [
+        [
+          {
+            "node": "Assign Schedule to Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
-  "settings": { "executionOrder": "v1" },
-  "tags": [{ "name": "scheduler" }, { "name": "autonomous" }]
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "scheduler"
+    },
+    {
+      "name": "autonomous"
+    }
+  ]
 }
