@@ -1,0 +1,236 @@
+###############################################################################
+# OpenClaw Social Media Automation — Full Production Stack
+#
+# FRAMEWORK RESPONSIBILITIES:
+#   caddy            → Reverse proxy + auto-TLS          (INFRASTRUCTURE)
+#   postgres         → Persistent database for n8n       (INFRASTRUCTURE)
+#   redis            → Job queues + caching              (INFRASTRUCTURE)
+#   openclaw-gateway → AI brain (content + scrum)        (BRAIN)
+#   n8n              → Workflow orchestration             (NERVOUS SYSTEM)
+#   media-worker     → FFmpeg video processing           (HANDS)
+#   dashboard        → Mobile-first GUI                  (EYES)
+#
+# Start:
+#   docker compose -f docker-compose.production.yml --env-file .env.production up -d
+#
+# Build first:
+#   docker build -t openclaw:local .
+#   docker compose -f docker-compose.production.yml build media-worker dashboard
+###############################################################################
+
+services:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # INFRASTRUCTURE LAYER
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  # Reverse proxy — the ONLY service exposed to the internet
+  caddy:
+    image: caddy:2-alpine
+    container_name: caddy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"  # HTTP/3
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    restart: unless-stopped
+    depends_on:
+      openclaw-gateway:
+        condition: service_healthy
+      n8n:
+        condition: service_started
+      dashboard:
+        condition: service_started
+
+  # Database — n8n persistence + content queue + goals + metrics
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    environment:
+      POSTGRES_DB: openclaw_automation
+      POSTGRES_USER: openclaw
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./services/postgres/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U openclaw -d openclaw_automation"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Job queue + cache
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - ./data/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # BRAIN — OpenClaw (AI Agent)
+  # Responsibilities: Generate captions, hashtags, content strategy, scrum
+  # Called by: n8n (via HTTP POST to /hooks/agent)
+  # Does NOT: Touch APIs, publish content, process media
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  openclaw-gateway:
+    image: ${OPENCLAW_IMAGE:-openclaw:local}
+    container_name: openclaw-gateway
+    command: ["node", "openclaw.mjs", "gateway", "--allow-unconfigured", "--bind", "lan"]
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN}
+      TZ: ${TZ:-Europe/Berlin}
+    volumes:
+      - ./data/openclaw:/home/node/.openclaw
+      - ./data/media:/home/node/.openclaw/workspace/media:ro  # read-only media access
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:18789/healthz').then(r=>{if(!r.ok)throw 1})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # NERVOUS SYSTEM — n8n (Workflow Automation)
+  # Responsibilities: Orchestrate everything, call APIs, schedule, publish
+  # Calls: OpenClaw (for AI), Media Worker (for FFmpeg), Platform APIs
+  # Does NOT: Think, create content, make decisions
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    environment:
+      - N8N_PROTOCOL=http
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PATH=/n8n/
+      - N8N_SECURE_COOKIE=false
+      - GENERIC_TIMEZONE=${TZ:-Europe/Berlin}
+      - TZ=${TZ:-Europe/Berlin}
+      # Production database (NOT SQLite)
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=openclaw_automation
+      - DB_POSTGRESDB_USER=openclaw
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+      # Queue mode for reliable execution
+      - EXECUTIONS_MODE=queue
+      - QUEUE_BULL_REDIS_HOST=redis
+      - QUEUE_BULL_REDIS_PORT=6379
+      # Internal service URLs (Docker DNS)
+      - OPENCLAW_URL=http://openclaw-gateway:18789
+      - OPENCLAW_HOOKS_TOKEN=${HOOKS_TOKEN}
+      - MEDIA_WORKER_URL=http://media-worker:3001
+      # Social media API keys (n8n manages these)
+      - META_APP_ID=${META_APP_ID:-}
+      - META_APP_SECRET=${META_APP_SECRET:-}
+      - META_PAGE_ACCESS_TOKEN=${META_PAGE_ACCESS_TOKEN:-}
+      - INSTAGRAM_BUSINESS_ACCOUNT_ID=${INSTAGRAM_BUSINESS_ACCOUNT_ID:-}
+      - TIKTOK_CLIENT_KEY=${TIKTOK_CLIENT_KEY:-}
+      - TIKTOK_CLIENT_SECRET=${TIKTOK_CLIENT_SECRET:-}
+      - YOUTUBE_CLIENT_ID=${YOUTUBE_CLIENT_ID:-}
+      - YOUTUBE_CLIENT_SECRET=${YOUTUBE_CLIENT_SECRET:-}
+      - YOUTUBE_REFRESH_TOKEN=${YOUTUBE_REFRESH_TOKEN:-}
+      - WHATSAPP_PHONE_NUMBER_ID=${WHATSAPP_PHONE_NUMBER_ID:-}
+      - WHATSAPP_ACCESS_TOKEN=${WHATSAPP_ACCESS_TOKEN:-}
+    volumes:
+      - ./data/n8n:/home/node/.n8n
+      - ./data/media:/data/media  # shared media volume
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      openclaw-gateway:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # HANDS — Media Worker (FFmpeg Processing)
+  # Responsibilities: Watermark, resize, create slideshows, probe metadata
+  # Called by: n8n (via HTTP POST)
+  # Does NOT: Decide what to process, call AI, publish anything
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  media-worker:
+    build:
+      context: ./services/media-worker
+      dockerfile: Dockerfile
+    container_name: media-worker
+    environment:
+      - PORT=3001
+      - REDIS_URL=redis://redis:6379
+      - MEDIA_DIR=/data/media
+      - MAX_FILE_SIZE=${MEDIA_MAX_FILE_SIZE:-500mb}
+      - TZ=${TZ:-Europe/Berlin}
+    volumes:
+      - ./data/media:/data/media  # shared media volume
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/health').then(r=>{if(!r.ok)throw 1})"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 4G  # FFmpeg needs headroom
+          cpus: "3"   # Leave 1 CPU for other services
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # EYES — Dashboard (Mobile-First GUI)
+  # Responsibilities: Upload media, configure campaigns, view queue + goals
+  # Calls: n8n webhooks (NEVER calls OpenClaw directly)
+  # Does NOT: Process media, generate content, publish
+  # ═══════════════════════════════════════════════════════════════════════════
+
+  dashboard:
+    build:
+      context: ./services/dashboard
+      dockerfile: Dockerfile
+    container_name: dashboard
+    environment:
+      - N8N_WEBHOOK_URL=http://n8n:5678/webhook
+      - MEDIA_WORKER_URL=http://media-worker:3001
+    volumes:
+      - ./data/media:/data/media:ro  # read-only for thumbnails
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+# ═══════════════════════════════════════════════════════════════════════════
+# VOLUMES
+# ═══════════════════════════════════════════════════════════════════════════
+
+volumes:
+  caddy-data:
+  caddy-config:

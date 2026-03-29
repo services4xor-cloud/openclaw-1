@@ -1,0 +1,88 @@
+{
+  "name": "Scheduled Publisher — Queue → Platform APIs",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "minutes", "minutesInterval": 15 }] }
+      },
+      "id": "cron-trigger",
+      "name": "Every 15 Minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [0, 0],
+      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nCheck queue on interval for posts ready to publish"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT cq.*, pm.file_path as media_path FROM content_queue cq LEFT JOIN processed_media pm ON cq.processed_id = pm.id WHERE cq.status = 'approved' AND cq.scheduled_at <= NOW() ORDER BY cq.scheduled_at ASC LIMIT 5"
+      },
+      "id": "fetch-queue",
+      "name": "Fetch Due Posts",
+      "type": "n8n-nodes-base.postgres",
+      "position": [250, 0],
+      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nPull approved posts that are due for publishing"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [{ "value1": "={{ $json.platform }}", "operation": "equal", "value2": "instagram" }]
+        }
+      },
+      "id": "route-instagram",
+      "name": "Route: Instagram",
+      "type": "n8n-nodes-base.switch",
+      "position": [500, -200],
+      "notes": "Routes to platform-specific publish nodes"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v19.0/{{ $env.INSTAGRAM_BUSINESS_ACCOUNT_ID }}/media",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "caption", "value": "={{ $json.caption }}\\n\\n{{ $json.hashtags.join(' ') }}" },
+            { "name": "media_type", "value": "REELS" },
+            { "name": "video_url", "value": "={{ $json.media_path }}" },
+            { "name": "access_token", "value": "={{ $env.META_PAGE_ACCESS_TOKEN }}" }
+          ]
+        }
+      },
+      "id": "publish-instagram",
+      "name": "Publish to Instagram",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [750, -200],
+      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nMeta Graph API — Instagram Reels publishing"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE content_queue SET status = 'published', published_at = NOW(), publish_url = '{{ $json.permalink }}' WHERE id = {{ $json.id }}"
+      },
+      "id": "mark-published",
+      "name": "Mark as Published",
+      "type": "n8n-nodes-base.postgres",
+      "position": [1000, 0],
+      "notes": "Update queue status after successful publish"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE content_queue SET status = 'failed', error_message = '{{ $json.error }}' WHERE id = {{ $json.id }}"
+      },
+      "id": "mark-failed",
+      "name": "Mark as Failed",
+      "type": "n8n-nodes-base.postgres",
+      "position": [1000, 200],
+      "notes": "Update queue status if publish fails"
+    }
+  ],
+  "connections": {
+    "Every 15 Minutes": { "main": [[{ "node": "Fetch Due Posts", "type": "main", "index": 0 }]] },
+    "Fetch Due Posts": { "main": [[{ "node": "Route: Instagram", "type": "main", "index": 0 }]] },
+    "Route: Instagram": { "main": [[{ "node": "Publish to Instagram", "type": "main", "index": 0 }]] },
+    "Publish to Instagram": { "main": [[{ "node": "Mark as Published", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": [{ "name": "publisher" }, { "name": "social-media" }]
+}

@@ -1,0 +1,168 @@
+{
+  "name": "Dashboard Webhooks — Serve Dashboard Data Requests",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "get-queue",
+        "responseMode": "responseNode"
+      },
+      "id": "get-queue-webhook",
+      "name": "GET Queue",
+      "type": "n8n-nodes-base.webhook",
+      "position": [0, 0],
+      "notes": "CALLED BY: Dashboard Queue page\nRETURNS: Current content queue"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM content_queue WHERE status IN ('pending','approved','scheduled') ORDER BY scheduled_at ASC LIMIT 50"
+      },
+      "id": "query-queue",
+      "name": "Query Queue",
+      "type": "n8n-nodes-base.postgres",
+      "position": [250, 0]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ queue: $json }) }}"
+      },
+      "id": "respond-queue",
+      "name": "Respond Queue",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [500, 0]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "approve-post",
+        "responseMode": "responseNode"
+      },
+      "id": "approve-webhook",
+      "name": "POST Approve Post",
+      "type": "n8n-nodes-base.webhook",
+      "position": [0, 250],
+      "notes": "CALLED BY: Dashboard approve button\nUPDATES: Post status to approved"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE content_queue SET status = 'approved' WHERE id = {{ $json.body.id }} AND status = 'pending'"
+      },
+      "id": "approve-query",
+      "name": "Approve in DB",
+      "type": "n8n-nodes-base.postgres",
+      "position": [250, 250]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true }) }}"
+      },
+      "id": "respond-approve",
+      "name": "Respond Approve",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [500, 250]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "approve-all",
+        "responseMode": "responseNode"
+      },
+      "id": "approve-all-webhook",
+      "name": "POST Approve All",
+      "type": "n8n-nodes-base.webhook",
+      "position": [0, 500]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE content_queue SET status = 'approved' WHERE status = 'pending'"
+      },
+      "id": "approve-all-query",
+      "name": "Approve All in DB",
+      "type": "n8n-nodes-base.postgres",
+      "position": [250, 500]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true }) }}"
+      },
+      "id": "respond-approve-all",
+      "name": "Respond Approve All",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [500, 500]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "add-goal",
+        "responseMode": "responseNode"
+      },
+      "id": "add-goal-webhook",
+      "name": "POST Add Goal",
+      "type": "n8n-nodes-base.webhook",
+      "position": [0, 750],
+      "notes": "CALLED BY: Dashboard Goals page\nINSERTS: New goal into database"
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "goals",
+        "columns": "type,title,target,status"
+      },
+      "id": "insert-goal",
+      "name": "Insert Goal",
+      "type": "n8n-nodes-base.postgres",
+      "position": [250, 750]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true }) }}"
+      },
+      "id": "respond-goal",
+      "name": "Respond Goal",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [500, 750]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "update-campaign",
+        "responseMode": "responseNode"
+      },
+      "id": "update-campaign-webhook",
+      "name": "POST Update Campaign",
+      "type": "n8n-nodes-base.webhook",
+      "position": [0, 1000],
+      "notes": "CALLED BY: Dashboard Campaign page\nUPDATES: Platform posting intervals"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true }) }}"
+      },
+      "id": "respond-campaign",
+      "name": "Respond Campaign",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [500, 1000]
+    }
+  ],
+  "connections": {
+    "GET Queue": { "main": [[{ "node": "Query Queue", "type": "main", "index": 0 }]] },
+    "Query Queue": { "main": [[{ "node": "Respond Queue", "type": "main", "index": 0 }]] },
+    "POST Approve Post": { "main": [[{ "node": "Approve in DB", "type": "main", "index": 0 }]] },
+    "Approve in DB": { "main": [[{ "node": "Respond Approve", "type": "main", "index": 0 }]] },
+    "POST Approve All": { "main": [[{ "node": "Approve All in DB", "type": "main", "index": 0 }]] },
+    "Approve All in DB": { "main": [[{ "node": "Respond Approve All", "type": "main", "index": 0 }]] },
+    "POST Add Goal": { "main": [[{ "node": "Insert Goal", "type": "main", "index": 0 }]] },
+    "Insert Goal": { "main": [[{ "node": "Respond Goal", "type": "main", "index": 0 }]] },
+    "POST Update Campaign": { "main": [[{ "node": "Respond Campaign", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": [{ "name": "dashboard" }, { "name": "webhooks" }]
+}

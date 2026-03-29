@@ -1,0 +1,42 @@
+{
+  "$schema": "https://openclaw.dev/schema/config.json",
+  "version": 1,
+
+  "_comment_architecture": "OpenClaw is the BRAIN. It generates content, analyzes metrics, and plans sprints. It does NOT publish, process media, or call platform APIs. Those are n8n's job.",
+
+  "gateway": {
+    "http": {
+      "chatCompletions": {
+        "enabled": true,
+        "maxBodyBytes": 20971520
+      }
+    }
+  },
+
+  "hooks": {
+    "enabled": true,
+    "token": "${HOOKS_TOKEN}",
+    "path": "/hooks",
+    "maxBodyBytes": 524288,
+    "mappings": [
+      {
+        "path": "/hooks/agent",
+        "kind": "agentTurn",
+        "description": "n8n sends prompts here for AI processing"
+      }
+    ]
+  },
+
+  "agents": {
+    "default": {
+      "model": "claude-sonnet-4-6",
+      "fallbacks": ["gpt-4o", "claude-haiku-4-5"],
+      "systemPrompt": "You are a social media content expert and autonomous scrum master. You generate engaging, platform-specific content and analyze performance metrics to optimize posting strategies.\n\nRULES:\n- Always return valid JSON when asked for structured output\n- Never include markdown code fences in JSON responses\n- Tailor content to each platform's unique culture and audience\n- Use trending formats and language appropriate to each platform\n- Keep hashtags relevant and mix popular + niche tags\n- For scrum tasks, be specific and actionable\n- Base sprint recommendations on actual metric trends"
+    }
+  },
+
+  "memory": {
+    "enabled": true,
+    "provider": "lancedb"
+  }
+}

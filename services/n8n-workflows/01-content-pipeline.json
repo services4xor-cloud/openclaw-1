@@ -1,0 +1,109 @@
+{
+  "name": "Content Pipeline — Upload → Watermark → AI Captions → Queue",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "content-pipeline",
+        "responseMode": "responseNode"
+      },
+      "id": "webhook-trigger",
+      "name": "Dashboard Upload Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [0, 0],
+      "notes": "TRIGGERED BY: Dashboard upload button\nRESPONSIBILITY: n8n receives upload notification"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.MEDIA_WORKER_URL }}/api/batch",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "inputPath", "value": "={{ $json.files[0].path }}" },
+            { "name": "platforms", "value": "=[\"instagram\",\"tiktok\",\"youtube\",\"facebook\",\"whatsapp\"]" }
+          ]
+        }
+      },
+      "id": "media-batch",
+      "name": "Media Worker: Batch Process",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [250, 0],
+      "notes": "RESPONSIBILITY: Media Worker (HANDS)\nWatermark + resize for all platforms via FFmpeg"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.MEDIA_WORKER_URL }}/api/jobs/{{ $json.jobId }}",
+        "options": {
+          "retry": {
+            "maxTries": 30,
+            "waitBetweenTries": 5000
+          }
+        }
+      },
+      "id": "poll-job",
+      "name": "Poll Media Job Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [500, 0],
+      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nWait for FFmpeg to finish processing"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.OPENCLAW_URL }}/hooks/agent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "=Bearer {{ $env.OPENCLAW_HOOKS_TOKEN }}" }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "=Generate social media captions for uploaded content.\n\nTheme: {{ $node['Dashboard Upload Webhook'].json.body.theme || 'General' }}\nBrand voice: {{ $node['Dashboard Upload Webhook'].json.body.brandVoice || 'Professional and engaging' }}\n\nPlatforms: Instagram, TikTok, YouTube Shorts, Facebook, WhatsApp\n\nReturn ONLY valid JSON (no markdown, no code fences) with this exact structure:\n{\n  \"instagram\": { \"caption\": \"...\", \"hashtags\": [\"#tag1\", \"#tag2\"], \"alt_text\": \"...\" },\n  \"tiktok\": { \"caption\": \"...\", \"hashtags\": [\"#tag1\", \"#tag2\"], \"alt_text\": \"...\" },\n  \"youtube\": { \"caption\": \"...\", \"hashtags\": [\"#tag1\", \"#tag2\"], \"alt_text\": \"...\" },\n  \"facebook\": { \"caption\": \"...\", \"hashtags\": [\"#tag1\", \"#tag2\"], \"alt_text\": \"...\" },\n  \"whatsapp\": { \"caption\": \"...\", \"hashtags\": [], \"alt_text\": \"...\" }\n}\n\nRules:\n- Instagram: Max 2200 chars, 20-30 relevant hashtags, engaging hook\n- TikTok: Short punchy caption, trending hashtags, use emojis\n- YouTube: SEO-optimized title style, 5-10 hashtags including #shorts\n- Facebook: Conversational tone, 3-5 hashtags, ask a question\n- WhatsApp: Brief personal message, no hashtags needed"
+            }
+          ]
+        }
+      },
+      "id": "openclaw-captions",
+      "name": "OpenClaw: Generate Captions",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [750, 0],
+      "notes": "RESPONSIBILITY: OpenClaw (BRAIN)\nAI generates platform-specific captions and hashtags"
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "content_queue",
+        "columns": "upload_id,platform,caption,hashtags,status,scheduled_at"
+      },
+      "id": "insert-queue",
+      "name": "Insert into Content Queue",
+      "type": "n8n-nodes-base.postgres",
+      "position": [1000, 0],
+      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nStore generated content in queue for scheduling"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true, message: 'Content pipeline started' }) }}"
+      },
+      "id": "response",
+      "name": "Respond to Dashboard",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [1250, 0]
+    }
+  ],
+  "connections": {
+    "Dashboard Upload Webhook": { "main": [[{ "node": "Media Worker: Batch Process", "type": "main", "index": 0 }]] },
+    "Media Worker: Batch Process": { "main": [[{ "node": "Poll Media Job Status", "type": "main", "index": 0 }]] },
+    "Poll Media Job Status": { "main": [[{ "node": "OpenClaw: Generate Captions", "type": "main", "index": 0 }]] },
+    "OpenClaw: Generate Captions": { "main": [[{ "node": "Insert into Content Queue", "type": "main", "index": 0 }]] },
+    "Insert into Content Queue": { "main": [[{ "node": "Respond to Dashboard", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": [{ "name": "content-pipeline" }, { "name": "social-media" }]
+}

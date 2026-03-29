@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+/* Mobile-first base styles */
+html {
+  -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  overscroll-behavior: none;
+  min-height: 100dvh;
+}
+
+/* Safe area for notched phones */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}

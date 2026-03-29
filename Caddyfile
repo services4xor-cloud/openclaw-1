@@ -1,0 +1,65 @@
+# OpenClaw Social Media Automation — Reverse Proxy
+#
+# Replace {$DOMAIN} with your actual domain, or set DOMAIN in .env.production
+# Caddy auto-provisions TLS certificates via Let's Encrypt.
+#
+# ROUTING:
+#   /           → Dashboard (EYES)
+#   /n8n/       → n8n workflows (NERVOUS SYSTEM)
+#   /api/       → OpenClaw gateway (BRAIN)
+#   /media-api/ → Media worker (HANDS)
+
+:80 {
+	# ── Dashboard (default) ──────────────────────────────────────────────
+	handle {
+		reverse_proxy dashboard:3000
+	}
+
+	# ── n8n Workflow Editor ──────────────────────────────────────────────
+	handle_path /n8n/* {
+		reverse_proxy n8n:5678
+	}
+
+	# ── n8n Webhooks (called by dashboard + external triggers) ───────────
+	handle /webhook/* {
+		reverse_proxy n8n:5678
+	}
+	handle /webhook-test/* {
+		reverse_proxy n8n:5678
+	}
+
+	# ── OpenClaw API (internal, but exposed for admin/debug) ─────────────
+	handle /api/* {
+		reverse_proxy openclaw-gateway:18789
+	}
+
+	# ── Media Worker API ─────────────────────────────────────────────────
+	handle_path /media-api/* {
+		reverse_proxy media-worker:3001
+	}
+
+	# ── Static media files (thumbnails, previews) ────────────────────────
+	handle /media/* {
+		root * /data
+		file_server browse
+	}
+
+	# ── Security headers ─────────────────────────────────────────────────
+	header {
+		X-Content-Type-Options nosniff
+		X-Frame-Options SAMEORIGIN
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+
+	# ── Request size limit (500MB for video uploads) ─────────────────────
+	request_body {
+		max_size 500MB
+	}
+
+	# ── Logging ──────────────────────────────────────────────────────────
+	log {
+		output stdout
+		format json
+	}
+}

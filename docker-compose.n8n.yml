@@ -1,0 +1,52 @@
+###############################################################################
+# OpenClaw + n8n — Combined stack
+#
+# Quick start:
+#   1. Build OpenClaw image:  docker build -t openclaw:local .
+#   2. Create .env.local with your keys (see below)
+#   3. Start:  docker compose -f docker-compose.yml -f docker-compose.n8n.yml --env-file .env.local up -d
+#   4. Open:   http://localhost:18789  (OpenClaw Gateway + Control UI)
+#              http://localhost:5678   (n8n Workflow Automation)
+#
+# Required .env.local:
+#   ANTHROPIC_API_KEY=sk-ant-your-key
+#   OPENCLAW_CONFIG_DIR=~/.openclaw
+#   OPENCLAW_WORKSPACE_DIR=~/.openclaw/workspace
+#
+# n8n -> OpenClaw integration:
+#   In n8n, use HTTP Request node:
+#     POST http://openclaw-gateway:18789/v1/chat/completions
+#   Or trigger OpenClaw agents:
+#     POST http://openclaw-gateway:18789/hooks/agent
+###############################################################################
+
+services:
+  # Extend the gateway with AI provider key
+  openclaw-gateway:
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+
+  # n8n workflow automation
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_PROTOCOL=http
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - GENERIC_TIMEZONE=${TZ:-Europe/Berlin}
+      - TZ=${TZ:-Europe/Berlin}
+      # Make OpenClaw reachable from n8n workflows
+      - OPENCLAW_URL=http://openclaw-gateway:18789
+    volumes:
+      - n8n-data:/home/node/.n8n
+    restart: unless-stopped
+    depends_on:
+      openclaw-gateway:
+        condition: service_healthy
+
+volumes:
+  n8n-data:

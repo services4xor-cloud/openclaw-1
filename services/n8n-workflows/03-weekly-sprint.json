@@ -1,0 +1,96 @@
+{
+  "name": "Weekly Sprint — Metrics Analysis → AI Sprint Planning → Task Generation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "cronExpression", "expression": "0 8 * * 1" }]
+        }
+      },
+      "id": "monday-trigger",
+      "name": "Every Monday 8:00 AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [0, 0],
+      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nTrigger weekly sprint planning every Monday"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT platform, SUM(views) as total_views, SUM(likes) as total_likes, SUM(shares) as total_shares, SUM(comments) as total_comments, SUM(clicks) as total_clicks FROM platform_metrics WHERE metric_date >= CURRENT_DATE - INTERVAL '7 days' GROUP BY platform"
+      },
+      "id": "fetch-metrics",
+      "name": "Fetch Last Week Metrics",
+      "type": "n8n-nodes-base.postgres",
+      "position": [250, 0],
+      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nCollect platform metrics from database"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM goals WHERE status = 'active'"
+      },
+      "id": "fetch-goals",
+      "name": "Fetch Active Goals",
+      "type": "n8n-nodes-base.postgres",
+      "position": [250, 200],
+      "notes": "Pull current goals for OpenClaw analysis"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.OPENCLAW_URL }}/hooks/agent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "=Bearer {{ $env.OPENCLAW_HOOKS_TOKEN }}" }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "=You are the autonomous Scrum Master for a social media automation system.\n\nLast week's platform metrics:\n{{ JSON.stringify($node['Fetch Last Week Metrics'].json, null, 2) }}\n\nCurrent active goals:\n{{ JSON.stringify($node['Fetch Active Goals'].json, null, 2) }}\n\nAnalyze the performance and create this week's sprint plan.\n\nReturn ONLY valid JSON:\n{\n  \"analysis\": \"2-3 sentence summary of what worked and what didn't\",\n  \"recommendations\": [\"recommendation 1\", \"recommendation 2\"],\n  \"sprint_tasks\": [\n    { \"title\": \"task description\", \"platform\": \"instagram|tiktok|youtube|facebook|whatsapp|null\", \"priority\": \"high|medium|low\" }\n  ],\n  \"goal_updates\": [\n    { \"goal_id\": 1, \"new_current\": 3400, \"note\": \"progress note\" }\n  ],\n  \"content_strategy\": \"Brief description of content focus for this week\"\n}"
+            }
+          ]
+        }
+      },
+      "id": "openclaw-sprint",
+      "name": "OpenClaw: Sprint Planning",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [550, 0],
+      "notes": "RESPONSIBILITY: OpenClaw (BRAIN)\nAI analyzes metrics, creates sprint plan, recommends content strategy"
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "sprints",
+        "columns": "week_number,year,analysis,recommendations,status"
+      },
+      "id": "create-sprint",
+      "name": "Create Sprint Record",
+      "type": "n8n-nodes-base.postgres",
+      "position": [800, -100],
+      "notes": "RESPONSIBILITY: n8n (NERVOUS SYSTEM)\nStore sprint in database"
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "sprint_tasks",
+        "columns": "sprint_id,title,platform,priority,status"
+      },
+      "id": "create-tasks",
+      "name": "Create Sprint Tasks",
+      "type": "n8n-nodes-base.postgres",
+      "position": [800, 100],
+      "notes": "Store AI-generated tasks in database"
+    }
+  ],
+  "connections": {
+    "Every Monday 8:00 AM": { "main": [[{ "node": "Fetch Last Week Metrics", "type": "main", "index": 0 }, { "node": "Fetch Active Goals", "type": "main", "index": 0 }]] },
+    "Fetch Last Week Metrics": { "main": [[{ "node": "OpenClaw: Sprint Planning", "type": "main", "index": 0 }]] },
+    "OpenClaw: Sprint Planning": { "main": [[{ "node": "Create Sprint Record", "type": "main", "index": 0 }, { "node": "Create Sprint Tasks", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": [{ "name": "scrum" }, { "name": "autonomous" }]
+}
