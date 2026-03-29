@@ -133,10 +133,8 @@ services:
       - DB_POSTGRESDB_DATABASE=openclaw_automation
       - DB_POSTGRESDB_USER=openclaw
       - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
-      # Queue mode for reliable execution
-      - EXECUTIONS_MODE=queue
-      - QUEUE_BULL_REDIS_HOST=redis
-      - QUEUE_BULL_REDIS_PORT=6379
+      # Regular mode (queue mode needs separate worker for webhooks)
+      - EXECUTIONS_MODE=regular
       # Internal service URLs (Docker DNS)
       - OPENCLAW_URL=http://openclaw-gateway:18789
       - OPENCLAW_HOOKS_TOKEN=${HOOKS_TOKEN}
