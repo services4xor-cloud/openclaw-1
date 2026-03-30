@@ -57,36 +57,22 @@ export default function UploadPage() {
       // Step 1: Upload watermark first (if provided) — saves to server permanently
       let watermarkPath = null;
       if (watermark) {
-        try {
-          const wfData = new FormData();
-          wfData.append("watermark", watermark);
-          const wRes = await fetch("/media-api/upload-watermark", { method: "POST", body: wfData });
-          if (wRes.ok) {
-            const wData = await wRes.json();
-            if (wData.ok) watermarkPath = wData.serverPath;
-          }
-        } catch {
-          // media-worker offline locally — watermark will be skipped
-          console.warn("media-worker unavailable, skipping watermark upload");
-        }
+        const wfData = new FormData();
+        wfData.append("watermark", watermark);
+        const wRes = await fetch("/media-api/upload-watermark", { method: "POST", body: wfData });
+        const wData = await wRes.json();
+        if (wData.ok) watermarkPath = wData.serverPath;
       }
       setUploadProgress(15);
 
       // Step 2: Upload actual media files to media-worker storage
       let uploadedFiles = [];
       if (files.length > 0) {
-        try {
-          const formData = new FormData();
-          files.forEach((f) => formData.append("files", f));
-          const uRes = await fetch("/media-api/upload", { method: "POST", body: formData });
-          if (uRes.ok) {
-            const uData = await uRes.json();
-            if (uData.ok) uploadedFiles = uData.files;
-          }
-        } catch {
-          console.warn("media-worker unavailable, proceeding without file paths");
-          uploadedFiles = files.map((f) => ({ originalName: f.name, mimeType: f.type }));
-        }
+        const formData = new FormData();
+        files.forEach((f) => formData.append("files", f));
+        const uRes = await fetch("/media-api/upload", { method: "POST", body: formData });
+        const uData = await uRes.json();
+        if (uData.ok) uploadedFiles = uData.files;
       }
       setUploadProgress(40);
 
@@ -104,24 +90,16 @@ export default function UploadPage() {
       });
 
       setUploadProgress(80);
+      const data = await res.json();
 
-      let pipelineOk = res.ok;
-      try {
-        const data = await res.json();
-        pipelineOk = data.ok ?? res.ok;
-      } catch {
-        // n8n may return non-JSON or empty body — treat HTTP 2xx as success
-        pipelineOk = res.ok;
-      }
-
-      if (pipelineOk) {
+      if (data.ok || res.ok) {
         setUploadProgress(100);
         setTimeout(() => {
           window.location.hash = "#/queue";
           window.location.reload();
         }, 1000);
       } else {
-        console.error("Pipeline error: n8n returned non-OK status");
+        console.error("Pipeline error:", data);
         setUploading(false);
       }
     } catch (err) {
