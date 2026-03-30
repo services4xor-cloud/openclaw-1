@@ -15,6 +15,7 @@ import express from "express";
 import multer from "multer";
 import { Worker } from "bullmq";
 import { randomUUID } from "node:crypto";
+import { mkdirSync } from "node:fs";
 import { processWatermark } from "./processors/watermark.mjs";
 import { processSlideshow } from "./processors/slideshow.mjs";
 import { processResize } from "./processors/resize.mjs";
@@ -65,10 +66,8 @@ const watermarkUpload = multer({
   storage: multer.diskStorage({
     destination: (_req, _file, cb) => {
       const dir = `${MEDIA_DIR}/watermarks`;
-      import("node:fs").then(({ mkdirSync }) => {
-        mkdirSync(dir, { recursive: true });
-        cb(null, dir);
-      });
+      mkdirSync(dir, { recursive: true });
+      cb(null, dir);
     },
     filename: (_req, _file, cb) => cb(null, "watermark.png"),
   }),
