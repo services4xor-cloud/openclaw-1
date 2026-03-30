@@ -54,21 +54,37 @@ export default function UploadPage() {
     setUploadProgress(0);
 
     try {
-      // Open n8n executions in new tab so user can watch the pipeline
-      window.open("/n8n/executions", "_blank");
+      // Step 1: Upload watermark first (if provided) — saves to server permanently
+      let watermarkPath = null;
+      if (watermark) {
+        const wfData = new FormData();
+        wfData.append("watermark", watermark);
+        const wRes = await fetch("/media-api/upload-watermark", { method: "POST", body: wfData });
+        const wData = await wRes.json();
+        if (wData.ok) watermarkPath = wData.serverPath;
+      }
+      setUploadProgress(15);
 
-      setUploadProgress(20);
+      // Step 2: Upload actual media files to media-worker storage
+      let uploadedFiles = [];
+      if (files.length > 0) {
+        const formData = new FormData();
+        files.forEach((f) => formData.append("files", f));
+        const uRes = await fetch("/media-api/upload", { method: "POST", body: formData });
+        const uData = await uRes.json();
+        if (uData.ok) uploadedFiles = uData.files;
+      }
+      setUploadProgress(40);
 
-      // Call the content pipeline webhook — this triggers:
-      // n8n → Anthropic AI (captions) → Postgres (stash)
+      // Step 3: Trigger n8n content pipeline with real server file paths
       const res = await fetch("/webhook/content-pipeline", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          files: files.map((f) => ({ name: f.name, type: f.type })),
+          files: uploadedFiles,
           theme,
           brandVoice,
-          hasWatermark: !!watermark,
+          watermarkPath,
           uploadId: `upload-${Date.now()}`,
         }),
       });
@@ -76,9 +92,8 @@ export default function UploadPage() {
       setUploadProgress(80);
       const data = await res.json();
 
-      if (data.ok) {
+      if (data.ok || res.ok) {
         setUploadProgress(100);
-        // Redirect to stash after short delay
         setTimeout(() => {
           window.location.hash = "#/queue";
           window.location.reload();
@@ -248,7 +263,7 @@ export default function UploadPage() {
         {uploading ? (
           <span className="flex items-center justify-center gap-2">
             <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            {uploadProgress < 80 ? "AI generating captions..." : "Saving to stash..."} {uploadProgress}%
+            {uploadProgress < 20 ? "Uploading watermark..." : uploadProgress < 45 ? "Uploading media..." : uploadProgress < 80 ? "AI generating captions..." : "Saving to stash..."} {uploadProgress}%
           </span>
         ) : (
           `Generate Content ${files.length ? `(${files.length} file${files.length !== 1 ? "s" : ""})` : ""}`
