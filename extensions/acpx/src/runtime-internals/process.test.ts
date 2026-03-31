@@ -2,8 +2,8 @@ import { spawn } from "node:child_process";
 import { chmod, mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { createWindowsCmdShimFixture } from "openclaw/plugin-sdk/testing";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createWindowsCmdShimFixture } from "../../../shared/windows-cmd-shim-test-fixtures.js";
 import {
   resolveSpawnCommand,
   spawnAndCollect,
@@ -333,7 +333,7 @@ describe("spawnAndCollect", () => {
       command: process.execPath,
       args: [
         "-e",
-        `process.stdout.write(JSON.stringify({openai:process.env.${openAiEnvKey},github:process.env.${githubEnvKey},hf:process.env.${hfEnvKey},openclaw:process.env.OPENCLAW_API_KEY,shell:process.env.OPENCLAW_SHELL}))`,
+        `process.stdout.write(JSON.stringify({openai:process.env.${openAiEnvKey},github:process.env.${githubEnvKey},hf:process.env.${hfEnvKey},openclaw:process.env.OPENCLAW_API_KEY,shell:process.env.OPENCLAW_SHELL}), () => process.exit(0))`,
       ],
       cwd: process.cwd(),
       stripProviderAuthEnvVars: options?.stripProviderAuthEnvVars,
@@ -341,7 +341,7 @@ describe("spawnAndCollect", () => {
 
     expect(result.code).toBe(0);
     expect(result.error).toBeNull();
-    return JSON.parse(result.stdout) as SpawnedEnvSnapshot;
+    return JSON.parse(result.stdout.trim()) as SpawnedEnvSnapshot;
   }
 
   it("returns abort error immediately when signal is already aborted", async () => {

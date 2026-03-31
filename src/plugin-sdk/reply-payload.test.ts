@@ -1,9 +1,14 @@
 import { describe, expect, it, vi } from "vitest";
 import {
+  countOutboundMedia,
   deliverFormattedTextWithAttachments,
   deliverTextOrMediaReply,
+  hasOutboundMedia,
+  hasOutboundReplyContent,
+  hasOutboundText,
   isNumericTargetId,
   resolveOutboundMediaUrls,
+  resolveSendableOutboundReplyParts,
   resolveTextChunksWithFallback,
   sendMediaWithLeadingCaption,
   sendPayloadWithChunkedTextAndMedia,
@@ -66,35 +71,191 @@ describe("sendPayloadWithChunkedTextAndMedia", () => {
 });
 
 describe("resolveOutboundMediaUrls", () => {
-  it("prefers mediaUrls over the legacy single-media field", () => {
-    expect(
-      resolveOutboundMediaUrls({
+  it.each([
+    {
+      name: "prefers mediaUrls over the legacy single-media field",
+      payload: {
         mediaUrls: ["https://example.com/a.png", "https://example.com/b.png"],
         mediaUrl: "https://example.com/legacy.png",
+      },
+      expected: ["https://example.com/a.png", "https://example.com/b.png"],
+    },
+    {
+      name: "falls back to the legacy single-media field",
+      payload: {
+        mediaUrl: "https://example.com/legacy.png",
+      },
+      expected: ["https://example.com/legacy.png"],
+    },
+  ])("$name", ({ payload, expected }) => {
+    expect(resolveOutboundMediaUrls(payload)).toEqual(expected);
+  });
+});
+
+describe("countOutboundMedia", () => {
+  it.each([
+    {
+      name: "counts normalized media entries",
+      payload: {
+        mediaUrls: ["https://example.com/a.png", "https://example.com/b.png"],
+      },
+      expected: 2,
+    },
+    {
+      name: "counts legacy single-media payloads",
+      payload: {
+        mediaUrl: "https://example.com/legacy.png",
+      },
+      expected: 1,
+    },
+  ])("$name", ({ payload, expected }) => {
+    expect(countOutboundMedia(payload)).toBe(expected);
+  });
+});
+
+describe("hasOutboundMedia", () => {
+  it("reports whether normalized payloads include media", () => {
+    expect(hasOutboundMedia({ mediaUrls: ["https://example.com/a.png"] })).toBe(true);
+    expect(hasOutboundMedia({ mediaUrl: "https://example.com/legacy.png" })).toBe(true);
+    expect(hasOutboundMedia({})).toBe(false);
+  });
+});
+
+describe("hasOutboundText", () => {
+  it.each([
+    {
+      name: "checks raw text presence by default",
+      payload: { text: "hello" },
+      options: undefined,
+      expected: true,
+    },
+    {
+      name: "treats whitespace-only text as present by default",
+      payload: { text: "   " },
+      options: undefined,
+      expected: true,
+    },
+    {
+      name: "returns false when text is missing",
+      payload: {},
+      options: undefined,
+      expected: false,
+    },
+    {
+      name: "can trim whitespace-only text",
+      payload: { text: "   " },
+      options: { trim: true },
+      expected: false,
+    },
+    {
+      name: "keeps non-empty trimmed text",
+      payload: { text: " hi " },
+      options: { trim: true },
+      expected: true,
+    },
+  ])("$name", ({ payload, options, expected }) => {
+    expect(hasOutboundText(payload, options)).toBe(expected);
+  });
+});
+
+describe("hasOutboundReplyContent", () => {
+  it.each([
+    {
+      name: "detects text content",
+      payload: { text: "hello" },
+      options: undefined,
+      expected: true,
+    },
+    {
+      name: "detects media content",
+      payload: { mediaUrl: "https://example.com/a.png" },
+      options: undefined,
+      expected: true,
+    },
+    {
+      name: "returns false when text and media are both missing",
+      payload: {},
+      options: undefined,
+      expected: false,
+    },
+    {
+      name: "can ignore whitespace-only text",
+      payload: { text: "   " },
+      options: { trimText: true },
+      expected: false,
+    },
+    {
+      name: "still reports content when trimmed text is blank but media exists",
+      payload: { text: "   ", mediaUrls: ["https://example.com/a.png"] },
+      options: { trimText: true },
+      expected: true,
+    },
+  ])("$name", ({ payload, options, expected }) => {
+    expect(hasOutboundReplyContent(payload, options)).toBe(expected);
+  });
+});
+
+describe("resolveSendableOutboundReplyParts", () => {
+  it("normalizes missing text and trims media urls", () => {
+    expect(
+      resolveSendableOutboundReplyParts({
+        mediaUrls: [" https://example.com/a.png ", "   "],
       }),
-    ).toEqual(["https://example.com/a.png", "https://example.com/b.png"]);
+    ).toEqual({
+      text: "",
+      trimmedText: "",
+      mediaUrls: ["https://example.com/a.png"],
+      mediaCount: 1,
+      hasText: false,
+      hasMedia: true,
+      hasContent: true,
+    });
   });
 
-  it("falls back to the legacy single-media field", () => {
+  it("accepts transformed text overrides", () => {
     expect(
-      resolveOutboundMediaUrls({
-        mediaUrl: "https://example.com/legacy.png",
-      }),
-    ).toEqual(["https://example.com/legacy.png"]);
+      resolveSendableOutboundReplyParts(
+        {
+          text: "ignored",
+        },
+        {
+          text: "  hello  ",
+        },
+      ),
+    ).toEqual({
+      text: "  hello  ",
+      trimmedText: "hello",
+      mediaUrls: [],
+      mediaCount: 0,
+      hasText: true,
+      hasMedia: false,
+      hasContent: true,
+    });
   });
 });
 
 describe("resolveTextChunksWithFallback", () => {
-  it("returns existing chunks unchanged", () => {
-    expect(resolveTextChunksWithFallback("hello", ["a", "b"])).toEqual(["a", "b"]);
-  });
-
-  it("falls back to the full text when chunkers return nothing", () => {
-    expect(resolveTextChunksWithFallback("hello", [])).toEqual(["hello"]);
-  });
-
-  it("returns empty for empty text with no chunks", () => {
-    expect(resolveTextChunksWithFallback("", [])).toEqual([]);
+  it.each([
+    {
+      name: "returns existing chunks unchanged",
+      text: "hello",
+      chunks: ["a", "b"],
+      expected: ["a", "b"],
+    },
+    {
+      name: "falls back to the full text when chunkers return nothing",
+      text: "hello",
+      chunks: [],
+      expected: ["hello"],
+    },
+    {
+      name: "returns empty for empty text with no chunks",
+      text: "",
+      chunks: [],
+      expected: [],
+    },
+  ])("$name", ({ text, chunks, expected }) => {
+    expect(resolveTextChunksWithFallback(text, chunks)).toEqual(expected);
   });
 });
 
@@ -160,6 +321,26 @@ describe("deliverTextOrMediaReply", () => {
 
     expect(sendText).not.toHaveBeenCalled();
     expect(sendMedia).not.toHaveBeenCalled();
+  });
+
+  it("ignores blank media urls before sending", async () => {
+    const sendMedia = vi.fn(async () => undefined);
+    const sendText = vi.fn(async () => undefined);
+
+    await expect(
+      deliverTextOrMediaReply({
+        payload: { text: "hello", mediaUrls: ["   ", " https://a "] },
+        text: "hello",
+        sendText,
+        sendMedia,
+      }),
+    ).resolves.toBe("media");
+
+    expect(sendMedia).toHaveBeenCalledTimes(1);
+    expect(sendMedia).toHaveBeenCalledWith({
+      mediaUrl: "https://a",
+      caption: "hello",
+    });
   });
 });
 

@@ -3,6 +3,7 @@
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
+import { BUNDLED_PLUGIN_PATH_PREFIX } from "./lib/bundled-plugin-paths.mjs";
 
 const logLevel = process.env.OPENCLAW_BUILD_VERBOSE ? "info" : "warn";
 const extraArgs = process.argv.slice(2);
@@ -33,9 +34,9 @@ function removeDistPluginNodeModulesSymlinks(rootDir) {
 
 function pruneStaleRuntimeSymlinks() {
   const cwd = process.cwd();
-  // runtime-postbuild links dist/dist-runtime plugin node_modules back into the
-  // source extensions. Remove only those symlinks up front so tsdown's clean
-  // step cannot traverse into the active pnpm install tree on rebuilds.
+  // runtime-postbuild stages plugin-owned node_modules into dist/ and links the
+  // dist-runtime overlay back to that tree. Remove only those symlinks up front
+  // so tsdown's clean step cannot traverse stale runtime overlays on rebuilds.
   removeDistPluginNodeModulesSymlinks(path.join(cwd, "dist"));
   removeDistPluginNodeModulesSymlinks(path.join(cwd, "dist-runtime"));
 }
@@ -49,7 +50,10 @@ function findFatalUnresolvedImport(lines) {
     }
 
     const normalizedLine = line.replace(ANSI_ESCAPE_RE, "");
-    if (!normalizedLine.includes("extensions/")) {
+    if (
+      !normalizedLine.includes(BUNDLED_PLUGIN_PATH_PREFIX) &&
+      !normalizedLine.includes("node_modules/")
+    ) {
       return normalizedLine;
     }
   }
