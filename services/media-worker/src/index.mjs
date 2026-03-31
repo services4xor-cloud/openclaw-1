@@ -254,7 +254,7 @@ const pool = new pg.Pool({
   port: parseInt(process.env.DB_PORT || "5432"),
   database: process.env.DB_NAME || "openclaw_automation",
   user: process.env.DB_USER || "openclaw",
-  password: process.env.DB_PASSWORD || process.env.POSTGRES_PASSWORD,
+  password: process.env.DB_PASSWORD ?? process.env.POSTGRES_PASSWORD ?? "",
 });
 
 app.delete("/api/queue/:id", async (req, res) => {
