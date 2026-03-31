@@ -144,3 +144,5 @@ changelog/fragments/
 
 # Local scratch workspace
 .tmp/
+.playwright-mcp/
+.pnpm-local/
