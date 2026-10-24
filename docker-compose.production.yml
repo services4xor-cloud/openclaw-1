@@ -37,6 +37,8 @@ services:
       - caddy-config:/config
     environment:
       DOMAIN: ${DOMAIN:-:80}
+      STUDIO_USER: ${STUDIO_USER:-admin}
+      STUDIO_PASS_HASH: ${STUDIO_PASS_HASH}
     restart: unless-stopped
     depends_on:
       openclaw-gateway:
