@@ -123,10 +123,13 @@ services:
     container_name: n8n
     environment:
       - N8N_PROTOCOL=http
-      - N8N_HOST=localhost
+      - N8N_HOST=${DOMAIN:-localhost}
       - N8N_PORT=5678
       - N8N_PATH=/n8n/
-      - N8N_SECURE_COOKIE=false
+      - N8N_SECURE_COOKIE=${N8N_SECURE_COOKIE:-true}
+      - N8N_PROXY_HOPS=1
+      - WEBHOOK_URL=https://${DOMAIN:-localhost}/
+      - N8N_EDITOR_BASE_URL=https://${DOMAIN:-localhost}/n8n/
       - GENERIC_TIMEZONE=${TZ:-Europe/Berlin}
       - TZ=${TZ:-Europe/Berlin}
       # Production database (NOT SQLite)
@@ -139,7 +142,7 @@ services:
       # Regular mode (queue mode needs separate worker for webhooks)
       - EXECUTIONS_MODE=regular
       - N8N_RESTRICT_ENVIRONMENT_VARIABLES_ACCESS=false
-      - N8N_LOG_LEVEL=debug
+      - N8N_LOG_LEVEL=info
       - N8N_LOG_OUTPUT=console
       # Internal service URLs (Docker DNS)
       - OPENCLAW_URL=http://openclaw-gateway:18789
