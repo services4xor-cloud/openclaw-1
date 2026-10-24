@@ -211,8 +211,8 @@ services:
     deploy:
       resources:
         limits:
-          memory: 4G  # FFmpeg needs headroom
-          cpus: "3"   # Leave 1 CPU for other services
+          memory: ${MEDIA_WORKER_MEMORY:-4G}  # FFmpeg needs headroom
+          cpus: "${MEDIA_WORKER_CPUS:-3}"   # Leave 1 CPU for other services
 
   # ═══════════════════════════════════════════════════════════════════════════
   # EYES — Dashboard (Mobile-First GUI)
