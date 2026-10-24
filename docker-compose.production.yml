@@ -35,6 +35,8 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy-data:/data
       - caddy-config:/config
+    environment:
+      DOMAIN: ${DOMAIN:-:80}
     restart: unless-stopped
     depends_on:
       openclaw-gateway:
@@ -116,7 +118,7 @@ services:
   # ═══════════════════════════════════════════════════════════════════════════
 
   n8n:
-    image: n8nio/n8n:latest
+    image: n8nio/n8n:2.7.0
     container_name: n8n
     environment:
       - N8N_PROTOCOL=http

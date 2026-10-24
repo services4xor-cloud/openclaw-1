@@ -35,7 +35,7 @@ error() { echo -e "${RED}[ERROR]${NC} $*" >&2; exit 1; }
 
 DEPLOY_USER="${OPENCLAW_USER:-deploy}"
 INSTALL_DIR="${OPENCLAW_DIR:-/opt/openclaw}"
-REPO_URL="${OPENCLAW_REPO:-https://github.com/nicosql/openclaw.git}"
+REPO_URL="${OPENCLAW_REPO:-https://github.com/services4xor-cloud/openclaw-1.git}"
 
 info "Starting OpenClaw VPS setup..."
 

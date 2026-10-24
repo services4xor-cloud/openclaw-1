@@ -9,7 +9,7 @@
 #   /api/       → OpenClaw gateway (BRAIN)
 #   /media-api/ → Media worker (HANDS)
 
-:80 {
+{$DOMAIN::80} {
 	# ── Dashboard (default) ──────────────────────────────────────────────
 	handle {
 		reverse_proxy dashboard:3000

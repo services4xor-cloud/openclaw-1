@@ -29,7 +29,7 @@ services:
 
   # n8n workflow automation
   n8n:
-    image: n8nio/n8n:latest
+    image: n8nio/n8n:2.7.0
     container_name: n8n
     ports:
       - "5678:5678"
