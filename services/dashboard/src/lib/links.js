@@ -10,6 +10,19 @@ export const PRODUCT_ANCHOR = {
 export const productUrl = (flow, lang) => `${siteHome(lang)}#${PRODUCT_ANCHOR[flow]}`;
 /** Packages and the free intro call on 4xor.de. */
 export const bookUrl = (lang) => `${siteHome(lang)}#pricing`;
-export const MAP_URL = "https://map.4xor.de/map";
+// The map's test address until map.4xor.de is set up; then VITE_MAP_ORIGIN switches it
+const MAP_ORIGIN = import.meta.env.VITE_MAP_ORIGIN || "https://claude-4xor-end-to-end.d201nclti8mlyp.amplifyapp.com";
+export const MAP_URL = `${MAP_ORIGIN}/map`;
+/** The map with this service in focus, so the agent answers about it. */
+const MAP_CODE = { workflow: "4xor-workflow-automation", social: "4xor-social-media-automation" };
+export const mapAgentUrl = (flow) => `${MAP_URL}?select=${MAP_CODE[flow]}&country=CH`;
+/** Back to the 4xor.de page that sent the visitor (the service card when it came from one). */
+export function backTo4xor(lang, flow) {
+  let fromSite = false;
+  try {
+    fromSite = /(^|\.)4xor\.de$/.test(new URL(document.referrer).hostname) && !document.referrer.includes("studio.");
+  } catch {}
+  return fromSite && flow ? productUrl(flow, lang) : siteHome(lang);
+}
 // The Be[X] map app holds the shared 4XOR sign-in and the live demo API.
 export const BEX_URL = import.meta.env.VITE_BEX_URL || "https://map.4xor.de";

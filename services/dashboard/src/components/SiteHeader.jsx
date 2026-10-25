@@ -9,7 +9,7 @@ import { useEffect, useRef } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import AnimatedLogo from "./AnimatedLogo.jsx";
 import { LANGS, LANGUAGES, siteHome, useLang, PRODUCT } from "../lib/i18n.jsx";
-import { BEX_URL, MAP_URL, bookUrl } from "../lib/links.js";
+import { BEX_URL, MAP_URL, backTo4xor, bookUrl } from "../lib/links.js";
 
 function Chevron() {
   return (
@@ -21,7 +21,7 @@ function Chevron() {
 
 export default function SiteHeader({ workspace = false }) {
   const { lang, setLang, t } = useLang();
-  const { pathname, hash } = useLocation();
+  const { pathname, hash, search } = useLocation();
   const menuRef = useRef(null);
   const langRef = useRef(null);
 
@@ -51,6 +51,8 @@ export default function SiteHeader({ workspace = false }) {
 
   // The site map: grouped as in the phone menu, flat in the desktop bar. The last
   // group leads back to the other 4XOR sites, so all three feel like one.
+  const tryFlow = pathname === "/try" ? (new URLSearchParams(search).get("flow") === "social" ? "social" : "workflow") : null;
+  const backHref = backTo4xor(lang, tryFlow);
   const signInUrl = `${BEX_URL}/login?callbackUrl=${encodeURIComponent(`${location.origin}/try?lang=${lang}#live`)}`;
   const sites = {
     label: "4XOR",
@@ -130,7 +132,7 @@ export default function SiteHeader({ workspace = false }) {
               </span>
             </Link>
             {/* The way back, in the same place and style as on the Be[X] map */}
-            <a href={siteHome(lang)} className="shrink-0 whitespace-nowrap rounded-full border border-white/20 px-2.5 py-1 text-xs text-[#e3ece7] hover:border-accent-400 hover:text-white">
+            <a href={backHref} className="shrink-0 whitespace-nowrap rounded-full border border-white/20 px-2.5 py-1 text-xs text-[#e3ece7] hover:border-accent-400 hover:text-white">
               <span aria-hidden="true">← </span>4xor.de
             </a>
           </div>

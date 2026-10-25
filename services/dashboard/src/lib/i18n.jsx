@@ -54,10 +54,11 @@ export const UI = {
     menu: "Menu",
     langLabel: "Language",
     groups: { services: "Services", studio: "Studio" },
-    tryLive: "Try it live",
+    tryLive: "Open live demo",
     signIn: "Sign in",
     cta: "Book free intro call",
     request: "Request this service",
+    askAgent: "Ask the agent on the Be[X] map",
     footerPlace: "4XOR, Aesch, Switzerland",
     mapLink: "Be[X] map",
     landing: {
@@ -114,6 +115,7 @@ export const UI = {
       signInPrompt: (product) => `Sign in once, then run ${product} for your own business.`,
       signInToRun: "Sign in to run it live",
       used: "You've used today's free run. The next one is ready tomorrow. Want this running for your business every day?",
+      soon: "The live run with your own business is coming soon. Until then, ask us or the agent on the map what it would do for you.",
       liveDone: "That was today's free run. After booking, it runs on your own accounts every day, and you approve in your Studio workspace.",
       business: "Your business",
       hints: {
@@ -158,10 +160,11 @@ export const UI = {
     menu: "Menü",
     langLabel: "Sprache",
     groups: { services: "Services", studio: "Studio" },
-    tryLive: "Live ausprobieren",
+    tryLive: "Live-Demo öffnen",
     signIn: "Anmelden",
     cta: "Gratis Erstgespräch buchen",
     request: "Service anfragen",
+    askAgent: "Den Agenten auf der Be[X]-Karte fragen",
     footerPlace: "4XOR, Aesch, Schweiz",
     mapLink: "Be[X]-Karte",
     landing: {
@@ -218,6 +221,7 @@ export const UI = {
       signInPrompt: (product) => `Einmal anmelden, dann ${product} für Ihr eigenes Geschäft starten.`,
       signInToRun: "Anmelden und live starten",
       used: "Den kostenlosen Lauf für heute haben Sie genutzt. Morgen ist der nächste bereit. Soll das jeden Tag für Ihr Geschäft laufen?",
+      soon: "Der Live-Lauf mit Ihrem eigenen Geschäft kommt bald. Bis dahin fragen Sie uns oder den Agenten auf der Karte, was er für Sie erledigen würde.",
       liveDone: "Das war Ihr kostenloser Lauf für heute. Nach der Buchung läuft es jeden Tag mit Ihren eigenen Konten, und Sie geben im Studio-Workspace frei.",
       business: "Ihr Geschäft",
       hints: {
@@ -262,10 +266,11 @@ export const UI = {
     menu: "Menu",
     langLabel: "Langue",
     groups: { services: "Services", studio: "Studio" },
-    tryLive: "Essayer en direct",
+    tryLive: "Ouvrir la démo",
     signIn: "Se connecter",
     cta: "Réserver un entretien gratuit",
     request: "Demander ce service",
+    askAgent: "Demander à l’agent sur la carte Be[X]",
     footerPlace: "4XOR, Aesch, Suisse",
     mapLink: "Carte Be[X]",
     landing: {
@@ -322,6 +327,7 @@ export const UI = {
       signInPrompt: (product) => `Connectez-vous une fois, puis lancez ${product} pour votre propre activité.`,
       signInToRun: "Se connecter et lancer",
       used: "Vous avez utilisé l’essai gratuit du jour. Le prochain est prêt demain. Vous voulez que cela tourne chaque jour pour votre activité ?",
+      soon: "L’essai en direct avec votre propre activité arrive bientôt. D’ici là, demandez-nous ou à l’agent sur la carte ce qu’il ferait pour vous.",
       liveDone: "C’était votre essai gratuit du jour. Après réservation, cela tourne chaque jour sur vos propres comptes, et vous validez dans votre espace Studio.",
       business: "Votre activité",
       hints: {
@@ -366,10 +372,11 @@ export const UI = {
     menu: "Menu",
     langLabel: "Lingua",
     groups: { services: "Servizi", studio: "Studio" },
-    tryLive: "Provare dal vivo",
+    tryLive: "Aprire la demo",
     signIn: "Accedere",
     cta: "Prenoti un colloquio gratuito",
     request: "Richiedere il servizio",
+    askAgent: "Chiedere all’agente sulla mappa Be[X]",
     footerPlace: "4XOR, Aesch, Svizzera",
     mapLink: "Mappa Be[X]",
     landing: {
@@ -426,6 +433,7 @@ export const UI = {
       signInPrompt: (product) => `Acceda una volta, poi avvii ${product} per la sua attività.`,
       signInToRun: "Accedere e avviare",
       used: "Ha già usato la prova gratuita di oggi. La prossima è pronta domani. Vuole che funzioni ogni giorno per la sua attività?",
+      soon: "La prova dal vivo con la sua attività arriva presto. Nel frattempo chieda a noi o all’agente sulla mappa cosa farebbe per lei.",
       liveDone: "Questa era la sua prova gratuita di oggi. Dopo la prenotazione funziona ogni giorno con i suoi account, e lei approva nel suo spazio Studio.",
       business: "La sua attività",
       hints: {

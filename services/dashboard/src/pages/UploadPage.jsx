@@ -15,9 +15,75 @@ import {
   CloudUpload,
   Stamp,
   Sparkles,
+  Check,
+  CheckCircle2,
+  CalendarClock,
 } from "lucide-react";
 import PageShell from "../components/PageShell.jsx";
 import Card from "../components/Card.jsx";
+
+/** What happens after "Generate", one line per stage, ticked off as it completes. */
+const RUN_STEPS = [
+  { icon: Stamp, label: "Brand kit received" },
+  { icon: CloudUpload, label: "Media uploaded" },
+  { icon: Sparkles, label: "AI writes a post for every channel" },
+  { icon: CalendarClock, label: "Best posting times planned" },
+  { icon: CheckCircle2, label: "Ready for your approval" },
+];
+
+/** fetch that fails loudly: a non-2xx or a non-JSON answer (an error page) is an error. */
+async function callJson(url, init) {
+  const res = await fetch(url, init);
+  const type = res.headers.get("content-type") || "";
+  if (!res.ok || !type.includes("json")) {
+    throw new Error(res.status === 404 ? "The service didn't answer (404)." : `The service answered ${res.status}.`);
+  }
+  return res.json();
+}
+
+function RunSteps({ phase, error, onRetry, onCancel }) {
+  return (
+    <Card className="mt-1">
+      <ol>
+        {RUN_STEPS.map(({ icon: Icon, label }, i) => {
+          const failed = error && error.step === i;
+          const last = i === RUN_STEPS.length - 1;
+          const state = failed ? "failed" : i < phase || (last && phase === i) ? "done" : i === phase ? "active" : "todo";
+          return (
+            <li key={label} className="relative flex items-center gap-3 pb-5 last:pb-0">
+              {!last && (
+                <span className="absolute left-[15px] top-8 h-[calc(100%-2rem)] w-0.5 bg-ink-700">
+                  <span className="block w-full bg-accent-400 transition-all duration-700" style={{ height: i < phase ? "100%" : "0%" }} />
+                </span>
+              )}
+              <span
+                className={`relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors duration-500 ${
+                  state === "done" ? "border-accent-400 bg-accent-400 text-ink-950"
+                    : state === "active" ? "border-gold-500 bg-gold-500/15 text-gold-300"
+                    : state === "failed" ? "border-red-400 bg-red-400/10 text-red-300"
+                    : "border-ink-700 bg-ink-950 text-ink-500"
+                }`}
+              >
+                {state === "done" ? <Check size={15} /> : state === "failed" ? <X size={15} /> : <Icon size={15} />}
+                {state === "active" && <span className="absolute inset-0 animate-ping rounded-full border border-gold-500/60" />}
+              </span>
+              <span className={`text-sm ${state === "todo" ? "text-ink-500" : "text-ink-100"}`}>{label}</span>
+            </li>
+          );
+        })}
+      </ol>
+      {error && (
+        <div className="mt-4 rounded-lg border border-red-400/30 bg-red-400/5 p-3">
+          <p className="text-sm text-red-200">This step didn't finish. {error.message} Nothing was posted.</p>
+          <div className="mt-3 flex gap-2">
+            <button onClick={onRetry} className="btn btn-primary btn-sm">Try again</button>
+            <button onClick={onCancel} className="btn btn-sm">Back to the form</button>
+          </div>
+        </div>
+      )}
+    </Card>
+  );
+}
 
 export default function UploadPage() {
   const [files, setFiles] = useState([]);
@@ -25,7 +91,8 @@ export default function UploadPage() {
   const [brandVoice, setBrandVoice] = useState("");
   const [watermark, setWatermark] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [phase, setPhase] = useState(0);
+  const [runError, setRunError] = useState(null); // { step, message }
   const fileInputRef = useRef(null);
   const watermarkInputRef = useRef(null);
 
@@ -51,33 +118,36 @@ export default function UploadPage() {
   const handleUpload = async () => {
     if (!theme.trim()) return;
     setUploading(true);
-    setUploadProgress(0);
+    setRunError(null);
+    let at = 0;
+    const go = (i) => setPhase((at = i));
+    let tick;
 
     try {
-      // Step 1: Upload watermark first (if provided) — saves to server permanently
+      // 1. Brand kit: the watermark is saved on the server for every later post
+      go(0);
       let watermarkPath = null;
       if (watermark) {
         const wfData = new FormData();
         wfData.append("watermark", watermark);
-        const wRes = await fetch("/media-api/upload-watermark", { method: "POST", body: wfData });
-        const wData = await wRes.json();
+        const wData = await callJson("/media-api/api/upload-watermark", { method: "POST", body: wfData });
         if (wData.ok) watermarkPath = wData.serverPath;
       }
-      setUploadProgress(15);
 
-      // Step 2: Upload actual media files to media-worker storage
+      // 2. Media files into storage
+      go(1);
       let uploadedFiles = [];
       if (files.length > 0) {
         const formData = new FormData();
         files.forEach((f) => formData.append("files", f));
-        const uRes = await fetch("/media-api/upload", { method: "POST", body: formData });
-        const uData = await uRes.json();
+        const uData = await callJson("/media-api/api/upload", { method: "POST", body: formData });
         if (uData.ok) uploadedFiles = uData.files;
       }
-      setUploadProgress(40);
 
-      // Step 3: Trigger the content pipeline with real server file paths
-      const res = await fetch("/webhook/content-pipeline", {
+      // 3–4. The content pipeline writes and plans the posts; it answers when done
+      go(2);
+      tick = setTimeout(() => go(3), 9000);
+      await callJson("/webhook/content-pipeline", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -88,22 +158,13 @@ export default function UploadPage() {
           uploadId: `upload-${Date.now()}`,
         }),
       });
-
-      setUploadProgress(80);
-      const data = await res.json();
-
-      if (data.ok || res.ok) {
-        setUploadProgress(100);
-        setTimeout(() => {
-          window.location.assign("/queue");
-        }, 1000);
-      } else {
-        console.error("Pipeline error:", data);
-        setUploading(false);
-      }
+      clearTimeout(tick);
+      go(RUN_STEPS.length - 1);
+      setTimeout(() => window.location.assign("/queue"), 1400);
     } catch (err) {
-      console.error("Upload failed:", err);
-      setUploading(false);
+      clearTimeout(tick);
+      console.error("Content run failed:", err);
+      setRunError({ step: at, message: err.message });
     }
   };
 
@@ -249,34 +310,15 @@ export default function UploadPage() {
         />
       </Card>
 
-      {/* Upload button */}
-      <button
-        onClick={handleUpload}
-        disabled={!theme.trim() || uploading}
-        className={`w-full py-3.5 rounded-2xl font-semibold text-sm transition-all ${
-          theme.trim() && !uploading
-            ? "bg-gradient-to-r from-accent-600 to-gold-600 text-white active:scale-[0.98] shadow-lg shadow-accent-500/20"
-            : "bg-ink-800 text-ink-500 cursor-not-allowed"
-        }`}
-      >
-        {uploading ? (
-          <span className="flex items-center justify-center gap-2">
-            <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            {uploadProgress < 20 ? "Uploading watermark..." : uploadProgress < 45 ? "Uploading media..." : uploadProgress < 80 ? "AI generating captions..." : "Preparing your posts..."} {uploadProgress}%
-          </span>
-        ) : (
-          `Generate Content ${files.length ? `(${files.length} file${files.length !== 1 ? "s" : ""})` : ""}`
-        )}
-      </button>
-
-      {/* Progress bar */}
-      {uploading && (
-        <div className="mt-3 h-1.5 bg-ink-800 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-accent-500 to-gold-500 transition-all duration-500"
-            style={{ width: `${uploadProgress}%` }}
-          />
+      {uploading ? (
+        <div ref={(el) => el?.scrollIntoView({ behavior: "smooth", block: "center" })}>
+          <RunSteps phase={phase} error={runError} onRetry={handleUpload} onCancel={() => setUploading(false)} />
         </div>
+      ) : (
+        <button onClick={handleUpload} disabled={!theme.trim()} className="btn btn-primary w-full py-3.5">
+          <Sparkles size={16} />
+          Generate posts{files.length ? ` (${files.length} file${files.length !== 1 ? "s" : ""})` : ""}
+        </button>
       )}
     </PageShell>
   );

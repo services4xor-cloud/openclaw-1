@@ -3,11 +3,11 @@
  * the ways in: the live demo and the workspace (which asks for a sign-in).
  */
 import { Link } from "react-router-dom";
-import { ArrowRight, Check, Workflow, Megaphone } from "lucide-react";
+import { CalendarDays, Check, Play, Workflow, Megaphone } from "lucide-react";
 import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
 import { PRODUCT, useLang } from "../lib/i18n.jsx";
-import { bookUrl, productUrl } from "../lib/links.js";
+import { bookUrl } from "../lib/links.js";
 
 const PRODUCTS = [
   { id: "agent-workflow", flow: "workflow", icon: Workflow },
@@ -26,11 +26,11 @@ export default function LandingPage() {
           <p className="eyebrow">{t.landing.eyebrow}</p>
           <h1 className="mt-4 max-w-3xl font-display text-[2.4rem] leading-[1.1] text-ink-100 sm:text-[3.4rem]">{t.landing.title}</h1>
           <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-400">{t.landing.sub}</p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/try" className="btn btn-primary">
-              {t.tryLive} <ArrowRight size={16} />
+          <div className="mt-8 grid gap-3 sm:flex sm:flex-wrap">
+            <Link to="/try" className="btn btn-primary rounded-full">
+              <Play size={16} /> {t.tryLive}
             </Link>
-            <a href={bookUrl(lang)} className="btn">{t.cta}</a>
+            <a href={bookUrl(lang)} className="btn"><CalendarDays size={16} /> {t.cta}</a>
           </div>
         </section>
 
@@ -56,11 +56,11 @@ export default function LandingPage() {
                   ))}
                 </ul>
                 <p className="mt-5 text-sm text-ink-400">{p.note}</p>
-                <div className="mt-auto flex flex-wrap gap-3 pt-6">
-                  <Link to={`/try?flow=${flow}`} className="btn btn-primary btn-sm">
-                    {t.tryLive} <ArrowRight size={14} />
+                <div className="mt-auto grid gap-3 pt-6 sm:flex sm:flex-wrap">
+                  <Link to={`/try?flow=${flow}`} className="btn btn-primary btn-sm rounded-full">
+                    <Play size={14} /> {t.tryLive}
                   </Link>
-                  <a href={productUrl(flow, lang)} className="btn btn-sm">{t.request}</a>
+                  <a href={bookUrl(lang)} className="btn btn-sm"><CalendarDays size={14} /> {t.cta}</a>
                 </div>
               </article>
             );
@@ -84,7 +84,7 @@ export default function LandingPage() {
                 ))}
               </ol>
             </div>
-            <a href={bookUrl(lang)} className="btn btn-primary shrink-0">{t.cta}</a>
+            <a href={bookUrl(lang)} className="btn btn-primary shrink-0"><CalendarDays size={16} /> {t.cta}</a>
           </div>
         </section>
       </main>

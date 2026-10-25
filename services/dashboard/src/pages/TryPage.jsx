@@ -6,12 +6,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
-  ArrowRight, Check, CalendarClock, Image as ImageIcon, Inbox, Mail, NotebookPen,
+  ArrowRight, Check, CalendarClock, CalendarDays, Image as ImageIcon, Inbox, Mail, NotebookPen,
   PenLine, RotateCcw, Send, Sparkles, Stamp, Timer, UserRound,
 } from "lucide-react";
 import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
-import { BEX_URL, bookUrl, productUrl } from "../lib/links.js";
+import { BEX_URL, bookUrl, mapAgentUrl } from "../lib/links.js";
 import { PRODUCT, useLang } from "../lib/i18n.jsx";
 import { SAMPLE_INPUT, SAMPLE_RESULT } from "../lib/demoSamples.js";
 
@@ -58,7 +58,7 @@ function SocialStage({ step, input, result, approved, onApprove, t }) {
   return (
     <div className="space-y-4">
       <Panel>
-        <div className="relative overflow-hidden rounded-lg border border-ink-700 bg-gradient-to-br from-accent-700/60 via-ink-800 to-gold-600/30 p-5">
+        <div className="relative overflow-hidden rounded-lg border border-ink-700 bg-gradient-to-br from-accent-700/60 via-ink-800 to-gold-600/30 p-5 pb-8">
           <div className="flex items-center gap-3">
             <ImageIcon className="shrink-0 text-ink-200" size={28} />
             <p className="text-sm text-ink-100">{input.detail}</p>
@@ -139,6 +139,19 @@ function WorkflowStage({ step, input, result, t }) {
           </div>
         </Panel>
       )}
+    </div>
+  );
+}
+
+/** The same two next steps as the service card on 4xor.de. */
+function NextSteps({ text, flow, lang, ui }) {
+  return (
+    <div className="grid gap-4">
+      <p className="text-sm text-ink-300">{text}</p>
+      <div className="grid gap-2 sm:flex sm:flex-wrap">
+        <a href={bookUrl(lang)} className="btn btn-primary"><CalendarDays size={16} /> {ui.cta}</a>
+        <a href={mapAgentUrl(flow)} className="btn">{ui.askAgent}</a>
+      </div>
     </div>
   );
 }
@@ -246,12 +259,12 @@ export default function TryPage() {
         <p className="mt-3 max-w-2xl text-ink-400">{Lit(t.watch(product, minutes))}</p>
 
         {/* Flow switch */}
-        <div className="mt-6 inline-flex max-w-full overflow-x-auto rounded-lg border border-ink-700 bg-ink-900 p-1">
+        <div className="mt-6 grid grid-cols-2 rounded-lg border border-ink-700 bg-ink-900 p-1 sm:inline-grid">
           {Object.keys(STEP_ICONS).map((key) => (
             <button
               key={key}
               onClick={() => setParams({ flow: key })}
-              className={`shrink-0 rounded-md px-3.5 py-2 text-sm transition-colors ${key === flowKey ? "bg-accent-400/15 text-ink-100" : "text-ink-400 hover:text-ink-200"}`}
+              className={`rounded-md px-3 py-2 text-center text-sm leading-tight transition-colors ${key === flowKey ? "bg-accent-400/15 text-ink-100" : "text-ink-400 hover:text-ink-200"}`}
             >
               {PRODUCT[key]}
             </button>
@@ -260,7 +273,7 @@ export default function TryPage() {
 
         <section id="stage" className="mt-6 grid scroll-mt-24 gap-5 lg:grid-cols-[280px_1fr]">
           {/* Pipeline */}
-          <ol className="card relative h-fit p-5">
+          <ol className="card relative hidden h-fit p-5 lg:block">
             {stepLabels.map((label, i) => {
               const Icon = STEP_ICONS[flowKey][i];
               const state = i < step || (i === step && done) ? "done" : i === step ? "active" : "todo";
@@ -289,6 +302,39 @@ export default function TryPage() {
 
           {/* What happens */}
           <div className="card min-h-[420px] p-5 sm:p-6">
+            {/* Phones: the pipeline as one compact row, so the work stays in view */}
+            <div className="mb-5 lg:hidden">
+              <ol className="flex items-center">
+                {stepLabels.map((label, i) => {
+                  const Icon = STEP_ICONS[flowKey][i];
+                  const state = i < step || (i === step && done) ? "done" : i === step ? "active" : "todo";
+                  return (
+                    <li key={label} className="flex flex-1 items-center last:flex-none">
+                      <span
+                        aria-label={label}
+                        className={`relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors duration-500 ${
+                          state === "done" ? "border-accent-400 bg-accent-400 text-ink-950"
+                            : state === "active" ? "border-gold-500 bg-gold-500/15 text-gold-300"
+                            : "border-ink-700 bg-ink-950 text-ink-500"
+                        }`}
+                      >
+                        {state === "done" ? <Check size={14} /> : <Icon size={14} />}
+                        {state === "active" && <span className="absolute inset-0 animate-ping rounded-full border border-gold-500/60" />}
+                      </span>
+                      {i < last && (
+                        <span className="mx-1 h-0.5 flex-1 bg-ink-700">
+                          <span className="block h-full bg-accent-400 transition-all duration-700" style={{ width: i < step ? "100%" : "0%" }} />
+                        </span>
+                      )}
+                    </li>
+                  );
+                })}
+              </ol>
+              <p key={step} className="mt-3 animate-[fadeUp_.35s_ease_both] text-sm text-ink-100">
+                <span className="mr-2 font-mono text-xs text-gold-400">{Math.min(step + 1, last + 1)}/{last + 1}</span>
+                {stepLabels[Math.min(step, last)]}
+              </p>
+            </div>
             <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
               <span className="text-xs text-ink-400">
                 {run.live ? t.liveFor : t.example}<span className="text-ink-200">{run.input.business}</span>
@@ -320,24 +366,17 @@ export default function TryPage() {
             <p className="mt-2 text-sm text-ink-400">{t.yourTurnText}</p>
           </div>
           <div className="card p-5 sm:p-6">
-            {!me?.signedIn ? (
+            {flowKey === "workflow" ? (
+              <NextSteps text={t.soon} flow={flowKey} lang={lang} ui={ui} />
+            ) : !me?.signedIn ? (
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <p className="text-sm text-ink-300">{t.signInPrompt(product)}</p>
                 <a href={signInUrl} className="btn btn-primary">{t.signInToRun} <ArrowRight size={16} /></a>
               </div>
             ) : usedToday && !run.live ? (
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-sm text-ink-300">{t.used}</p>
-                <a href={bookUrl(lang)} className="btn btn-primary">{ui.cta}</a>
-              </div>
+              <NextSteps text={t.used} flow={flowKey} lang={lang} ui={ui} />
             ) : run.live ? (
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-sm text-ink-300">{t.liveDone}</p>
-                <div className="flex flex-wrap gap-2">
-                  <a href={productUrl(flowKey, lang)} className="btn">{ui.request}</a>
-                  <a href={bookUrl(lang)} className="btn btn-primary">{ui.cta}</a>
-                </div>
-              </div>
+              <NextSteps text={t.liveDone} flow={flowKey} lang={lang} ui={ui} />
             ) : (
               <form onSubmit={runLive} className="grid gap-3">
                 <label className="grid gap-1.5 text-sm text-ink-300">

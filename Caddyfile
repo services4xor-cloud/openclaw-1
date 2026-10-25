@@ -27,20 +27,20 @@
 		{$STUDIO_USER:admin} {$STUDIO_PASS_HASH}
 	}
 
-	# Public pages are read-only
-	@publicWrite {
-		path / /try /assets/* /favicon.svg
-		not method GET HEAD
-	}
-	respond @publicWrite 405
-
 	# ── Dashboard (default) ──────────────────────────────────────────────
 	handle {
+		# Public pages are read-only (inside the handle: respond runs before reverse_proxy)
+		@publicWrite {
+			path / /try /assets/* /favicon.svg
+			not method GET HEAD
+		}
+		respond @publicWrite 405
 		reverse_proxy dashboard:3000
 	}
 
 	# ── n8n Workflow Editor ──────────────────────────────────────────────
-	handle_path /n8n/* {
+	handle /n8n/* {
+		uri strip_prefix /n8n
 		reverse_proxy n8n:5678
 	}
 
@@ -58,7 +58,8 @@
 	}
 
 	# ── Media Worker API ─────────────────────────────────────────────────
-	handle_path /media-api/* {
+	handle /media-api/* {
+		uri strip_prefix /media-api
 		reverse_proxy media-worker:3001
 	}
 
