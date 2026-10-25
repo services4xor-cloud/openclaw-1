@@ -30,7 +30,7 @@ export default function LandingPage() {
             <Link to="/try" className="btn btn-primary">
               {t.tryLive} <ArrowRight size={16} />
             </Link>
-            <a href="/workspace" className="btn">{t.workspaceSignIn}</a>
+            <a href={bookUrl(lang)} className="btn">{t.cta}</a>
           </div>
         </section>
 

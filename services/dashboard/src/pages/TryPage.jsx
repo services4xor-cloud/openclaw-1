@@ -203,29 +203,37 @@ export default function TryPage() {
     e.preventDefault();
     setBusy(true);
     setError("");
+    // Never leave the button spinning: give up after 60 seconds
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 60_000);
     try {
       const res = await fetch(`${BEX_URL}/api/studio-demo`, {
         method: "POST",
         credentials: "include",
+        signal: ctrl.signal,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ flow: flowKey, ...form }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         setError(data.error || t.error);
-        if (data.used) setMe((m) => ({ ...m, used: true }));
+        if (res.status === 401) setMe((m) => ({ ...m, signedIn: false }));
+        if (data.used) markUsed();
         return;
       }
-      setMe((m) => ({ ...m, used: true }));
+      markUsed();
       setRun({ input: form, result: data.result, live: true });
       restart();
       document.getElementById("stage")?.scrollIntoView({ behavior: "smooth" });
     } catch {
       setError(t.unreachable);
     } finally {
+      clearTimeout(timer);
       setBusy(false);
     }
   };
+  const markUsed = () => setMe((m) => ({ ...m, used: { ...m?.used, [flowKey]: true } }));
+  const usedToday = !!me?.used?.[flowKey];
 
   const hints = t.hints[flowKey];
 
@@ -317,7 +325,7 @@ export default function TryPage() {
                 <p className="text-sm text-ink-300">{t.signInPrompt(product)}</p>
                 <a href={signInUrl} className="btn btn-primary">{t.signInToRun} <ArrowRight size={16} /></a>
               </div>
-            ) : me.used && !run.live ? (
+            ) : usedToday && !run.live ? (
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <p className="text-sm text-ink-300">{t.used}</p>
                 <a href={bookUrl(lang)} className="btn btn-primary">{ui.cta}</a>

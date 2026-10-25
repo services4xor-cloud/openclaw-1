@@ -1,7 +1,7 @@
 /**
  * The 4xor.de header, shared by every Studio page: promo bar, deep green bar with
  * a teal rule on top, the BE[ ] logo, the links, the language switch and one call
- * to action. Below 1000px the links fold into a full-screen menu with the
+ * to action. Below 1180px the links fold into a full-screen menu with the
  * languages as pills and the call to action at the foot, exactly as on 4xor.de.
  * `workspace` swaps the public links for the workspace links.
  */
@@ -9,7 +9,7 @@ import { useEffect, useRef } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import AnimatedLogo from "./AnimatedLogo.jsx";
 import { LANGS, LANGUAGES, siteHome, useLang, PRODUCT } from "../lib/i18n.jsx";
-import { MAP_URL, bookUrl } from "../lib/links.js";
+import { BEX_URL, MAP_URL, bookUrl } from "../lib/links.js";
 
 function Chevron() {
   return (
@@ -51,6 +51,7 @@ export default function SiteHeader({ workspace = false }) {
 
   // The site map: grouped as in the phone menu, flat in the desktop bar. The last
   // group leads back to the other 4XOR sites, so all three feel like one.
+  const signInUrl = `${BEX_URL}/login?callbackUrl=${encodeURIComponent(`${location.origin}/try?lang=${lang}#live`)}`;
   const sites = {
     label: "4XOR",
     items: [
@@ -82,12 +83,14 @@ export default function SiteHeader({ workspace = false }) {
           label: t.groups.studio,
           items: [
             { to: "/try", label: t.tryLive },
-            { href: "/workspace", label: t.signIn },
+            // Visitors sign in with their 4XOR account for the live run; the
+            // customer workspace stays behind its own login, out of the public menu
+            { href: signInUrl, label: t.signIn },
           ],
         },
         sites,
       ];
-  const desktopItems = workspace ? groups[0].items : [...groups[0].items, groups[1].items[0]];
+  const desktopItems = groups[0].items;
 
   const item = (i, className) =>
     i.to ? (
@@ -114,20 +117,26 @@ export default function SiteHeader({ workspace = false }) {
       )}
       <header className="sticky top-0 z-40 border-b border-white/10 border-t-[3px] border-t-accent-400 bg-deep text-[#f3f5f2]">
         <div className="relative mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2.5 sm:px-6">
-          <Link
-            to={workspace ? "/workspace" : "/"}
-            aria-label={t.homeLabel}
-            className="flex shrink-0 items-center gap-3 text-[#f3f5f2]"
-            onClick={() => menuRef.current && (menuRef.current.open = false)}
-          >
-            <AnimatedLogo size={34} />
-            <span className="hidden border-l border-white/20 pl-3 font-brand text-[0.8rem] font-medium uppercase tracking-[0.22em] text-[#dfe8e3] sm:inline">
-              Studio
-            </span>
-          </Link>
+          <div className="flex min-w-0 items-center gap-3">
+            <Link
+              to={workspace ? "/workspace" : "/"}
+              aria-label={t.homeLabel}
+              className="flex shrink-0 items-center gap-3 text-[#f3f5f2]"
+              onClick={() => menuRef.current && (menuRef.current.open = false)}
+            >
+              <AnimatedLogo size={34} />
+              <span className="hidden border-l border-white/20 pl-3 font-brand text-[0.8rem] font-medium uppercase tracking-[0.22em] text-[#dfe8e3] sm:inline">
+                Studio
+              </span>
+            </Link>
+            {/* The way back, in the same place and style as on the Be[X] map */}
+            <a href={siteHome(lang)} className="shrink-0 whitespace-nowrap rounded-full border border-white/20 px-2.5 py-1 text-xs text-[#e3ece7] hover:border-accent-400 hover:text-white">
+              <span aria-hidden="true">← </span>4xor.de
+            </a>
+          </div>
 
-          <nav aria-label="Main" className="flex items-center gap-6 text-[0.95rem]">
-            <div className="hidden items-center gap-7 min-[1001px]:flex">{desktopItems.map((i) => item(i, "nav-link"))}</div>
+          <nav aria-label="Main" className="flex shrink-0 items-center gap-6 text-[0.95rem]">
+            <div className="hidden items-center gap-7 min-[1180px]:flex">{desktopItems.map((i) => item(i, "nav-link"))}</div>
 
             <details ref={langRef} className="langs relative hidden sm:block">
               <summary aria-label={`${t.langLabel}: ${LANGUAGES[lang]}`} className="flex cursor-pointer list-none items-center gap-1.5 font-mono text-[0.82rem] font-medium tracking-wide text-[#dfe8e3] hover:text-accent-300">
@@ -150,14 +159,10 @@ export default function SiteHeader({ workspace = false }) {
               </ul>
             </details>
 
-            {workspace ? (
-              <a href={siteHome(lang)} className="nav-link hidden text-[0.9rem] min-[1001px]:inline">4xor.de</a>
-            ) : (
-              <a href={bookUrl(lang)} className="btn btn-on-deep btn-sm hidden sm:inline-flex">{t.cta}</a>
-            )}
+            {!workspace && <a href={bookUrl(lang)} className="btn btn-on-deep btn-sm hidden sm:inline-flex">{t.cta}</a>}
 
             {/* Phones and tablets: the whole site map on one screen, as on 4xor.de */}
-            <details ref={menuRef} className="menu min-[1001px]:hidden">
+            <details ref={menuRef} className="menu min-[1180px]:hidden">
               <summary className="cursor-pointer list-none rounded-md border-[1.5px] border-white/25 px-3.5 py-1.5 text-[0.92rem] font-semibold hover:border-accent-400 hover:text-accent-300">
                 {t.menu}
               </summary>

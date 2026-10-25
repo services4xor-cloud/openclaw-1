@@ -1,3 +1,12 @@
+{
+	servers {
+		timeouts {
+			read_header 10s
+			idle 2m
+		}
+	}
+}
+
 # OpenClaw Social Media Automation — Reverse Proxy
 #
 # Replace {$DOMAIN} with your actual domain, or set DOMAIN in .env.production
@@ -17,6 +26,13 @@
 	basic_auth @private bcrypt "4XOR Studio" {
 		{$STUDIO_USER:admin} {$STUDIO_PASS_HASH}
 	}
+
+	# Public pages are read-only
+	@publicWrite {
+		path / /try /assets/* /favicon.svg
+		not method GET HEAD
+	}
+	respond @publicWrite 405
 
 	# ── Dashboard (default) ──────────────────────────────────────────────
 	handle {
