@@ -150,9 +150,6 @@ services:
       - OPENCLAW_URL=http://openclaw-gateway:18789
       - OPENCLAW_HOOKS_TOKEN=${HOOKS_TOKEN}
       - MEDIA_WORKER_URL=http://media-worker:3001
-      # Visitor demo workflow calls Claude directly and reads the key via $env
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
       # Social media API keys (n8n manages these)
       - META_APP_ID=${META_APP_ID:-}
       - META_APP_SECRET=${META_APP_SECRET:-}

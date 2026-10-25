@@ -80,10 +80,6 @@
         "headerParameters": {
           "parameters": [
             {
-              "name": "x-api-key",
-              "value": "={{ $env.ANTHROPIC_API_KEY }}"
-            },
-            {
               "name": "anthropic-version",
               "value": "2023-06-01"
             }
@@ -94,6 +90,14 @@
         "jsonBody": "={{ JSON.stringify($json.payload) }}",
         "options": {
           "timeout": 60000
+        },
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "studioAnthropic01",
+          "name": "Anthropic (Studio demo)"
         }
       }
     },
