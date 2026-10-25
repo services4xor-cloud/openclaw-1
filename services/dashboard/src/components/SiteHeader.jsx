@@ -127,11 +127,8 @@ export default function SiteHeader({ workspace = false }) {
               onClick={() => menuRef.current && (menuRef.current.open = false)}
             >
               <AnimatedLogo size={34} />
-              <span className="hidden border-l border-white/20 pl-3 font-brand text-[0.8rem] font-medium uppercase tracking-[0.22em] text-[#dfe8e3] sm:inline">
-                Studio
-              </span>
             </Link>
-            {/* The way back, in the same place and style as on the Be[X] map */}
+            {/* Logo, then the way back: the same header as the Be[X] map */}
             <a href={backHref} className="shrink-0 whitespace-nowrap rounded-full border border-white/20 px-2.5 py-1 text-xs text-[#e3ece7] hover:border-accent-400 hover:text-white">
               <span aria-hidden="true">← </span>4xor.de
             </a>
