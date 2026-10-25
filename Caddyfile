@@ -22,7 +22,8 @@
 	# ── Access gate until the shared Google login is wired ─────────────
 	# The front door (/), the live demo (/try), their assets and icon are
 	# public; the workspace and everything behind it asks for the Studio login.
-	@private not path / /try /assets/* /favicon.svg
+	# The visitor demo webhook is public too; n8n limits it to one run a day.
+	@private not path / /try /assets/* /favicon.svg /webhook/studio-demo
 	basic_auth @private bcrypt "4XOR Studio" {
 		{$STUDIO_USER:admin} {$STUDIO_PASS_HASH}
 	}
@@ -41,6 +42,14 @@
 	# ── n8n Workflow Editor ──────────────────────────────────────────────
 	handle /n8n/* {
 		uri strip_prefix /n8n
+		reverse_proxy n8n:5678
+	}
+
+	# ── Public visitor demo (small JSON body only) ──────────────────────
+	handle /webhook/studio-demo {
+		request_body {
+			max_size 16KB
+		}
 		reverse_proxy n8n:5678
 	}
 

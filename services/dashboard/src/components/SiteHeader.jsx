@@ -9,7 +9,7 @@ import { useEffect, useRef } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import AnimatedLogo from "./AnimatedLogo.jsx";
 import { LANGS, LANGUAGES, siteHome, useLang, PRODUCT } from "../lib/i18n.jsx";
-import { BEX_URL, MAP_URL, backTo4xor, bookUrl } from "../lib/links.js";
+import { MAP_URL, backTo4xor, bookUrl } from "../lib/links.js";
 
 function Chevron() {
   return (
@@ -53,7 +53,6 @@ export default function SiteHeader({ workspace = false }) {
   // group leads back to the other 4XOR sites, so all three feel like one.
   const tryFlow = pathname === "/try" ? (new URLSearchParams(search).get("flow") === "social" ? "social" : "workflow") : null;
   const backHref = backTo4xor(lang, tryFlow);
-  const signInUrl = `${BEX_URL}/login?callbackUrl=${encodeURIComponent(`${location.origin}/try?lang=${lang}#live`)}`;
   const sites = {
     label: "4XOR",
     items: [
@@ -84,15 +83,16 @@ export default function SiteHeader({ workspace = false }) {
         {
           label: t.groups.studio,
           items: [
+            // The customer workspace stays behind its own login, out of the public menu
             { to: "/try", label: t.tryLive },
-            // Visitors sign in with their 4XOR account for the live run; the
-            // customer workspace stays behind its own login, out of the public menu
-            { href: signInUrl, label: t.signIn },
           ],
         },
         sites,
       ];
-  const desktopItems = groups[0].items;
+  // Inside a demo the header stays quiet: no links to the other service
+  const inDemo = !workspace && pathname === "/try";
+  const shownGroups = inDemo ? groups.slice(1) : groups;
+  const desktopItems = inDemo ? [] : groups[0].items;
 
   const item = (i, className) =>
     i.to ? (
@@ -169,7 +169,7 @@ export default function SiteHeader({ workspace = false }) {
                 {t.menu}
               </summary>
               <div className="menu-panel" onClick={closeMenu}>
-                {groups.map((g, n) => (
+                {shownGroups.map((g, n) => (
                   <div key={g.label} className="menu-group" style={{ "--n": n }}>
                     <p className="menu-head">{g.label}</p>
                     <div className="menu-links">{g.items.map((i) => item(i, "menu-link"))}</div>

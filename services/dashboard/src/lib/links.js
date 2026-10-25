@@ -24,5 +24,3 @@ export function backTo4xor(lang, flow) {
   } catch {}
   return fromSite && flow ? productUrl(flow, lang) : siteHome(lang);
 }
-// The Be[X] map app holds the shared 4XOR sign-in and the live demo API.
-export const BEX_URL = import.meta.env.VITE_BEX_URL || "https://map.4xor.de";
