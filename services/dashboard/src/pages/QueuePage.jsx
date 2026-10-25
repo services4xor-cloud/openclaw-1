@@ -112,7 +112,7 @@ const DEFAULT_POSTS_PER_DAY = {
 const PLATFORMS = ["instagram", "tiktok", "youtube", "facebook", "whatsapp"];
 
 const TABS = [
-  { key: "stash", label: "Stash", icon: Inbox },
+  { key: "stash", label: "To approve", icon: Inbox },
   { key: "approved", label: "Scheduled", icon: CalendarClock },
   { key: "published", label: "Published", icon: Send },
 ];
@@ -251,7 +251,7 @@ export default function QueuePage() {
   // ── Render ──────────────────────────────────────────────────────────────
 
   return (
-    <PageShell title="Content Stash" subtitle="One approval = all platforms, auto-scheduled">
+    <PageShell title="Approve posts" subtitle="One approval sends a post to every channel, scheduled for you.">
       {/* Runway warning */}
       {lowestRunway < 3 && (
         <Card
@@ -267,9 +267,9 @@ export default function QueuePage() {
               className={`shrink-0 mt-0.5 ${lowestRunway < 1 ? "text-red-400" : "text-amber-400"}`}
             />
             <div>
-              <p className="text-sm font-medium text-slate-200">
+              <p className="text-sm font-medium text-ink-200">
                 {lowestRunway < 1
-                  ? "Content runs out today — approve more from stash!"
+                  ? "Posts run out today. Approve more to keep your channels active."
                   : `~${Math.ceil(lowestRunway)} day${Math.ceil(lowestRunway) !== 1 ? "s" : ""} of content left`}
               </p>
               <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5">
@@ -277,7 +277,7 @@ export default function QueuePage() {
                   <span
                     key={r.platform}
                     className={`text-[11px] ${
-                      r.days_remaining < 1 ? "text-red-400" : r.days_remaining < 3 ? "text-amber-400" : "text-slate-500"
+                      r.days_remaining < 1 ? "text-red-400" : r.days_remaining < 3 ? "text-amber-400" : "text-ink-500"
                     }`}
                   >
                     {r.platform}: {r.days_remaining.toFixed(1)}d
@@ -292,8 +292,8 @@ export default function QueuePage() {
       {/* Runway bars */}
       <Card className="mb-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-medium text-slate-400">Content Runway</span>
-          <span className="text-[10px] text-slate-600">days remaining per platform</span>
+          <span className="text-xs font-medium text-ink-400">Posts ready</span>
+          <span className="text-[10px] text-ink-600">days remaining per platform</span>
         </div>
         <div className="space-y-2">
           {runway.map((r) => {
@@ -303,17 +303,17 @@ export default function QueuePage() {
                 ? "from-red-500 to-red-600"
                 : r.days_remaining < 3
                   ? "from-amber-500 to-amber-600"
-                  : "from-emerald-500 to-cyan-500";
+                  : "from-emerald-500 to-gold-500";
             return (
               <div key={r.platform} className="flex items-center gap-2">
-                <span className="text-[11px] text-slate-500 w-16 shrink-0 capitalize">{r.platform}</span>
-                <div className="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
+                <span className="text-[11px] text-ink-500 w-16 shrink-0 capitalize">{r.platform}</span>
+                <div className="flex-1 h-2 bg-ink-800 rounded-full overflow-hidden">
                   <div
                     className={`h-full bg-gradient-to-r ${color} rounded-full transition-all`}
                     style={{ width: `${pct}%` }}
                   />
                 </div>
-                <span className="text-[11px] text-slate-500 w-8 text-right shrink-0">
+                <span className="text-[11px] text-ink-500 w-8 text-right shrink-0">
                   {r.days_remaining.toFixed(1)}d
                 </span>
               </div>
@@ -323,7 +323,7 @@ export default function QueuePage() {
       </Card>
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-4 bg-slate-900 rounded-xl p-1">
+      <div className="flex gap-1 mb-4 bg-ink-900 rounded-xl p-1">
         {TABS.map(({ key, label, icon: Icon }) => {
           const count = groups.filter((g) => g.status === key).length;
           return (
@@ -331,14 +331,14 @@ export default function QueuePage() {
               key={key}
               onClick={() => setActiveTab(key)}
               className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-[11px] font-medium transition-colors ${
-                activeTab === key ? "bg-slate-800 text-slate-200 shadow-sm" : "text-slate-500"
+                activeTab === key ? "bg-ink-800 text-ink-200 shadow-sm" : "text-ink-500"
               }`}
             >
               <Icon size={13} />
               {label}
               {count > 0 && (
                 <span className={`ml-0.5 text-[10px] px-1.5 rounded-full ${
-                  activeTab === key ? "bg-violet-500/30 text-violet-300" : "bg-slate-800 text-slate-600"
+                  activeTab === key ? "bg-accent-500/30 text-accent-300" : "bg-ink-800 text-ink-600"
                 }`}>
                   {count}
                 </span>
@@ -353,17 +353,17 @@ export default function QueuePage() {
         <div className="flex gap-2 mb-3">
           <button
             onClick={fetchData}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-slate-800 rounded-xl text-xs text-slate-300 active:bg-slate-700"
+            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-ink-800 rounded-xl text-xs text-ink-300 active:bg-ink-700"
           >
             <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
             Refresh
           </button>
           <button
             onClick={approveAll}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-violet-600/20 rounded-xl text-xs text-violet-400 active:bg-violet-600/30 font-medium"
+            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-accent-600/20 rounded-xl text-xs text-accent-400 active:bg-accent-600/30 font-medium"
           >
             <CheckCheck size={14} />
-            Approve All ({stashCount})
+            Approve all ({stashCount})
           </button>
         </div>
       )}
@@ -387,36 +387,36 @@ export default function QueuePage() {
                 <div className="flex gap-1.5 shrink-0 ml-2">
                   <button
                     onClick={() => approveGroup(group.id)}
-                    className="h-8 px-3 rounded-lg bg-violet-600/20 flex items-center gap-1.5 active:bg-violet-600/40"
-                    title="Approve for ALL platforms"
+                    className="h-8 px-3 rounded-lg bg-accent-600/20 flex items-center gap-1.5 active:bg-accent-600/40"
+                    title="Approve for every channel"
                   >
-                    <Check size={14} className="text-violet-400" />
-                    <span className="text-[11px] text-violet-400 font-medium">Approve</span>
+                    <Check size={14} className="text-accent-400" />
+                    <span className="text-[11px] text-accent-400 font-medium">Approve</span>
                   </button>
                   <button
                     onClick={() => skipGroup(group.id)}
-                    className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center active:bg-red-600/20"
+                    className="w-8 h-8 rounded-lg bg-ink-800 flex items-center justify-center active:bg-red-600/20"
                   >
-                    <X size={14} className="text-slate-500" />
+                    <X size={14} className="text-ink-500" />
                   </button>
                 </div>
               )}
             </div>
 
             {/* Theme label */}
-            <p className="text-[11px] text-slate-500 mb-1.5 font-medium uppercase tracking-wider">
+            <p className="text-[11px] text-ink-500 mb-1.5 font-medium uppercase tracking-wider">
               {group.theme}
             </p>
 
             {/* Preview caption (first platform) */}
-            <p className="text-sm text-slate-300 leading-relaxed mb-2">
+            <p className="text-sm text-ink-300 leading-relaxed mb-2">
               {preview.caption}
             </p>
 
             {/* Expand to see all platform variants */}
             <button
               onClick={() => setExpandedGroup(isExpanded ? null : group.id)}
-              className="flex items-center gap-1 text-[11px] text-slate-500 hover:text-slate-300 mb-1"
+              className="flex items-center gap-1 text-[11px] text-ink-500 hover:text-ink-300 mb-1"
             >
               {isExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
               {isExpanded ? "Hide" : "Show"} all {group.variants.length} platform versions
@@ -424,9 +424,9 @@ export default function QueuePage() {
 
             {/* Expanded: all variants */}
             {isExpanded && (
-              <div className="mt-2 space-y-2 border-t border-slate-800 pt-2">
+              <div className="mt-2 space-y-2 border-t border-ink-800 pt-2">
                 {group.variants.map((v) => (
-                  <div key={v.id} className="bg-slate-800/50 rounded-lg p-2.5">
+                  <div key={v.id} className="bg-ink-800/50 rounded-lg p-2.5">
                     <div className="flex items-center justify-between mb-1">
                       <PlatformBadge platform={v.platform} />
                       {v.scheduled_at && (
@@ -438,11 +438,11 @@ export default function QueuePage() {
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-slate-400 leading-relaxed">{v.caption}</p>
+                    <p className="text-xs text-ink-400 leading-relaxed">{v.caption}</p>
                     {v.hashtags.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-1">
                         {v.hashtags.map((tag, i) => (
-                          <span key={i} className="text-[9px] text-violet-400/70">{tag}</span>
+                          <span key={i} className="text-[9px] text-accent-400/70">{tag}</span>
                         ))}
                       </div>
                     )}
@@ -452,7 +452,7 @@ export default function QueuePage() {
             )}
 
             {/* Footer timestamp */}
-            <div className="mt-2 text-[11px] text-slate-600 flex items-center gap-1">
+            <div className="mt-2 text-[11px] text-ink-600 flex items-center gap-1">
               <Clock size={11} />
               {group.status === "approved" && group.approved_at
                 ? `Approved ${new Date(group.approved_at).toLocaleString("en-US", { month: "short", day: "numeric" })} — system is scheduling`
@@ -467,12 +467,12 @@ export default function QueuePage() {
       {/* Empty state */}
       {filteredGroups.length === 0 && (
         <div className="text-center py-12">
-          <Archive size={32} className="mx-auto mb-3 text-slate-700" />
-          <p className="text-sm text-slate-500">
+          <Archive size={32} className="mx-auto mb-3 text-ink-700" />
+          <p className="text-sm text-ink-500">
             {activeTab === "stash"
-              ? "Stash is empty — upload media to generate content."
+              ? "Nothing to approve yet. Upload photos or videos to get new posts."
               : activeTab === "approved"
-                ? "Nothing scheduled. Approve from stash to fill the pipeline."
+                ? "Nothing scheduled yet. Approve posts to fill the schedule."
                 : "No posts published yet."}
           </p>
         </div>

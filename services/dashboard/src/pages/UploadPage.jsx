@@ -76,7 +76,7 @@ export default function UploadPage() {
       }
       setUploadProgress(40);
 
-      // Step 3: Trigger n8n content pipeline with real server file paths
+      // Step 3: Trigger the content pipeline with real server file paths
       const res = await fetch("/webhook/content-pipeline", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -95,8 +95,7 @@ export default function UploadPage() {
       if (data.ok || res.ok) {
         setUploadProgress(100);
         setTimeout(() => {
-          window.location.hash = "#/queue";
-          window.location.reload();
+          window.location.assign("/queue");
         }, 1000);
       } else {
         console.error("Pipeline error:", data);
@@ -110,8 +109,8 @@ export default function UploadPage() {
 
   return (
     <PageShell
-      title="Upload Center"
-      subtitle="Drop your raw media — the system handles the rest"
+      title="Create posts"
+      subtitle="Upload photos or videos. You get ready-to-approve posts for every channel."
     >
       {/* Drop zone */}
       <Card className="mb-4">
@@ -119,17 +118,17 @@ export default function UploadPage() {
           onDrop={handleDrop}
           onDragOver={(e) => e.preventDefault()}
           onClick={() => fileInputRef.current?.click()}
-          className="border-2 border-dashed border-slate-700 rounded-xl p-8 text-center cursor-pointer hover:border-violet-500/50 active:border-violet-500 transition-colors"
+          className="border-2 border-dashed border-ink-700 rounded-xl p-8 text-center cursor-pointer hover:border-accent-500/50 active:border-accent-500 transition-colors"
         >
           <CloudUpload
-            className="mx-auto mb-3 text-slate-500"
+            className="mx-auto mb-3 text-ink-500"
             size={40}
             strokeWidth={1.5}
           />
-          <p className="text-sm text-slate-300 font-medium">
+          <p className="text-sm text-ink-300 font-medium">
             Tap to select or drop files
           </p>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-ink-500 mt-1">
             Images & videos — up to 500MB each
           </p>
         </div>
@@ -147,19 +146,19 @@ export default function UploadPage() {
       {files.length > 0 && (
         <Card className="mb-4">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-slate-300">
+            <span className="text-sm font-medium text-ink-300">
               {files.length} file{files.length !== 1 ? "s" : ""} selected
             </span>
             <button
               onClick={() => setFiles([])}
-              className="text-xs text-slate-500 hover:text-red-400"
+              className="text-xs text-ink-500 hover:text-red-400"
             >
               Clear all
             </button>
           </div>
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
             {files.map((file, i) => (
-              <div key={i} className="relative aspect-square rounded-lg overflow-hidden bg-slate-800">
+              <div key={i} className="relative aspect-square rounded-lg overflow-hidden bg-ink-800">
                 {file.type.startsWith("image/") ? (
                   <img
                     src={URL.createObjectURL(file)}
@@ -168,8 +167,8 @@ export default function UploadPage() {
                   />
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center">
-                    <Film size={20} className="text-slate-500" />
-                    <span className="text-[9px] text-slate-500 mt-1 truncate max-w-full px-1">
+                    <Film size={20} className="text-ink-500" />
+                    <span className="text-[9px] text-ink-500 mt-1 truncate max-w-full px-1">
                       {file.name}
                     </span>
                   </div>
@@ -189,17 +188,17 @@ export default function UploadPage() {
       {/* Watermark upload */}
       <Card className="mb-4">
         <div className="flex items-center gap-3 mb-2">
-          <Stamp size={18} className="text-violet-400" />
-          <span className="text-sm font-medium text-slate-200">Watermark</span>
+          <Stamp size={18} className="text-accent-400" />
+          <span className="text-sm font-medium text-ink-200">Watermark</span>
         </div>
         {watermark ? (
           <div className="flex items-center gap-3">
             <img
               src={URL.createObjectURL(watermark)}
               alt="Watermark"
-              className="w-12 h-12 rounded-lg object-contain bg-slate-800 p-1"
+              className="w-12 h-12 rounded-lg object-contain bg-ink-800 p-1"
             />
-            <span className="text-xs text-slate-400 flex-1 truncate">
+            <span className="text-xs text-ink-400 flex-1 truncate">
               {watermark.name}
             </span>
             <button
@@ -212,7 +211,7 @@ export default function UploadPage() {
         ) : (
           <button
             onClick={() => watermarkInputRef.current?.click()}
-            className="w-full py-2.5 border border-dashed border-slate-700 rounded-xl text-xs text-slate-400 hover:border-violet-500/50"
+            className="w-full py-2.5 border border-dashed border-ink-700 rounded-xl text-xs text-ink-400 hover:border-accent-500/50"
           >
             Upload watermark image (PNG recommended)
           </button>
@@ -229,8 +228,8 @@ export default function UploadPage() {
       {/* Theme & brand voice */}
       <Card className="mb-4">
         <div className="flex items-center gap-3 mb-3">
-          <Sparkles size={18} className="text-cyan-400" />
-          <span className="text-sm font-medium text-slate-200">
+          <Sparkles size={18} className="text-gold-400" />
+          <span className="text-sm font-medium text-ink-200">
             Content Direction
           </span>
         </div>
@@ -238,14 +237,14 @@ export default function UploadPage() {
           value={theme}
           onChange={(e) => setTheme(e.target.value)}
           placeholder="Describe the theme or direction... e.g. 'Summer fitness campaign, energetic vibe, beach aesthetics'"
-          className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 placeholder:text-slate-600 resize-none focus:outline-none focus:border-violet-500/50 mb-3"
+          className="w-full bg-ink-800 border border-ink-700 rounded-xl px-3 py-2.5 text-sm text-ink-200 placeholder:text-ink-600 resize-none focus:outline-none focus:border-accent-500/50 mb-3"
           rows={3}
         />
         <textarea
           value={brandVoice}
           onChange={(e) => setBrandVoice(e.target.value)}
           placeholder="Brand voice notes... e.g. 'Casual but professional, use emoji sparingly, always include call-to-action'"
-          className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 placeholder:text-slate-600 resize-none focus:outline-none focus:border-violet-500/50"
+          className="w-full bg-ink-800 border border-ink-700 rounded-xl px-3 py-2.5 text-sm text-ink-200 placeholder:text-ink-600 resize-none focus:outline-none focus:border-accent-500/50"
           rows={2}
         />
       </Card>
@@ -256,14 +255,14 @@ export default function UploadPage() {
         disabled={!theme.trim() || uploading}
         className={`w-full py-3.5 rounded-2xl font-semibold text-sm transition-all ${
           theme.trim() && !uploading
-            ? "bg-gradient-to-r from-violet-600 to-cyan-600 text-white active:scale-[0.98] shadow-lg shadow-violet-500/20"
-            : "bg-slate-800 text-slate-500 cursor-not-allowed"
+            ? "bg-gradient-to-r from-accent-600 to-gold-600 text-white active:scale-[0.98] shadow-lg shadow-accent-500/20"
+            : "bg-ink-800 text-ink-500 cursor-not-allowed"
         }`}
       >
         {uploading ? (
           <span className="flex items-center justify-center gap-2">
             <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            {uploadProgress < 20 ? "Uploading watermark..." : uploadProgress < 45 ? "Uploading media..." : uploadProgress < 80 ? "AI generating captions..." : "Saving to stash..."} {uploadProgress}%
+            {uploadProgress < 20 ? "Uploading watermark..." : uploadProgress < 45 ? "Uploading media..." : uploadProgress < 80 ? "AI generating captions..." : "Preparing your posts..."} {uploadProgress}%
           </span>
         ) : (
           `Generate Content ${files.length ? `(${files.length} file${files.length !== 1 ? "s" : ""})` : ""}`
@@ -272,9 +271,9 @@ export default function UploadPage() {
 
       {/* Progress bar */}
       {uploading && (
-        <div className="mt-3 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+        <div className="mt-3 h-1.5 bg-ink-800 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-violet-500 to-cyan-500 transition-all duration-500"
+            className="h-full bg-gradient-to-r from-accent-500 to-gold-500 transition-all duration-500"
             style={{ width: `${uploadProgress}%` }}
           />
         </div>

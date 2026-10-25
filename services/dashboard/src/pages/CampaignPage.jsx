@@ -51,8 +51,8 @@ export default function CampaignPage() {
 
   return (
     <PageShell
-      title="Campaign Config"
-      subtitle="Set posting intervals per platform — n8n handles the scheduling"
+      title="Posting schedule"
+      subtitle="Choose how often each channel gets a new post. Scheduling happens automatically."
     >
       {/* Platform cards */}
       {platforms.map((platform) => (
@@ -61,9 +61,9 @@ export default function CampaignPage() {
             <PlatformBadge platform={platform.id} size="md" />
             <button onClick={() => togglePlatform(platform.id)}>
               {platform.enabled ? (
-                <ToggleRight size={28} className="text-violet-400" />
+                <ToggleRight size={28} className="text-accent-400" />
               ) : (
-                <ToggleLeft size={28} className="text-slate-600" />
+                <ToggleLeft size={28} className="text-ink-600" />
               )}
             </button>
           </div>
@@ -72,24 +72,24 @@ export default function CampaignPage() {
             <div className="space-y-3">
               {/* Posts per day */}
               <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-400">Posts / day</span>
+                <span className="text-xs text-ink-400">Posts / day</span>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() =>
                       updatePlatform(platform.id, "postsPerDay", Math.max(1, platform.postsPerDay - 1))
                     }
-                    className="w-7 h-7 rounded-lg bg-slate-800 text-slate-300 text-sm font-bold flex items-center justify-center"
+                    className="w-7 h-7 rounded-lg bg-ink-800 text-ink-300 text-sm font-bold flex items-center justify-center"
                   >
                     -
                   </button>
-                  <span className="text-sm font-semibold text-slate-200 w-6 text-center">
+                  <span className="text-sm font-semibold text-ink-200 w-6 text-center">
                     {platform.postsPerDay}
                   </span>
                   <button
                     onClick={() =>
                       updatePlatform(platform.id, "postsPerDay", Math.min(10, platform.postsPerDay + 1))
                     }
-                    className="w-7 h-7 rounded-lg bg-slate-800 text-slate-300 text-sm font-bold flex items-center justify-center"
+                    className="w-7 h-7 rounded-lg bg-ink-800 text-ink-300 text-sm font-bold flex items-center justify-center"
                   >
                     +
                   </button>
@@ -98,24 +98,24 @@ export default function CampaignPage() {
 
               {/* Interval */}
               <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-400 flex items-center gap-1.5">
+                <span className="text-xs text-ink-400 flex items-center gap-1.5">
                   <Clock size={12} /> Interval
                 </span>
-                <span className="text-sm text-slate-300">
+                <span className="text-sm text-ink-300">
                   Every {platform.intervalHours}h
                 </span>
               </div>
 
               {/* Best times */}
               <div>
-                <span className="text-xs text-slate-400 block mb-1.5">
+                <span className="text-xs text-ink-400 block mb-1.5">
                   Preferred times
                 </span>
                 <div className="flex flex-wrap gap-1.5">
                   {platform.bestTimes.map((time, i) => (
                     <span
                       key={i}
-                      className="text-[11px] bg-slate-800 text-slate-300 px-2 py-1 rounded-lg"
+                      className="text-[11px] bg-ink-800 text-ink-300 px-2 py-1 rounded-lg"
                     >
                       {time}
                     </span>
@@ -131,7 +131,7 @@ export default function CampaignPage() {
       <button
         onClick={handleSave}
         disabled={saving}
-        className="w-full py-3.5 rounded-2xl font-semibold text-sm bg-gradient-to-r from-violet-600 to-cyan-600 text-white active:scale-[0.98] transition-transform shadow-lg shadow-violet-500/20 flex items-center justify-center gap-2"
+        className="w-full py-3.5 rounded-2xl font-semibold text-sm bg-gradient-to-r from-accent-600 to-gold-600 text-white active:scale-[0.98] transition-transform shadow-lg shadow-accent-500/20 flex items-center justify-center gap-2"
       >
         <Save size={16} />
         {saving ? "Saving..." : "Save Campaign Settings"}

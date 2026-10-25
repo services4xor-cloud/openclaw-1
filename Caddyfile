@@ -11,7 +11,10 @@
 
 {$DOMAIN::80} {
 	# ── Access gate until the shared Google login is wired ─────────────
-	basic_auth {
+	# The front door (/, its assets and icon) is public; the workspace and
+	# everything behind it asks for the Studio login.
+	@private not path / /assets/* /favicon.svg
+	basic_auth @private bcrypt "4XOR Studio" {
 		{$STUDIO_USER:admin} {$STUDIO_PASS_HASH}
 	}
 

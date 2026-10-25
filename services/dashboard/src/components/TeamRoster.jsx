@@ -31,7 +31,7 @@ const AGENTS = [
     key: "caption_writer",
     name: "Caption Writer",
     role: "Writes platform-specific captions & hashtags",
-    system: "OpenClaw (Brain)",
+    system: "Social Media Automation",
     icon: Pencil,
     color: "violet",
     SystemIcon: Brain,
@@ -40,16 +40,16 @@ const AGENTS = [
     key: "media_processor",
     name: "Media Processor",
     role: "Watermarks, resizes & creates slideshows",
-    system: "FFmpeg Worker (Hands)",
+    system: "Social Media Automation",
     icon: Film,
     color: "cyan",
     SystemIcon: Cpu,
   },
   {
     key: "sprint_planner",
-    name: "Sprint Planner",
-    role: "Analyzes metrics & plans weekly sprints",
-    system: "OpenClaw (Brain)",
+    name: "Weekly Planner",
+    role: "Reads the results and plans next week",
+    system: "Agent Workflow Automation",
     icon: Zap,
     color: "amber",
     SystemIcon: Brain,
@@ -58,7 +58,7 @@ const AGENTS = [
     key: "scheduler",
     name: "Auto-Scheduler",
     role: "Assigns publish times to approved posts",
-    system: "n8n (Nervous System)",
+    system: "Agent Workflow Automation",
     icon: CalendarClock,
     color: "emerald",
     SystemIcon: Network,
@@ -67,7 +67,7 @@ const AGENTS = [
     key: "publisher",
     name: "Publisher",
     role: "Posts to Instagram, TikTok, YouTube, FB",
-    system: "n8n (Nervous System)",
+    system: "Social Media Automation",
     icon: Send,
     color: "rose",
     SystemIcon: Network,
@@ -75,19 +75,19 @@ const AGENTS = [
 ];
 
 const COLOR_MAP = {
-  violet: { bg: "bg-violet-500/10", text: "text-violet-400", ring: "ring-violet-500/30", pulse: "bg-violet-400" },
-  cyan:   { bg: "bg-cyan-500/10",   text: "text-cyan-400",   ring: "ring-cyan-500/30",   pulse: "bg-cyan-400" },
+  violet: { bg: "bg-accent-500/10", text: "text-accent-400", ring: "ring-accent-500/30", pulse: "bg-accent-400" },
+  cyan:   { bg: "bg-gold-500/10",   text: "text-gold-400",   ring: "ring-gold-500/30",   pulse: "bg-gold-400" },
   amber:  { bg: "bg-amber-500/10",  text: "text-amber-400",  ring: "ring-amber-500/30",  pulse: "bg-amber-400" },
   emerald:{ bg: "bg-emerald-500/10",text: "text-emerald-400",ring: "ring-emerald-500/30",pulse: "bg-emerald-400" },
   rose:   { bg: "bg-rose-500/10",   text: "text-rose-400",   ring: "ring-rose-500/30",   pulse: "bg-rose-400" },
 };
 
 const STATUS_CONFIG = {
-  working:  { dot: "bg-violet-400", label: "Working", animate: true },
+  working:  { dot: "bg-accent-400", label: "Working", animate: true },
   idle:     { dot: "bg-emerald-400", label: "Ready", animate: false },
   sleeping: { dot: "bg-amber-400",  label: "Sleeping", animate: false },
   error:    { dot: "bg-red-400",    label: "Error", animate: true },
-  offline:  { dot: "bg-slate-600",  label: "Offline", animate: false },
+  offline:  { dot: "bg-ink-600",  label: "Offline", animate: false },
 };
 
 function timeAgo(ts) {
@@ -146,14 +146,14 @@ export default function TeamRoster() {
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-slate-300">Your Team</span>
-          <span className="text-[10px] text-slate-600 bg-slate-800 px-1.5 py-0.5 rounded">
+          <span className="text-sm font-semibold text-ink-300">Working for you</span>
+          <span className="text-[10px] text-ink-600 bg-ink-800 px-1.5 py-0.5 rounded">
             {AGENTS.length} workers
           </span>
         </div>
         <button
           onClick={() => { setLoading(true); fetchStatus(); }}
-          className="text-slate-500 hover:text-slate-300 transition-colors"
+          className="text-ink-500 hover:text-ink-300 transition-colors"
           aria-label="Refresh team status"
         >
           <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
@@ -163,7 +163,7 @@ export default function TeamRoster() {
       {/* Summary bar */}
       <div className="flex gap-3 mb-3 text-[11px]">
         {counts.working > 0 && (
-          <span className="text-violet-400 bg-violet-500/10 px-2 py-1 rounded-lg">
+          <span className="text-accent-400 bg-accent-500/10 px-2 py-1 rounded-lg">
             {counts.working} working
           </span>
         )}
@@ -215,22 +215,22 @@ export default function TeamRoster() {
               {/* Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-slate-200 truncate">
+                  <span className="text-sm font-medium text-ink-200 truncate">
                     {agent.name}
                   </span>
                   <span className={`text-[10px] px-1.5 py-0.5 rounded ${
                     data.status === "working"
-                      ? "bg-violet-500/20 text-violet-300"
+                      ? "bg-accent-500/20 text-accent-300"
                       : data.status === "idle"
                       ? "bg-emerald-500/20 text-emerald-300"
                       : data.status === "sleeping"
                       ? "bg-amber-500/20 text-amber-300"
-                      : "bg-slate-700 text-slate-400"
+                      : "bg-ink-700 text-ink-400"
                   }`}>
                     {statusCfg.label}
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                <p className="text-[11px] text-ink-500 truncate mt-0.5">
                   {data.activity || agent.role}
                 </p>
               </div>
@@ -238,9 +238,9 @@ export default function TeamRoster() {
               {/* Stat */}
               <div className="text-right shrink-0">
                 {data.stat != null && (
-                  <div className="text-sm font-semibold text-slate-300">{data.stat}</div>
+                  <div className="text-sm font-semibold text-ink-300">{data.stat}</div>
                 )}
-                <div className="text-[10px] text-slate-600">
+                <div className="text-[10px] text-ink-600">
                   {timeAgo(data.lastAction)}
                 </div>
               </div>
@@ -248,23 +248,23 @@ export default function TeamRoster() {
 
             {/* Expanded detail */}
             {isExpanded && (
-              <div className="mt-3 pt-3 border-t border-slate-800">
+              <div className="mt-3 pt-3 border-t border-ink-800">
                 <div className="flex items-center gap-1.5 mb-2">
-                  <SysIcon size={12} className="text-slate-500" />
-                  <span className="text-[10px] text-slate-500">{agent.system}</span>
+                  <SysIcon size={12} className="text-ink-500" />
+                  <span className="text-[10px] text-ink-500">{agent.system}</span>
                 </div>
                 {data.details && (
                   <div className="grid grid-cols-2 gap-2 text-[11px]">
                     {Object.entries(data.details).map(([key, val]) => (
-                      <div key={key} className="bg-slate-800/50 rounded-lg px-2.5 py-1.5">
-                        <span className="text-slate-500 block">{key}</span>
-                        <span className="text-slate-300 font-medium">{val}</span>
+                      <div key={key} className="bg-ink-800/50 rounded-lg px-2.5 py-1.5">
+                        <span className="text-ink-500 block">{key}</span>
+                        <span className="text-ink-300 font-medium">{val}</span>
                       </div>
                     ))}
                   </div>
                 )}
                 {!data.details && (
-                  <p className="text-[11px] text-slate-600 italic">
+                  <p className="text-[11px] text-ink-600 italic">
                     No detailed metrics available yet
                   </p>
                 )}

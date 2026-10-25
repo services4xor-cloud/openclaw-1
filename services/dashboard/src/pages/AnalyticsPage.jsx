@@ -22,7 +22,7 @@ import PageShell from "../components/PageShell.jsx";
 import Card from "../components/Card.jsx";
 import PlatformBadge from "../components/PlatformBadge.jsx";
 
-// Mock analytics — replaced by n8n webhook data in production
+// Mock analytics — replaced by webhook data in production
 const MOCK_METRICS = {
   instagram: {
     followers: 3200,
@@ -83,8 +83,8 @@ export default function AnalyticsPage() {
 
   return (
     <PageShell
-      title="Analytics"
-      subtitle="Collected by n8n — analyzed by OpenClaw during sprint planning"
+      title="Results"
+      subtitle="Reach and engagement per channel. Your AI team uses them to plan next week."
     >
       {/* Period selector */}
       <div className="flex gap-2 mb-4">
@@ -98,8 +98,8 @@ export default function AnalyticsPage() {
             onClick={() => setPeriod(p.value)}
             className={`flex-1 py-2 rounded-xl text-xs font-medium transition-colors ${
               period === p.value
-                ? "bg-violet-600/20 text-violet-400 ring-1 ring-violet-500/30"
-                : "bg-slate-800 text-slate-500"
+                ? "bg-accent-600/20 text-accent-400 ring-1 ring-accent-500/30"
+                : "bg-ink-800 text-ink-500"
             }`}
           >
             {p.label}
@@ -108,13 +108,13 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Overall summary */}
-      <Card className="mb-4 bg-gradient-to-br from-slate-900 to-slate-800">
+      <Card className="mb-4 bg-gradient-to-br from-ink-900 to-ink-800">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <div className="text-[11px] text-slate-500 mb-1 flex items-center gap-1">
+            <div className="text-[11px] text-ink-500 mb-1 flex items-center gap-1">
               <Users size={11} /> Total Followers
             </div>
-            <div className="text-xl font-bold text-slate-100">
+            <div className="text-xl font-bold text-ink-100">
               {Object.values(MOCK_METRICS)
                 .reduce((sum, m) => sum + m.followers, 0)
                 .toLocaleString()}
@@ -129,30 +129,30 @@ export default function AnalyticsPage() {
             </div>
           </div>
           <div>
-            <div className="text-[11px] text-slate-500 mb-1 flex items-center gap-1">
+            <div className="text-[11px] text-ink-500 mb-1 flex items-center gap-1">
               <Eye size={11} /> Total Views
             </div>
-            <div className="text-xl font-bold text-slate-100">
+            <div className="text-xl font-bold text-ink-100">
               {Object.values(MOCK_METRICS)
                 .reduce((sum, m) => sum + m.views, 0)
                 .toLocaleString()}
             </div>
           </div>
           <div>
-            <div className="text-[11px] text-slate-500 mb-1 flex items-center gap-1">
+            <div className="text-[11px] text-ink-500 mb-1 flex items-center gap-1">
               <Heart size={11} /> Total Likes
             </div>
-            <div className="text-xl font-bold text-slate-100">
+            <div className="text-xl font-bold text-ink-100">
               {Object.values(MOCK_METRICS)
                 .reduce((sum, m) => sum + m.likes, 0)
                 .toLocaleString()}
             </div>
           </div>
           <div>
-            <div className="text-[11px] text-slate-500 mb-1 flex items-center gap-1">
+            <div className="text-[11px] text-ink-500 mb-1 flex items-center gap-1">
               <Share2 size={11} /> Total Shares
             </div>
-            <div className="text-xl font-bold text-slate-100">
+            <div className="text-xl font-bold text-ink-100">
               {Object.values(MOCK_METRICS)
                 .reduce((sum, m) => sum + m.shares, 0)
                 .toLocaleString()}
@@ -167,8 +167,8 @@ export default function AnalyticsPage() {
           <div className="flex items-center justify-between mb-3">
             <PlatformBadge platform={platform} size="md" />
             <div className="flex items-center gap-1">
-              <Users size={12} className="text-slate-500" />
-              <span className="text-sm font-semibold text-slate-300">
+              <Users size={12} className="text-ink-500" />
+              <span className="text-sm font-semibold text-ink-300">
                 {metrics.followers.toLocaleString()}
               </span>
               <span
@@ -189,13 +189,13 @@ export default function AnalyticsPage() {
             {Object.entries(METRIC_ICONS).map(([key, Icon]) => (
               <div
                 key={key}
-                className="text-center bg-slate-800/50 rounded-lg py-2"
+                className="text-center bg-ink-800/50 rounded-lg py-2"
               >
-                <Icon size={14} className="text-slate-500 mx-auto mb-1" />
-                <div className="text-xs font-semibold text-slate-300">
+                <Icon size={14} className="text-ink-500 mx-auto mb-1" />
+                <div className="text-xs font-semibold text-ink-300">
                   {(metrics[key] || 0).toLocaleString()}
                 </div>
-                <div className="text-[9px] text-slate-600 capitalize">
+                <div className="text-[9px] text-ink-600 capitalize">
                   {key}
                 </div>
               </div>
@@ -204,7 +204,7 @@ export default function AnalyticsPage() {
 
           {/* Top post */}
           {metrics.topPost && (
-            <div className="text-[11px] text-slate-500 bg-slate-800/30 rounded-lg px-2.5 py-1.5">
+            <div className="text-[11px] text-ink-500 bg-ink-800/30 rounded-lg px-2.5 py-1.5">
               Top: {metrics.topPost}
             </div>
           )}

@@ -20,7 +20,7 @@ const PLATFORM_LABELS = {
 };
 
 export default function PlatformBadge({ platform, size = "sm" }) {
-  const colors = PLATFORM_COLORS[platform] || "bg-slate-500/20 text-slate-400";
+  const colors = PLATFORM_COLORS[platform] || "bg-ink-500/20 text-ink-400";
   const label = PLATFORM_LABELS[platform] || platform;
   const sizeClass = size === "sm" ? "text-[10px] px-2 py-0.5" : "text-xs px-2.5 py-1";
 
