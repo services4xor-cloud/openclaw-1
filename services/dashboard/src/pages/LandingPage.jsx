@@ -2,6 +2,7 @@
  * Public front door of 4XOR Studio: the two services in outcome language, and
  * the way into the workspace. Everything below /workspace asks for a sign-in.
  */
+import { Link } from "react-router-dom";
 import { ArrowRight, Check, Workflow, Megaphone } from "lucide-react";
 import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
@@ -21,6 +22,7 @@ const PRODUCTS = [
     ],
     note: "Start with one process and add the next once it pays off.",
     more: PRODUCT_URL.workflows,
+    flow: "workflow",
   },
   {
     id: "social-media",
@@ -35,6 +37,7 @@ const PRODUCTS = [
     ],
     note: "Instagram, TikTok, YouTube, Facebook and WhatsApp.",
     more: PRODUCT_URL.social,
+    flow: "social",
   },
 ];
 
@@ -57,16 +60,16 @@ export default function LandingPage() {
             they do for you, and you approve what goes out.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <a href="/workspace" className="btn btn-primary">
-              Sign in to your workspace <ArrowRight size={16} />
-            </a>
-            <a href={BOOK_URL} className="btn">Book a demo</a>
+            <Link to="/try" className="btn btn-primary">
+              Try it live <ArrowRight size={16} />
+            </Link>
+            <a href="/workspace" className="btn">Sign in to your workspace</a>
           </div>
         </section>
 
         {/* The two services */}
         <section aria-label="Services" className="mx-auto grid max-w-6xl gap-5 px-4 pb-12 sm:px-6 md:grid-cols-2">
-          {PRODUCTS.map(({ id, icon: Icon, name, lead, outcomes, note, more }) => (
+          {PRODUCTS.map(({ id, icon: Icon, name, lead, outcomes, note, more, flow }) => (
             <article id={id} key={id} className="card scroll-mt-24 flex flex-col p-6 sm:p-7">
               <div className="flex items-center gap-3">
                 <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent-400/10 text-accent-400">
@@ -85,10 +88,10 @@ export default function LandingPage() {
               </ul>
               <p className="mt-5 text-sm text-ink-400">{note}</p>
               <div className="mt-auto flex flex-wrap gap-3 pt-6">
+                <Link to={`/try?flow=${flow}`} className="btn btn-primary btn-sm">
+                  Try it live <ArrowRight size={14} />
+                </Link>
                 <a href={more} className="btn btn-sm">Request this service</a>
-                <a href="/workspace" className="btn btn-sm border-transparent text-accent-400">
-                  Open the demo <ArrowRight size={14} />
-                </a>
               </div>
             </article>
           ))}

@@ -7,3 +7,5 @@ export const PRODUCT_URL = {
   social: `${SITE}/#social-media-automation`,
 };
 export const MAP_URL = "https://map.4xor.de/map";
+// The Be[X] map app holds the shared 4XOR sign-in and the live demo API.
+export const BEX_URL = import.meta.env.VITE_BEX_URL || "https://map.4xor.de";

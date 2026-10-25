@@ -4,6 +4,7 @@
  *
  * Routes:
  *   /           → public front door (the two services, sign in)
+ *   /try        → public live demo, one workflow of each service
  *   /workspace  → overview of both services (sign-in required from here on)
  *   /upload /queue /campaign /analytics → Social Media Automation
  *   /team /goals                        → Agent Workflow Automation
@@ -19,11 +20,13 @@ import QueuePage from "./pages/QueuePage.jsx";
 import GoalsPage from "./pages/GoalsPage.jsx";
 import AnalyticsPage from "./pages/AnalyticsPage.jsx";
 import TeamPage from "./pages/TeamPage.jsx";
+import TryPage from "./pages/TryPage.jsx";
 
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
+      <Route path="/try" element={<TryPage />} />
       <Route element={<WorkspaceLayout />}>
         <Route path="/workspace" element={<WorkspacePage />} />
         <Route path="/upload" element={<UploadPage />} />
