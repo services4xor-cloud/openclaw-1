@@ -77,8 +77,8 @@ export default function SiteHeader({ workspace = false }) {
         ]
       : [
           { to: "/", label: t.studioHome },
+          // Only the live demo; Agent Workflow Automation has none yet
           { to: "/try?flow=social", label: PRODUCT.social },
-          { to: "/try?flow=workflow", label: PRODUCT.workflow },
         ];
   // Sign-in is the Be[X] account on the map, which sends the visitor back here
   const toSignIn = (e) => {
