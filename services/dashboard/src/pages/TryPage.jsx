@@ -279,13 +279,15 @@ export default function TryPage() {
   const hints = t.hints[flowKey];
 
   const stage = (
-    <div id="stage" className={`scroll-mt-24 ${flowKey === "social" ? "mt-14" : "mt-6"}`}>
-    {/* Its own heading, so the example never reads as part of the visitor's form */}
-    <div className="mb-5 flex items-center gap-4">
-      <p className="eyebrow shrink-0">{run.live ? t.liveHeading : t.exampleHeading}</p>
-      <span className="h-px flex-1 bg-ink-700" />
-    </div>
-    <section className="grid gap-5 lg:grid-cols-[280px_1fr]">
+    <section id="stage" className="mt-10 scroll-mt-24">
+      <div className="mb-4 flex items-center gap-3">
+        <span className="h-px flex-1 bg-ink-700" />
+        <span className={`text-xs font-semibold uppercase tracking-[0.18em] ${run.live ? "text-gold-400" : "text-ink-400"}`}>
+          {run.live ? t.liveTitle : t.exampleTitle}
+        </span>
+        <span className="h-px flex-1 bg-ink-700" />
+      </div>
+      <div className="grid gap-5 lg:grid-cols-[280px_1fr]">
       {/* Pipeline */}
       <ol className="card relative hidden h-fit p-5 lg:block">
         {stepLabels.map((label, i) => {
@@ -371,16 +373,20 @@ export default function TryPage() {
           </Panel>
         )}
       </div>
+      </div>
     </section>
-    </div>
   );
   const live = (
-    <section id="live" className="mt-8 grid scroll-mt-24 gap-5 rounded-2xl border border-accent-400/40 bg-accent-700/15 p-4 sm:p-6 lg:grid-cols-[280px_1fr]">
-      <div>
-        <p className="eyebrow">{t.yourTurn}</p>
-        {flowKey === "social" && <p className="mt-2 text-sm text-ink-400">{t.yourTurnText}</p>}
-      </div>
-      <div className="card p-5 sm:p-6">
+    <section id="live" className="mt-8 scroll-mt-24">
+      {/* The visitor's own run: the main action, set apart from the example */}
+      <div className="card border-gold-500/40 bg-gradient-to-br from-accent-700/30 via-ink-900 to-ink-900 p-5 sm:p-8">
+        <div className="mb-5 flex items-start gap-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold-500 text-ink-950"><Sparkles size={18} /></span>
+          <div>
+            <h2 className="text-xl font-semibold text-ink-100">{flowKey === "social" ? t.tryTitle : t.yourTurn}</h2>
+            {flowKey === "social" && <p className="mt-1 text-sm text-ink-400">{t.yourTurnText}</p>}
+          </div>
+        </div>
         {flowKey === "workflow" ? (
           <NextSteps text={t.soon} flow={flowKey} lang={lang} ui={ui} />
         ) : run.live && !run.pending ? (
