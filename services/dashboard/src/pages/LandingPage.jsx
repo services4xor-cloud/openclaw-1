@@ -9,9 +9,10 @@ import SiteFooter from "../components/SiteFooter.jsx";
 import { PRODUCT, useLang } from "../lib/i18n.jsx";
 import { bookUrl } from "../lib/links.js";
 
+// Only Social Media Automation has a live demo yet, the same as on 4xor.de
 const PRODUCTS = [
-  { id: "agent-workflow", flow: "workflow", icon: Workflow },
-  { id: "social-media", flow: "social", icon: Megaphone },
+  { id: "agent-workflow", flow: "workflow", icon: Workflow, live: false },
+  { id: "social-media", flow: "social", icon: Megaphone, live: true },
 ];
 
 export default function LandingPage() {
@@ -27,7 +28,7 @@ export default function LandingPage() {
           <h1 className="mt-4 max-w-3xl font-display text-[2.4rem] leading-[1.1] text-ink-100 sm:text-[3.4rem]">{t.landing.title}</h1>
           <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-400">{t.landing.sub}</p>
           <div className="mt-8 grid gap-3 sm:flex sm:flex-wrap">
-            <Link to="/try" className="btn btn-primary rounded-full">
+            <Link to="/try?flow=social" className="btn btn-primary rounded-full">
               <Play size={16} /> {t.tryLive}
             </Link>
             <a href={bookUrl(lang)} className="btn"><CalendarDays size={16} /> {t.cta}</a>
@@ -36,7 +37,7 @@ export default function LandingPage() {
 
         {/* The two services */}
         <section aria-label={t.groups.services} className="mx-auto grid max-w-6xl gap-5 px-4 pb-12 sm:px-6 md:grid-cols-2">
-          {PRODUCTS.map(({ id, flow, icon: Icon }) => {
+          {PRODUCTS.map(({ id, flow, icon: Icon, live }) => {
             const p = t.products[flow];
             return (
               <article id={id} key={id} className="card flex scroll-mt-24 flex-col p-6 sm:p-7">
@@ -57,9 +58,15 @@ export default function LandingPage() {
                 </ul>
                 <p className="mt-5 text-sm text-ink-400">{p.note}</p>
                 <div className="mt-auto grid gap-3 pt-6 sm:flex sm:flex-wrap">
-                  <Link to={`/try?flow=${flow}`} className="btn btn-primary btn-sm rounded-full">
-                    <Play size={14} /> {t.tryLive}
-                  </Link>
+                  {live ? (
+                    <Link to={`/try?flow=${flow}`} className="btn btn-primary btn-sm rounded-full">
+                      <Play size={14} /> {t.tryLive}
+                    </Link>
+                  ) : (
+                    <span aria-disabled="true" className="btn btn-sm cursor-default rounded-full opacity-60">
+                      <Play size={14} /> {t.demoSoon}
+                    </span>
+                  )}
                   <a href={bookUrl(lang)} className="btn btn-sm"><CalendarDays size={14} /> {t.cta}</a>
                 </div>
               </article>
