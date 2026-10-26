@@ -22,7 +22,9 @@ const STEP_ICONS = {
 const STEP_MS = 2600;
 const APPROVE_STEP = 3; // social waits here for the visitor's click
 const CHANNELS = ["Instagram", "Facebook", "LinkedIn", "TikTok"];
-const WRITE_STEP = 2; // a live run waits here for the workflow's answer
+// A live run waits here for the workflow's answer: social at "posts written",
+// workflow before "lead understood", which already needs the answer
+const WAIT_STEP = { social: 2, workflow: 1 };
 const today = () => new Date().toISOString().slice(0, 10);
 function readUsed(flow) {
   try {
@@ -125,6 +127,30 @@ function Lit([before, mid, after], className = "text-gold-400") {
   );
 }
 
+function Failed({ message, t }) {
+  return (
+    <Panel>
+      <div className="rounded-lg border border-red-400/40 bg-red-500/10 p-4 text-sm text-red-200" role="alert">
+        {message}
+        <a href="#live" className="ml-2 font-semibold text-red-100 underline underline-offset-4">{t.retry}</a>
+      </div>
+    </Panel>
+  );
+}
+
+function Pending() {
+  return (
+    <Panel>
+      <div className="space-y-2.5 rounded-lg border border-ink-700 bg-ink-950/50 p-4" aria-busy="true">
+        <div className="h-2.5 w-2/3 animate-pulse rounded bg-ink-700/70" />
+        <div className="h-2.5 w-11/12 animate-pulse rounded bg-ink-700/70" />
+        <div className="h-2.5 w-4/5 animate-pulse rounded bg-ink-700/70" />
+        <div className="h-2.5 w-1/2 animate-pulse rounded bg-ink-700/50" />
+      </div>
+    </Panel>
+  );
+}
+
 function SocialStage({ step, input, result, approved, onApprove, failed, t }) {
   const posts = result.posts ?? [];
   return (
@@ -149,14 +175,7 @@ function SocialStage({ step, input, result, approved, onApprove, failed, t }) {
           )}
         </div>
       </Panel>
-      {failed && (
-        <Panel>
-          <div className="rounded-lg border border-red-400/40 bg-red-500/10 p-4 text-sm text-red-200" role="alert">
-            {failed}
-            <a href="#live" className="ml-2 font-semibold text-red-100 underline underline-offset-4">{t.retry}</a>
-          </div>
-        </Panel>
-      )}
+      {failed && <Failed message={failed} t={t} />}
       {!failed && step >= 2 && posts.length === 0 && (
         <Panel>
           <div className="grid gap-3 sm:grid-cols-2" aria-busy="true">
@@ -200,7 +219,8 @@ function SocialStage({ step, input, result, approved, onApprove, failed, t }) {
   );
 }
 
-function WorkflowStage({ step, input, result, t }) {
+function WorkflowStage({ step, input, result, failed, t }) {
+  const ready = !!result.lead;
   return (
     <div className="space-y-4">
       <Panel>
@@ -209,7 +229,9 @@ function WorkflowStage({ step, input, result, t }) {
           <p className="whitespace-pre-line text-sm text-ink-200">{input.detail}</p>
         </div>
       </Panel>
-      {step >= 1 && (
+      {failed && <Failed message={failed} t={t} />}
+      {!failed && !ready && step >= 1 && <Pending />}
+      {ready && step >= 1 && (
         <Panel>
           <div className="flex flex-wrap gap-2">
             <Chip><UserRound size={12} />{result.lead.name}</Chip>
@@ -218,7 +240,7 @@ function WorkflowStage({ step, input, result, t }) {
           </div>
         </Panel>
       )}
-      {step >= 2 && (
+      {ready && step >= 2 && (
         <Panel>
           <div className="rounded-lg border border-accent-400/30 bg-ink-950/50 p-4">
             <p className="mb-2 text-xs text-ink-400">{t.reply} · <span className="text-ink-200">{result.reply.subject}</span></p>
@@ -226,7 +248,7 @@ function WorkflowStage({ step, input, result, t }) {
           </div>
         </Panel>
       )}
-      {step >= 3 && (
+      {ready && step >= 3 && (
         <Panel>
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs text-ink-400">{t.offered}</span>
@@ -234,7 +256,7 @@ function WorkflowStage({ step, input, result, t }) {
           </div>
         </Panel>
       )}
-      {step >= 4 && (
+      {ready && step >= 4 && (
         <Panel>
           <div className="grid gap-2 text-sm sm:grid-cols-2">
             <div className="rounded-lg border border-ink-700 bg-ink-950/50 p-3"><p className="text-xs text-ink-400">{t.crm}</p><p className="text-ink-200">{result.crmNote}</p></div>
@@ -296,6 +318,7 @@ export default function TryPage() {
   useEffect(() => {
     const saved = readSaved(flowKey);
     setError("");
+    setForm((f) => ({ business: f.business, detail: "" }));
     setUsedToday(!tester && readUsed(flowKey));
     if (saved) {
       setRun({ input: saved.input, result: saved.result, live: true });
@@ -309,7 +332,7 @@ export default function TryPage() {
 
   // One step at a time; social waits at "approve" for the visitor's click, and a
   // live run holds at "writing" until the workflow has answered
-  const waiting = (flowKey === "social" && step === APPROVE_STEP && !approved) || ((run.pending || run.failed) && step >= WRITE_STEP);
+  const waiting = (flowKey === "social" && step === APPROVE_STEP && !approved) || ((run.pending || run.failed) && step >= WAIT_STEP[flowKey]);
   useEffect(() => {
     if (step >= last || waiting) return;
     const id = setTimeout(() => setStep((s) => s + 1), STEP_MS);
@@ -324,8 +347,9 @@ export default function TryPage() {
     e.preventDefault();
     setBusy(true);
     setError("");
-    const input = { ...form, photoUrl: photo?.url };
-    setRun({ input, result: { posts: [] }, live: true, pending: true });
+    const withPhoto = flowKey === "social" && photo;
+    const input = { ...form, photoUrl: withPhoto ? photo.url : undefined };
+    setRun({ input, result: flowKey === "social" ? { posts: [] } : {}, live: true, pending: true });
     restart();
     document.getElementById("stage")?.scrollIntoView({ behavior: "smooth" });
     // Never leave it spinning: give up after 75 seconds
@@ -338,8 +362,9 @@ export default function TryPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
+          flow: flowKey,
           lang,
-          ...(photo && { image: { mediaType: photo.mediaType, data: photo.data } }),
+          ...(withPhoto && { image: { mediaType: photo.mediaType, data: photo.data } }),
           ...(tester && { testerKey: tester }),
         }),
       });
@@ -357,7 +382,7 @@ export default function TryPage() {
     } catch (err) {
       // Keep the visitor's own run on screen with the reason, never fall back to the example
       const message = err.name === "AbortError" || err instanceof TypeError ? t.unreachable : err.message;
-      setRun({ input, result: { posts: [] }, live: true, failed: message });
+      setRun({ input, result: {}, live: true, failed: message });
       setError(message);
     } finally {
       clearTimeout(timer);
@@ -467,7 +492,7 @@ export default function TryPage() {
         {flowKey === "social" ? (
           <SocialStage step={step} input={run.input} result={run.result} approved={approved} failed={run.failed} t={t} onApprove={() => { setApproved(true); setStep(last); }} />
         ) : (
-          <WorkflowStage step={step} input={run.input} result={run.result} t={t} />
+          <WorkflowStage step={step} input={run.input} result={run.result} failed={run.failed} t={t} />
         )}
         {done && (
           <Panel>
@@ -488,14 +513,12 @@ export default function TryPage() {
         <div className="mb-5 flex items-start gap-3">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold-500 text-ink-950"><Sparkles size={18} /></span>
           <div>
-            <h2 className="text-xl font-semibold text-ink-100">{flowKey === "social" ? t.tryTitle : t.yourTurn}</h2>
-            {flowKey === "social" && <p className="mt-1 text-sm text-ink-400">{t.yourTurnText}</p>}
+            <h2 className="text-xl font-semibold text-ink-100">{t.tryTitle}</h2>
+            <p className="mt-1 text-sm text-ink-400">{flowKey === "social" ? t.yourTurnText : t.yourTurnWorkflow}</p>
           </div>
         </div>
-        {flowKey === "workflow" ? (
-          <NextSteps text={t.soon} flow={flowKey} lang={lang} ui={ui} />
-        ) : run.live && !run.pending && !run.failed && !tester ? (
-          <NextSteps text={t.liveDone} flow={flowKey} lang={lang} ui={ui} other="workflow" />
+        {run.live && !run.pending && !run.failed && !tester ? (
+          <NextSteps text={t.liveDone} flow={flowKey} lang={lang} ui={ui} other={flowKey === "social" ? "workflow" : "social"} />
         ) : usedToday && !run.pending ? (
           <div className="grid gap-4">
             <p className="flex items-start gap-2.5 rounded-lg border border-gold-500/50 bg-gold-500/10 p-3.5 text-sm text-gold-200" role="status">
@@ -509,6 +532,7 @@ export default function TryPage() {
               {t.business}
               <input required minLength={3} maxLength={300} value={form.business} onChange={(e) => setForm({ ...form, business: e.target.value })} placeholder={hints.business} className={inputClass} />
             </label>
+            {flowKey === "social" && (
             <div className="grid gap-1.5 text-sm text-ink-300">
               {t.photo.label}
               {photo ? (
@@ -530,9 +554,10 @@ export default function TryPage() {
               )}
               <span className="text-xs text-ink-500">{t.photo.hint}</span>
             </div>
+            )}
             <label className="grid gap-1.5 text-sm text-ink-300">
               {hints.detailLabel}
-              <textarea required={!photo} minLength={photo ? 0 : 3} maxLength={1000} rows={3} value={form.detail} onChange={(e) => setForm({ ...form, detail: e.target.value })} placeholder={hints.detail} className={`resize-none ${inputClass}`} />
+              <textarea required={!(flowKey === "social" && photo)} minLength={flowKey === "social" && photo ? 0 : 3} maxLength={1000} rows={flowKey === "workflow" ? 4 : 3} value={form.detail} onChange={(e) => setForm({ ...form, detail: e.target.value })} placeholder={hints.detail} className={`resize-none ${inputClass}`} />
             </label>
             {error && <p className="text-sm text-red-300">{error}</p>}
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -556,7 +581,8 @@ export default function TryPage() {
         <p className="mt-3 max-w-2xl text-ink-400">{Lit(t.watch(product, minutes))}</p>
 
         {/* One service per demo: nothing here mentions the other one until the result */}
-        {flowKey === "social" ? <>{live}{stage}</> : <>{stage}{live}</>}
+        {live}
+        {stage}
       </main>
       <SiteFooter />
     </div>
