@@ -7,12 +7,11 @@ import { CalendarDays, Check, Play, Workflow, Megaphone } from "lucide-react";
 import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
 import { PRODUCT, useLang } from "../lib/i18n.jsx";
-import { bookUrl } from "../lib/links.js";
+import { LIVE_FLOWS, bookUrl } from "../lib/links.js";
 
-// Only Social Media Automation has a live demo yet, the same as on 4xor.de
 const PRODUCTS = [
-  { id: "agent-workflow", flow: "workflow", icon: Workflow, live: false },
-  { id: "social-media", flow: "social", icon: Megaphone, live: true },
+  { id: "agent-workflow", flow: "workflow", icon: Workflow },
+  { id: "social-media", flow: "social", icon: Megaphone },
 ];
 
 export default function LandingPage() {
@@ -37,7 +36,7 @@ export default function LandingPage() {
 
         {/* The two services */}
         <section aria-label={t.groups.services} className="mx-auto grid max-w-6xl gap-5 px-4 pb-12 sm:px-6 md:grid-cols-2">
-          {PRODUCTS.map(({ id, flow, icon: Icon, live }) => {
+          {PRODUCTS.map(({ id, flow, icon: Icon }) => {
             const p = t.products[flow];
             return (
               <article id={id} key={id} className="card flex scroll-mt-24 flex-col p-6 sm:p-7">
@@ -58,14 +57,12 @@ export default function LandingPage() {
                 </ul>
                 <p className="mt-5 text-sm text-ink-400">{p.note}</p>
                 <div className="mt-auto grid gap-3 pt-6 sm:flex sm:flex-wrap">
-                  {live ? (
+                  {LIVE_FLOWS.includes(flow) ? (
                     <Link to={`/try?flow=${flow}`} className="btn btn-primary btn-sm rounded-full">
                       <Play size={14} /> {t.tryLive}
                     </Link>
                   ) : (
-                    <span aria-disabled="true" className="btn btn-sm cursor-default rounded-full opacity-60">
-                      <Play size={14} /> {t.demoSoon}
-                    </span>
+                    <span className="inline-flex items-center rounded-full border border-ink-700 px-3.5 py-1.5 text-sm text-ink-400">{t.demoSoon}</span>
                   )}
                   <a href={bookUrl(lang)} className="btn btn-sm"><CalendarDays size={14} /> {t.cta}</a>
                 </div>

@@ -11,6 +11,7 @@ import { Link, useLocation } from "react-router-dom";
 import AnimatedLogo from "./AnimatedLogo.jsx";
 import { LANGS, LANGUAGES, PRODUCT, useLang } from "../lib/i18n.jsx";
 import { chromeFor } from "../lib/site-chrome.js";
+import { LIVE_FLOWS } from "../lib/links.js";
 
 function Chevron({ className = "" }) {
   return (
@@ -61,7 +62,8 @@ export default function SiteHeader({ workspace = false }) {
   };
 
   // Studio's own pages. Inside a demo only that demo, so the funnel stays on one service.
-  const flow = new URLSearchParams(search).get("flow") === "workflow" ? "workflow" : "social";
+  const asked = new URLSearchParams(search).get("flow");
+  const flow = LIVE_FLOWS.includes(asked) ? asked : "social";
   const current = pathname === "/try" ? `/try?flow=${flow}` : pathname;
   const here = (to) => (to === current ? "page" : undefined);
   const product = workspace
@@ -75,11 +77,7 @@ export default function SiteHeader({ workspace = false }) {
           { to: "/", label: t.studioHome },
           { to: `/try?flow=${flow}`, label: PRODUCT[flow] },
         ]
-      : [
-          { to: "/", label: t.studioHome },
-          // Only the live demo; Agent Workflow Automation has none yet
-          { to: "/try?flow=social", label: PRODUCT.social },
-        ];
+      : [{ to: "/", label: t.studioHome }, ...LIVE_FLOWS.map((f) => ({ to: `/try?flow=${f}`, label: PRODUCT[f] }))];
   // Sign-in is the Be[X] account on the map, which sends the visitor back here
   const toSignIn = (e) => {
     e.currentTarget.href = `${c.signIn.href}${encodeURIComponent(window.location.href)}`;
