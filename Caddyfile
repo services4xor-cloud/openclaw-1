@@ -36,6 +36,9 @@
 			not method GET HEAD
 		}
 		respond @publicWrite 405
+		# The dashboard loads only its own bundle; it talks to the map for the signed-in demo.
+		# n8n (/n8n/*) is outside this handle and keeps its own looser rules.
+		header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://map.4xor.de; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://map.4xor.de; object-src 'none'"
 		reverse_proxy dashboard:3000
 	}
 
@@ -84,6 +87,7 @@
 		X-Frame-Options SAMEORIGIN
 		Referrer-Policy strict-origin-when-cross-origin
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
 		-Server
 	}
 
