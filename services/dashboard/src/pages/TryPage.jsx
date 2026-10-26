@@ -51,7 +51,13 @@ function save(key, value) {
 /** The 4XOR team's tester key: once opened with ?key=…, this browser keeps it */
 function testerKey(params) {
   const fromUrl = params.get("key");
-  if (fromUrl) save("studio-demo-key", fromUrl);
+  if (fromUrl) {
+    save("studio-demo-key", fromUrl);
+    // Take it out of the address bar, so it doesn't end up in history, links or screenshots
+    const url = new URL(window.location.href);
+    url.searchParams.delete("key");
+    window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
+  }
   try {
     return fromUrl || localStorage.getItem("studio-demo-key") || "";
   } catch {
