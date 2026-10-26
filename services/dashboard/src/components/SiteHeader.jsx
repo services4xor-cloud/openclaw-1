@@ -1,6 +1,6 @@
 /**
- * The 4xor.de header, the same on 4xor.de, the Be[X] map and Studio: promo bar,
- * deep green bar with a teal rule, the 4XOR logo (home: 4xor.de), the three groups
+ * The 4xor.de header, the same on 4xor.de, the Be[X] map and Studio (the promo
+ * bar stays on 4xor.de only): deep green bar with a teal rule, the 4XOR logo (home: 4xor.de), the three groups
  * of the 4xor.de site map with their lists, Sign in, the languages and the booking
  * button; below 1024px the full-screen menu. Next to the logo Studio adds itself as
  * the STUDIO pill, whose list holds Studio's own pages. The texts and links come
@@ -92,16 +92,6 @@ export default function SiteHeader({ workspace = false }) {
 
   return (
     <>
-      {!workspace && (
-        <aside aria-label={c.promo.bold} className="hidden bg-[linear-gradient(90deg,#17483c,#1d5a4b_50%,#17483c)] sm:block">
-          <a href={c.promo.href} className="flex min-h-[34px] items-center justify-center px-4 py-1.5 text-center text-[0.88rem] text-[#e3ece7] underline-offset-[3px] hover:underline">
-            <span>
-              <b className="font-semibold text-gold-300">{c.promo.bold}</b>
-              {c.promo.extra}
-            </span>
-          </a>
-        </aside>
-      )}
       <header className="sticky top-0 z-40 border-b border-white/10 border-t-[3px] border-t-accent-400 bg-deep text-[#f3f5f2]">
         <div className="relative mx-auto flex max-w-[76rem] items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6">
           <div className="flex shrink-0 items-center gap-3">
