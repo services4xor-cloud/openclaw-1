@@ -40,7 +40,7 @@
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ flow: 'social', business: String($json.body.business || ''), detail: String($json.body.detail || ''), lang: String($json.body.lang || 'en').slice(0, 5), image: $json.body.image && typeof $json.body.image === 'object' ? { mediaType: String($json.body.image.mediaType || ''), data: String($json.body.image.data || '') } : undefined, visitorIp: String($json.headers['x-forwarded-for'] || '').split(',')[0].trim() }) }}",
+        "jsonBody": "={{ JSON.stringify({ flow: 'social', business: String($json.body.business || ''), detail: String($json.body.detail || ''), lang: String($json.body.lang || 'en').slice(0, 5), testerKey: typeof $json.body.testerKey === 'string' ? $json.body.testerKey.slice(0, 128) : undefined, image: $json.body.image && typeof $json.body.image === 'object' ? { mediaType: String($json.body.image.mediaType || ''), data: String($json.body.image.data || '') } : undefined, visitorIp: String($json.headers['x-forwarded-for'] || '').split(',')[0].trim() }) }}",
         "options": {
           "timeout": 75000,
           "response": {

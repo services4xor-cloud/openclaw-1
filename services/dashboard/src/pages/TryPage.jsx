@@ -31,6 +31,33 @@ function readUsed(flow) {
     return false;
   }
 }
+/** The visitor's own run of today, so it stays on screen after a reload */
+function readSaved(flow) {
+  try {
+    const saved = JSON.parse(localStorage.getItem(`studio-demo-run-${flow}`) || "null");
+    return saved?.date === today() ? saved : null;
+  } catch {
+    return null;
+  }
+}
+function save(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+/** The 4XOR team's tester key: once opened with ?key=…, this browser keeps it */
+function testerKey(params) {
+  const fromUrl = params.get("key");
+  if (fromUrl) save("studio-demo-key", fromUrl);
+  try {
+    return fromUrl || localStorage.getItem("studio-demo-key") || "";
+  } catch {
+    return fromUrl || "";
+  }
+}
 
 /**
  * Shrinks a photo in the browser to a JPEG of at most 1024px, so the upload stays
@@ -92,7 +119,7 @@ function Lit([before, mid, after], className = "text-gold-400") {
   );
 }
 
-function SocialStage({ step, input, result, approved, onApprove, t }) {
+function SocialStage({ step, input, result, approved, onApprove, failed, t }) {
   const posts = result.posts ?? [];
   return (
     <div className="space-y-4">
@@ -116,7 +143,15 @@ function SocialStage({ step, input, result, approved, onApprove, t }) {
           )}
         </div>
       </Panel>
-      {step >= 2 && posts.length === 0 && (
+      {failed && (
+        <Panel>
+          <div className="rounded-lg border border-red-400/40 bg-red-500/10 p-4 text-sm text-red-200" role="alert">
+            {failed}
+            <a href="#live" className="ml-2 font-semibold text-red-100 underline underline-offset-4">{t.retry}</a>
+          </div>
+        </Panel>
+      )}
+      {!failed && step >= 2 && posts.length === 0 && (
         <Panel>
           <div className="grid gap-3 sm:grid-cols-2" aria-busy="true">
             {CHANNELS.map((c) => (
@@ -233,6 +268,7 @@ export default function TryPage() {
   // Two separate demos: Social Media Automation unless the workflow one is asked for
   const flowKey = params.get("flow") === "workflow" ? "workflow" : "social";
   const product = PRODUCT[flowKey];
+  const [tester] = useState(() => testerKey(params));
   const stepLabels = t.steps[flowKey];
   const last = stepLabels.length - 1;
 
@@ -252,15 +288,22 @@ export default function TryPage() {
   };
   // A new flow or language plays the example again (a live result stays until then)
   useEffect(() => {
-    setRun(sample());
-    restart();
+    const saved = readSaved(flowKey);
     setError("");
-    setUsedToday(readUsed(flowKey));
+    setUsedToday(!tester && readUsed(flowKey));
+    if (saved) {
+      setRun({ input: saved.input, result: saved.result, live: true });
+      setStep(stepLabels.length - 1);
+      setApproved(true);
+    } else {
+      setRun(sample());
+      restart();
+    }
   }, [flowKey, lang]);
 
   // One step at a time; social waits at "approve" for the visitor's click, and a
   // live run holds at "writing" until the workflow has answered
-  const waiting = (flowKey === "social" && step === APPROVE_STEP && !approved) || (run.pending && step >= WRITE_STEP);
+  const waiting = (flowKey === "social" && step === APPROVE_STEP && !approved) || ((run.pending || run.failed) && step >= WRITE_STEP);
   useEffect(() => {
     if (step >= last || waiting) return;
     const id = setTimeout(() => setStep((s) => s + 1), STEP_MS);
@@ -291,6 +334,7 @@ export default function TryPage() {
           ...form,
           lang,
           ...(photo && { image: { mediaType: photo.mediaType, data: photo.data } }),
+          ...(tester && { testerKey: tester }),
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -300,21 +344,23 @@ export default function TryPage() {
       }
       markUsed();
       setRun({ input, result: data.result, live: true });
+      const entry = { date: today(), input, result: data.result };
+      // Keep it for today; without the photo if the browser has no room for it
+      if (!save(`studio-demo-run-${flowKey}`, JSON.stringify(entry)))
+        save(`studio-demo-run-${flowKey}`, JSON.stringify({ ...entry, input: { ...input, photoUrl: undefined } }));
     } catch (err) {
-      setRun(sample());
-      restart();
-      setError(err.name === "AbortError" || err instanceof TypeError ? t.unreachable : err.message);
-      document.getElementById("live")?.scrollIntoView({ behavior: "smooth" });
+      // Keep the visitor's own run on screen with the reason, never fall back to the example
+      const message = err.name === "AbortError" || err instanceof TypeError ? t.unreachable : err.message;
+      setRun({ input, result: { posts: [] }, live: true, failed: message });
+      setError(message);
     } finally {
       clearTimeout(timer);
       setBusy(false);
     }
   };
   const markUsed = () => {
-    setUsedToday(true);
-    try {
-      localStorage.setItem(`studio-demo-${flowKey}`, today());
-    } catch {}
+    if (!tester) setUsedToday(true);
+    save(`studio-demo-${flowKey}`, today());
   };
 
   const hints = t.hints[flowKey];
@@ -413,7 +459,7 @@ export default function TryPage() {
           </button>
         </div>
         {flowKey === "social" ? (
-          <SocialStage step={step} input={run.input} result={run.result} approved={approved} t={t} onApprove={() => { setApproved(true); setStep(last); }} />
+          <SocialStage step={step} input={run.input} result={run.result} approved={approved} failed={run.failed} t={t} onApprove={() => { setApproved(true); setStep(last); }} />
         ) : (
           <WorkflowStage step={step} input={run.input} result={run.result} t={t} />
         )}
@@ -442,10 +488,15 @@ export default function TryPage() {
         </div>
         {flowKey === "workflow" ? (
           <NextSteps text={t.soon} flow={flowKey} lang={lang} ui={ui} />
-        ) : run.live && !run.pending ? (
+        ) : run.live && !run.pending && !run.failed && !tester ? (
           <NextSteps text={t.liveDone} flow={flowKey} lang={lang} ui={ui} other="workflow" />
-        ) : usedToday && !run.live ? (
-          <NextSteps text={t.used} flow={flowKey} lang={lang} ui={ui} />
+        ) : usedToday && !run.pending ? (
+          <div className="grid gap-4">
+            <p className="flex items-start gap-2.5 rounded-lg border border-gold-500/50 bg-gold-500/10 p-3.5 text-sm text-gold-200" role="status">
+              <Timer size={18} className="mt-0.5 shrink-0 text-gold-400" /> {t.usedNotice}
+            </p>
+            <NextSteps text={t.used} flow={flowKey} lang={lang} ui={ui} />
+          </div>
         ) : (
           <form onSubmit={runLive} className="grid gap-3">
             <label className="grid gap-1.5 text-sm text-ink-300">
