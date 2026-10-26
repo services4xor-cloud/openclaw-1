@@ -79,16 +79,14 @@ export default function SiteHeader({ workspace = false }) {
           { to: `/try?flow=${flow}`, label: PRODUCT[flow] },
         ]
       : [{ to: "/", label: t.studioHome }, ...LIVE_FLOWS.map((f) => ({ to: `/try?flow=${f}`, label: PRODUCT[f] }))];
-  // Sign-in is the Be[X] account on the map, which sends the visitor back here
-  const toSignIn = (e) => {
-    e.currentTarget.href = `${c.signIn.href}${encodeURIComponent(window.location.href)}`;
-  };
+  // Sign-in is the Be[X] account on the map, which sends the visitor back to this page
+  const signInHref = `${c.signIn.href}${encodeURIComponent(`${window.location.origin}${pathname}${search}${hash}`)}`;
   // Signed in: the first name where "Sign in" stands, leading to the Be[X] profile
   const account = useMapAccount();
   const firstName = account?.name?.split(" ")[0];
   const accountLink = account
-    ? { href: `${MAP_ORIGIN}/profile`, label: firstName || "Be[X]", onClick: undefined }
-    : { href: c.signIn.href, label: c.signIn.label, onClick: toSignIn };
+    ? { href: `${MAP_ORIGIN}/profile`, label: firstName || "Be[X]" }
+    : { href: signInHref, label: c.signIn.label };
 
   return (
     <>
@@ -148,7 +146,7 @@ export default function SiteHeader({ workspace = false }) {
               ))}
             </ul>
 
-            <a href={accountLink.href} onClick={accountLink.onClick} aria-label={accountLink.label} className="nav-link inline-flex items-center gap-1.5">
+            <a href={accountLink.href} aria-label={accountLink.label} className="nav-link inline-flex items-center gap-1.5">
               <PersonIcon size={18} />
               <span className="hidden max-w-[9rem] truncate sm:inline">{accountLink.label}</span>
             </a>
@@ -214,7 +212,7 @@ export default function SiteHeader({ workspace = false }) {
                 {/* Sign-in above the languages, as on 4xor.de */}
                 <a
                   href={accountLink.href}
-                  onClick={accountLink.onClick}
+                 
                   className="menu-group mt-1.5 flex min-h-[44px] items-center gap-2.5 border-b border-white/10 text-[1.05rem] font-semibold"
                   style={{ "--n": 4 }}
                 >

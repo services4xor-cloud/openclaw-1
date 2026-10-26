@@ -89,7 +89,7 @@ export const UI = {
           "Posts scheduled at the right times",
           "Nothing goes out until you approve it",
         ],
-        note: "Instagram, TikTok, YouTube, Facebook and WhatsApp.",
+        note: "Instagram, Facebook, LinkedIn and TikTok.",
       },
     },
     try: {
@@ -203,7 +203,7 @@ export const UI = {
           "Beiträge zur richtigen Zeit eingeplant",
           "Nichts geht raus, bevor Sie es freigeben",
         ],
-        note: "Instagram, TikTok, YouTube, Facebook und WhatsApp.",
+        note: "Instagram, Facebook, LinkedIn und TikTok.",
       },
     },
     try: {
@@ -317,7 +317,7 @@ export const UI = {
           "Publications programmées au bon moment",
           "Rien ne part sans votre validation",
         ],
-        note: "Instagram, TikTok, YouTube, Facebook et WhatsApp.",
+        note: "Instagram, Facebook, LinkedIn et TikTok.",
       },
     },
     try: {
@@ -431,7 +431,7 @@ export const UI = {
           "Post programmati al momento giusto",
           "Nulla esce senza la sua approvazione",
         ],
-        note: "Instagram, TikTok, YouTube, Facebook e WhatsApp.",
+        note: "Instagram, Facebook, LinkedIn e TikTok.",
       },
     },
     try: {

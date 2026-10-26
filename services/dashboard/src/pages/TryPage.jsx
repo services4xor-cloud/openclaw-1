@@ -21,6 +21,8 @@ const STEP_ICONS = {
   social: [ImageIcon, Stamp, Sparkles, Check, CalendarClock],
 };
 const STEP_MS = 2600;
+/** The example's own photo (fresh croissants), served with the page */
+const EXAMPLE_PHOTO = "/demo/croissants.jpg";
 const APPROVE_STEP = 3; // social waits here for the visitor's click
 const CHANNELS = ["Instagram", "Facebook", "LinkedIn", "TikTok"];
 // A live run waits here for the workflow's answer: social at "posts written",
@@ -138,13 +140,17 @@ function Pending() {
 
 function SocialStage({ step, input, result, approved, onApprove, failed, t }) {
   const posts = result.posts ?? [];
+  // A photo that doesn't load falls back to the description tile
+  const [broken, setBroken] = useState(false);
+  useEffect(() => setBroken(false), [input.photoUrl]);
+  const photo = !broken && input.photoUrl;
   return (
     <div className="space-y-4">
       <Panel>
-        <div className={`relative overflow-hidden rounded-lg border border-ink-700 ${input.photoUrl ? "" : "bg-gradient-to-br from-accent-700/60 via-ink-800 to-gold-600/30 p-5 pb-8"}`}>
-          {input.photoUrl ? (
+        <div className={`relative overflow-hidden rounded-lg border border-ink-700 ${photo ? "" : "bg-gradient-to-br from-accent-700/60 via-ink-800 to-gold-600/30 p-5 pb-8"}`}>
+          {photo ? (
             <>
-              <img src={input.photoUrl} alt="" className="max-h-72 w-full object-cover" />
+              <img src={photo} alt="" onError={() => setBroken(true)} className="max-h-72 w-full object-cover" />
               {input.detail && <p className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink-950/90 to-transparent px-4 pb-8 pt-8 text-sm text-ink-100">{input.detail}</p>}
             </>
           ) : (
@@ -287,7 +293,11 @@ export default function TryPage() {
   const stepLabels = t.steps[flowKey];
   const last = stepLabels.length - 1;
 
-  const sample = () => ({ input: SAMPLE_INPUT[lang][flowKey], result: SAMPLE_RESULT[lang][flowKey], live: false });
+  const sample = () => ({
+    input: { ...SAMPLE_INPUT[lang][flowKey], ...(flowKey === "social" && { photoUrl: EXAMPLE_PHOTO }) },
+    result: SAMPLE_RESULT[lang][flowKey],
+    live: false,
+  });
   const [run, setRun] = useState(sample);
   const [step, setStep] = useState(0);
   const [approved, setApproved] = useState(false);
@@ -307,6 +317,13 @@ export default function TryPage() {
     setError("");
     setForm((f) => ({ business: f.business, detail: "" }));
     setUsedToday(account ? !!account.used?.[flowKey] : readUsed(flowKey));
+    // Anonymous: ask the server too, so the notice shows before the form is filled
+    let off = false;
+    if (!account)
+      fetch("/webhook/studio-demo", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ flow: flowKey, check: true }) })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => !off && d?.used && setUsedToday(true))
+        .catch(() => {});
     if (saved) {
       setRun({ input: saved.input, result: saved.result, live: true });
       setStep(stepLabels.length - 1);
@@ -315,6 +332,9 @@ export default function TryPage() {
       setRun(sample());
       restart();
     }
+    return () => {
+      off = true;
+    };
   }, [flowKey, lang, account]);
 
   // One step at a time; social waits at "approve" for the visitor's click, and a
@@ -327,6 +347,15 @@ export default function TryPage() {
   }, [step, waiting, last, run]);
 
   const done = step >= last && (flowKey !== "social" || approved);
+  // The example approves itself after a moment, so it runs through to "Scheduled"
+  useEffect(() => {
+    if (run.live || flowKey !== "social" || step !== APPROVE_STEP || approved) return;
+    const id = setTimeout(() => {
+      setApproved(true);
+      setStep(last);
+    }, STEP_MS);
+    return () => clearTimeout(id);
+  }, [run.live, flowKey, step, approved, last]);
   const minutes = run.result.minutesSaved ?? SAMPLE_RESULT[lang][flowKey].minutesSaved;
 
   // The visitor's own run goes through the real content workflow on this server
