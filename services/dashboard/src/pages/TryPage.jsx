@@ -53,7 +53,7 @@ function testerKey(params) {
   const fromUrl = params.get("key");
   if (fromUrl) {
     save("studio-demo-key", fromUrl);
-    // Take it out of the address bar, so it doesn't end up in history, links or screenshots
+    // Keep the key out of the address bar, history, shared links and access logs
     const url = new URL(window.location.href);
     url.searchParams.delete("key");
     window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);

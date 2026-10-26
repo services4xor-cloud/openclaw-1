@@ -1,6 +1,7 @@
 /**
- * Header logo: BE[ ] around the 4XOR mark, the same frames as the 4xor.de and
- * Be[X] map headers (spins with the scroll, backflips on a click).
+ * Header logo: the 4XOR mark, the same frames as the 4xor.de and Be[X] map
+ * headers (spins with the scroll, backflips on a click). `brand="4xor"` shows it
+ * with the 4XOR wordmark as in the 4xor.de header, otherwise inside BE[ ].
  */
 import { useEffect, useRef } from "react";
 import { startLogoMotion } from "../lib/logo-motion.ts";
@@ -9,7 +10,7 @@ const PYRAMID = "M26.5 8 2.5 47l24 11 24-11ZM26.5 8v50M2.5 47l24-12 24 12";
 const RING = "M15.3 40.6A12.5 12.5 0 1 1 37.7 40.6";
 const ACCENT = "rgb(var(--color-accent-rgb))";
 
-export default function AnimatedLogo({ size = 32 }) {
+export default function AnimatedLogo({ size = 32, brand = "bex" }) {
   const svgRef = useRef(null);
 
   useEffect(() => {
@@ -18,14 +19,19 @@ export default function AnimatedLogo({ size = 32 }) {
   }, []);
 
   const text = size * 0.44;
+  const is4xor = brand === "4xor";
   return (
-    <span className="bx-logo logo inline-flex items-center leading-none" aria-label="Be[4XOR]">
-      <span className="font-brand font-medium tracking-[0.22em]" style={{ fontSize: text }}>
-        BE
-      </span>
-      <span aria-hidden="true" className="bx-bracket" style={{ fontSize: size * 0.95 }}>
-        [
-      </span>
+    <span className="bx-logo logo inline-flex items-center leading-none" aria-label={is4xor ? "4XOR" : "Be[4XOR]"}>
+      {!is4xor && (
+        <>
+          <span className="font-brand font-medium tracking-[0.22em]" style={{ fontSize: text }}>
+            BE
+          </span>
+          <span aria-hidden="true" className="bx-bracket" style={{ fontSize: size * 0.95 }}>
+            [
+          </span>
+        </>
+      )}
       <svg
         ref={svgRef}
         width={(size * 53) / 60}
@@ -80,9 +86,15 @@ export default function AnimatedLogo({ size = 32 }) {
         <path className="rays" d="" strokeWidth="1.1" strokeLinecap="round" opacity="0" />
         <circle className="dot" cx="26.5" cy="5.5" r="3.75" fill="url(#bx-logo-sun)" />
       </svg>
-      <span aria-hidden="true" className="bx-bracket" style={{ fontSize: size * 0.95 }}>
-        ]
-      </span>
+      {is4xor ? (
+        <span className="ml-3 shrink-0 font-brand font-medium tracking-[0.22em] max-[380px]:hidden" style={{ fontSize: size * 0.5 }}>
+          4XOR
+        </span>
+      ) : (
+        <span aria-hidden="true" className="bx-bracket" style={{ fontSize: size * 0.95 }}>
+          ]
+        </span>
+      )}
     </span>
   );
 }

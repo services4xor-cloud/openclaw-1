@@ -1,0 +1,523 @@
+{
+  "languages": {
+    "en": "English",
+    "de": "Deutsch",
+    "fr": "Français",
+    "it": "Italiano"
+  },
+  "company": "4XOR Software Schäuble",
+  "contact": {
+    "email": "info@4xor.de",
+    "phone": "+41 76 639 66 09",
+    "phoneHref": "tel:+41766396609",
+    "whatsapp": "https://wa.me/41766396609",
+    "linkedin": "https://www.linkedin.com/in/tobias-sch%C3%A4uble-8a2a3b1a1/",
+    "address": "Dornacherstrasse 17, 4147 Aesch, Schweiz"
+  },
+  "lang": {
+    "en": {
+      "home": "https://www.4xor.de/",
+      "homeLabel": "4XOR home",
+      "promo": {
+        "bold": "Free 15-min intro call",
+        "extra": ", then fixed-price packages from CHF 330",
+        "href": "https://www.4xor.de/#pricing"
+      },
+      "groups": [
+        {
+          "id": "offer",
+          "label": "What we do",
+          "items": [
+            {
+              "id": "industries",
+              "label": "Use cases",
+              "note": "What AI takes off your plate",
+              "href": "https://www.4xor.de/#industries"
+            },
+            {
+              "id": "solutions",
+              "label": "Solutions",
+              "note": "Automation, agents, assistants, software",
+              "href": "https://www.4xor.de/#solutions"
+            },
+            {
+              "id": "website",
+              "label": "Websites",
+              "note": "A marketing site at a fixed price",
+              "href": "https://www.4xor.de/website/"
+            },
+            {
+              "id": "studio",
+              "label": "Studio",
+              "note": "Try the AI services live",
+              "href": "https://studio.4xor.de/"
+            },
+            {
+              "id": "map",
+              "label": "Be[X] map",
+              "note": "Countries, partners and offerings",
+              "href": "https://map.4xor.de/map"
+            }
+          ]
+        },
+        {
+          "id": "start",
+          "label": "Getting started",
+          "items": [
+            {
+              "id": "process",
+              "label": "30-day pilot",
+              "note": "What happens week by week",
+              "href": "https://www.4xor.de/#process"
+            },
+            {
+              "id": "pricing",
+              "label": "Pricing",
+              "note": "Packages at a fixed price",
+              "href": "https://www.4xor.de/#pricing"
+            }
+          ]
+        },
+        {
+          "id": "company",
+          "label": "About us",
+          "items": [
+            {
+              "id": "about",
+              "label": "Team",
+              "note": "Who builds it, led from Switzerland",
+              "href": "https://www.4xor.de/#about"
+            },
+            {
+              "id": "insights",
+              "label": "Insights",
+              "note": "Notes from the work",
+              "href": "https://www.4xor.de/insights/"
+            },
+            {
+              "id": "faq",
+              "label": "FAQ",
+              "note": "Data, code ownership, your IT",
+              "href": "https://www.4xor.de/faq/"
+            },
+            {
+              "id": "security",
+              "label": "Security",
+              "note": "How we handle your data",
+              "href": "https://www.4xor.de/security/"
+            }
+          ]
+        }
+      ],
+      "cta": {
+        "label": "Book free intro call",
+        "href": "https://cal.com/tobias-c3llle/intro"
+      },
+      "menu": "Menu",
+      "signIn": {
+        "label": "Sign in",
+        "href": "https://map.4xor.de/login?callbackUrl="
+      },
+      "langLabel": "Language",
+      "footer": {
+        "tagline": "AI agents, knowledge assistants and automation, engineered to run in production. Based in Aesch, Switzerland. Swiss and EU data protection as standard.",
+        "contact": "Contact",
+        "legal": "Legal",
+        "localTime": "Local time in Aesch",
+        "top": "Back to top"
+      },
+      "legal": [
+        {
+          "label": "Legal notice",
+          "href": "https://www.4xor.de/legal-notice/"
+        },
+        {
+          "label": "Privacy",
+          "href": "https://www.4xor.de/privacy/"
+        },
+        {
+          "label": "Terms",
+          "href": "https://www.4xor.de/terms/"
+        }
+      ]
+    },
+    "de": {
+      "home": "https://www.4xor.de/de/",
+      "homeLabel": "4XOR Startseite",
+      "promo": {
+        "bold": "Gratis Erstgespräch, 15 Min.",
+        "extra": ", danach Pakete zum Festpreis ab CHF 330",
+        "href": "https://www.4xor.de/de/#pricing"
+      },
+      "groups": [
+        {
+          "id": "offer",
+          "label": "Was wir tun",
+          "items": [
+            {
+              "id": "industries",
+              "label": "Use Cases",
+              "note": "Was KI Ihnen abnimmt",
+              "href": "https://www.4xor.de/de/#industries"
+            },
+            {
+              "id": "solutions",
+              "label": "Lösungen",
+              "note": "Automatisierung, Agenten, Assistenten, Software",
+              "href": "https://www.4xor.de/de/#solutions"
+            },
+            {
+              "id": "website",
+              "label": "Websites",
+              "note": "Marketing-Website zum Festpreis",
+              "href": "https://www.4xor.de/de/website/"
+            },
+            {
+              "id": "studio",
+              "label": "Studio",
+              "note": "Die KI-Services live ausprobieren",
+              "href": "https://studio.4xor.de/"
+            },
+            {
+              "id": "map",
+              "label": "Be[X]-Karte",
+              "note": "Länder, Partner und Angebote",
+              "href": "https://map.4xor.de/map"
+            }
+          ]
+        },
+        {
+          "id": "start",
+          "label": "Einstieg",
+          "items": [
+            {
+              "id": "process",
+              "label": "30-Tage-Pilot",
+              "note": "Was Woche für Woche passiert",
+              "href": "https://www.4xor.de/de/#process"
+            },
+            {
+              "id": "pricing",
+              "label": "Preise",
+              "note": "Pakete zum Festpreis",
+              "href": "https://www.4xor.de/de/#pricing"
+            }
+          ]
+        },
+        {
+          "id": "company",
+          "label": "Über uns",
+          "items": [
+            {
+              "id": "about",
+              "label": "Team",
+              "note": "Wer baut, geführt aus der Schweiz",
+              "href": "https://www.4xor.de/de/#about"
+            },
+            {
+              "id": "insights",
+              "label": "Insights",
+              "note": "Notizen aus der Arbeit",
+              "href": "https://www.4xor.de/de/insights/"
+            },
+            {
+              "id": "faq",
+              "label": "FAQ",
+              "note": "Daten, Code-Eigentum, Ihre IT",
+              "href": "https://www.4xor.de/de/faq/"
+            },
+            {
+              "id": "security",
+              "label": "Sicherheit",
+              "note": "So gehen wir mit Daten um",
+              "href": "https://www.4xor.de/de/security/"
+            }
+          ]
+        }
+      ],
+      "cta": {
+        "label": "Gratis Erstgespräch buchen",
+        "href": "https://cal.com/tobias-c3llle/intro"
+      },
+      "menu": "Menü",
+      "signIn": {
+        "label": "Anmelden",
+        "href": "https://map.4xor.de/login?callbackUrl="
+      },
+      "langLabel": "Sprache",
+      "footer": {
+        "tagline": "KI-Agenten, Wissensassistenten und Automatisierung, gebaut für den Produktivbetrieb. Aus Aesch, Schweiz. Schweizer und EU-Datenschutz als Standard.",
+        "contact": "Kontakt",
+        "legal": "Rechtliches",
+        "localTime": "Ortszeit in Aesch",
+        "top": "Nach oben"
+      },
+      "legal": [
+        {
+          "label": "Impressum",
+          "href": "https://www.4xor.de/impressum/"
+        },
+        {
+          "label": "Datenschutz",
+          "href": "https://www.4xor.de/datenschutz/"
+        },
+        {
+          "label": "AGB",
+          "href": "https://www.4xor.de/agb/"
+        }
+      ]
+    },
+    "fr": {
+      "home": "https://www.4xor.de/fr/",
+      "homeLabel": "Accueil 4XOR",
+      "promo": {
+        "bold": "Premier entretien gratuit de 15 min",
+        "extra": ", puis des forfaits à prix fixe dès CHF 330",
+        "href": "https://www.4xor.de/fr/#pricing"
+      },
+      "groups": [
+        {
+          "id": "offer",
+          "label": "Nos services",
+          "items": [
+            {
+              "id": "industries",
+              "label": "Cas d’usage",
+              "note": "Ce que l’IA vous épargne",
+              "href": "https://www.4xor.de/fr/#industries"
+            },
+            {
+              "id": "solutions",
+              "label": "Solutions",
+              "note": "Automatisation, agents, assistants, logiciels",
+              "href": "https://www.4xor.de/fr/#solutions"
+            },
+            {
+              "id": "website",
+              "label": "Sites web",
+              "note": "Un site vitrine à prix fixe",
+              "href": "https://www.4xor.de/fr/website/"
+            },
+            {
+              "id": "studio",
+              "label": "Studio",
+              "note": "Essayer les services IA en direct",
+              "href": "https://studio.4xor.de/"
+            },
+            {
+              "id": "map",
+              "label": "Carte Be[X]",
+              "note": "Pays, partenaires et offres",
+              "href": "https://map.4xor.de/map"
+            }
+          ]
+        },
+        {
+          "id": "start",
+          "label": "Premiers pas",
+          "items": [
+            {
+              "id": "process",
+              "label": "Pilote de 30 jours",
+              "note": "Ce qui se passe semaine après semaine",
+              "href": "https://www.4xor.de/fr/#process"
+            },
+            {
+              "id": "pricing",
+              "label": "Tarifs",
+              "note": "Des forfaits à prix fixe",
+              "href": "https://www.4xor.de/fr/#pricing"
+            }
+          ]
+        },
+        {
+          "id": "company",
+          "label": "Qui sommes-nous",
+          "items": [
+            {
+              "id": "about",
+              "label": "Équipe",
+              "note": "Qui construit, dirigé depuis la Suisse",
+              "href": "https://www.4xor.de/fr/#about"
+            },
+            {
+              "id": "insights",
+              "label": "Insights",
+              "note": "Notes tirées du terrain",
+              "href": "https://www.4xor.de/fr/insights/"
+            },
+            {
+              "id": "faq",
+              "label": "FAQ",
+              "note": "Données, propriété du code, votre IT",
+              "href": "https://www.4xor.de/fr/faq/"
+            },
+            {
+              "id": "security",
+              "label": "Sécurité",
+              "note": "Comment nous traitons vos données",
+              "href": "https://www.4xor.de/fr/security/"
+            }
+          ]
+        }
+      ],
+      "cta": {
+        "label": "Réserver un entretien gratuit",
+        "href": "https://cal.com/tobias-c3llle/intro"
+      },
+      "menu": "Menu",
+      "signIn": {
+        "label": "Se connecter",
+        "href": "https://map.4xor.de/login?callbackUrl="
+      },
+      "langLabel": "Langue",
+      "footer": {
+        "tagline": "Agents IA, assistants de connaissances et automatisation, conçus pour tourner en production. Basés à Aesch, en Suisse. Protection des données suisse et européenne en standard.",
+        "contact": "Contact",
+        "legal": "Informations légales",
+        "localTime": "Heure locale à Aesch",
+        "top": "Retour en haut"
+      },
+      "legal": [
+        {
+          "label": "Mentions légales",
+          "href": "https://www.4xor.de/legal-notice/"
+        },
+        {
+          "label": "Protection des données",
+          "href": "https://www.4xor.de/privacy/"
+        },
+        {
+          "label": "Conditions générales",
+          "href": "https://www.4xor.de/terms/"
+        }
+      ]
+    },
+    "it": {
+      "home": "https://www.4xor.de/it/",
+      "homeLabel": "Home 4XOR",
+      "promo": {
+        "bold": "Primo colloquio gratuito di 15 min",
+        "extra": ", poi pacchetti a prezzo fisso da CHF 330",
+        "href": "https://www.4xor.de/it/#pricing"
+      },
+      "groups": [
+        {
+          "id": "offer",
+          "label": "Cosa facciamo",
+          "items": [
+            {
+              "id": "industries",
+              "label": "Casi d’uso",
+              "note": "Il lavoro che l’IA le toglie",
+              "href": "https://www.4xor.de/it/#industries"
+            },
+            {
+              "id": "solutions",
+              "label": "Soluzioni",
+              "note": "Automazione, agenti, assistenti, software",
+              "href": "https://www.4xor.de/it/#solutions"
+            },
+            {
+              "id": "website",
+              "label": "Siti web",
+              "note": "Un sito di marketing a prezzo fisso",
+              "href": "https://www.4xor.de/it/website/"
+            },
+            {
+              "id": "studio",
+              "label": "Studio",
+              "note": "Provare dal vivo i servizi IA",
+              "href": "https://studio.4xor.de/"
+            },
+            {
+              "id": "map",
+              "label": "Mappa Be[X]",
+              "note": "Paesi, partner e offerte",
+              "href": "https://map.4xor.de/map"
+            }
+          ]
+        },
+        {
+          "id": "start",
+          "label": "Per iniziare",
+          "items": [
+            {
+              "id": "process",
+              "label": "Pilota di 30 giorni",
+              "note": "Cosa succede settimana per settimana",
+              "href": "https://www.4xor.de/it/#process"
+            },
+            {
+              "id": "pricing",
+              "label": "Prezzi",
+              "note": "Pacchetti a prezzo fisso",
+              "href": "https://www.4xor.de/it/#pricing"
+            }
+          ]
+        },
+        {
+          "id": "company",
+          "label": "Chi siamo",
+          "items": [
+            {
+              "id": "about",
+              "label": "Team",
+              "note": "Chi sviluppa, diretto dalla Svizzera",
+              "href": "https://www.4xor.de/it/#about"
+            },
+            {
+              "id": "insights",
+              "label": "Insights",
+              "note": "Appunti dal lavoro",
+              "href": "https://www.4xor.de/it/insights/"
+            },
+            {
+              "id": "faq",
+              "label": "FAQ",
+              "note": "Dati, proprietà del codice, la sua IT",
+              "href": "https://www.4xor.de/it/faq/"
+            },
+            {
+              "id": "security",
+              "label": "Sicurezza",
+              "note": "Come trattiamo i suoi dati",
+              "href": "https://www.4xor.de/it/security/"
+            }
+          ]
+        }
+      ],
+      "cta": {
+        "label": "Prenoti un colloquio gratuito",
+        "href": "https://cal.com/tobias-c3llle/intro"
+      },
+      "menu": "Menu",
+      "signIn": {
+        "label": "Accedi",
+        "href": "https://map.4xor.de/login?callbackUrl="
+      },
+      "langLabel": "Lingua",
+      "footer": {
+        "tagline": "Agenti IA, assistenti di conoscenza e automazione, sviluppati per funzionare in produzione. Con sede ad Aesch, in Svizzera. Protezione dei dati svizzera ed europea di serie.",
+        "contact": "Contatto",
+        "legal": "Informazioni legali",
+        "localTime": "Ora locale ad Aesch",
+        "top": "Torna su"
+      },
+      "legal": [
+        {
+          "label": "Note legali",
+          "href": "https://www.4xor.de/legal-notice/"
+        },
+        {
+          "label": "Protezione dei dati",
+          "href": "https://www.4xor.de/privacy/"
+        },
+        {
+          "label": "Condizioni generali",
+          "href": "https://www.4xor.de/terms/"
+        }
+      ]
+    }
+  }
+}

@@ -15,11 +15,3 @@ export const MAP_URL = `${MAP_ORIGIN}/map`;
 /** The map with this service in focus, so the agent answers about it. */
 const MAP_CODE = { workflow: "4xor-workflow-automation", social: "4xor-social-media-automation" };
 export const mapAgentUrl = (flow) => `${MAP_URL}?select=${MAP_CODE[flow]}&country=CH`;
-/** Back to the 4xor.de page that sent the visitor (the service card when it came from one). */
-export function backTo4xor(lang, flow) {
-  let fromSite = false;
-  try {
-    fromSite = /(^|\.)4xor\.de$/.test(new URL(document.referrer).hostname) && !document.referrer.includes("studio.");
-  } catch {}
-  return fromSite && flow ? productUrl(flow, lang) : siteHome(lang);
-}

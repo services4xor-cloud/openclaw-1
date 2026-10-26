@@ -142,6 +142,13 @@ body {
 .nav-link[aria-current="page"] {
   color: #b8e4d5;
 }
+.foot-link {
+  color: rgb(243 245 242 / 0.8);
+  transition: color 0.15s ease;
+}
+.foot-link:hover {
+  color: #b8e4d5;
+}
 }
 
 h1,
