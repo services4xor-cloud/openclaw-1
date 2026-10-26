@@ -33,6 +33,45 @@
   --color-deep: #17483c; /* header and footer bands */
 }
 
+/* Chinese and Hindi: the Latin brand fonts first (numbers, names, product names), then
+   the system's own CJK or Devanagari faces, so no glyph falls back to a random font.
+   Same rules as the Be[X] map. */
+html:lang(zh) {
+  --font-sans:
+    "Schibsted Grotesk Variable", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    "Noto Sans SC", "Noto Sans CJK SC", "Source Han Sans SC", system-ui, sans-serif;
+  --font-display:
+    "Newsreader Variable", "Songti SC", "STSong", "Noto Serif SC", "Noto Serif CJK SC", "SimSun", serif;
+}
+html:lang(hi) {
+  --font-sans:
+    "Schibsted Grotesk Variable", "Kohinoor Devanagari", "Nirmala UI", "Mangal",
+    "Noto Sans Devanagari", system-ui, sans-serif;
+  --font-display:
+    "Newsreader Variable", "Noto Serif Devanagari", "Kohinoor Devanagari", "Nirmala UI", serif;
+}
+/* Neither script has italics: keep the letters upright instead of slanting them */
+html:lang(zh) em,
+html:lang(zh) .italic,
+html:lang(hi) em,
+html:lang(hi) .italic {
+  font-style: normal;
+}
+/* Small mono labels: the mono font has no CJK/Devanagari, and its wide spaces split the words */
+html:lang(zh) .menu-head,
+html:lang(hi) .menu-head,
+html:lang(zh) .font-mono.uppercase,
+html:lang(hi) .font-mono.uppercase,
+html:lang(zh) main [class*="tracking-"],
+html:lang(hi) main [class*="tracking-"] {
+  font-family: var(--font-sans);
+  letter-spacing: normal;
+}
+/* Devanagari vowel marks reach above and below the line */
+html:lang(hi) body {
+  line-height: 1.6;
+}
+
 :root {
   --color-accent-rgb: 127 184 166;
 }

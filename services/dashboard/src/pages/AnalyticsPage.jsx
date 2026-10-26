@@ -21,6 +21,7 @@ import {
 import PageShell from "../components/PageShell.jsx";
 import Card from "../components/Card.jsx";
 import PlatformBadge from "../components/PlatformBadge.jsx";
+import { unit, useText } from "../lib/i18n-workspace.js";
 
 // Mock analytics — replaced by webhook data in production
 const MOCK_METRICS = {
@@ -79,19 +80,21 @@ const METRIC_ICONS = {
 };
 
 export default function AnalyticsPage() {
+  const { t, locale } = useText();
+  const total = (key) => Object.values(MOCK_METRICS).reduce((sum, m) => sum + m[key], 0).toLocaleString(locale);
   const [period, setPeriod] = useState("7d");
 
   return (
     <PageShell
-      title="Results"
-      subtitle="Reach and engagement per channel. Your AI team uses them to plan next week."
+      title={t("a.title")}
+      subtitle={t("a.sub")}
     >
       {/* Period selector */}
       <div className="flex gap-2 mb-4">
         {[
-          { value: "7d", label: "7 days" },
-          { value: "30d", label: "30 days" },
-          { value: "90d", label: "90 days" },
+          { value: "7d", label: unit(locale, 7, "day") },
+          { value: "30d", label: unit(locale, 30, "day") },
+          { value: "90d", label: unit(locale, 90, "day") },
         ].map((p) => (
           <button
             key={p.value}
@@ -112,50 +115,42 @@ export default function AnalyticsPage() {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <div className="text-[11px] text-ink-500 mb-1 flex items-center gap-1">
-              <Users size={11} /> Total Followers
+              <Users size={11} /> {t("a.followers")}
             </div>
             <div className="text-xl font-bold text-ink-100">
-              {Object.values(MOCK_METRICS)
-                .reduce((sum, m) => sum + m.followers, 0)
-                .toLocaleString()}
+              {total("followers")}
             </div>
             <div className="text-[11px] text-emerald-400 flex items-center gap-0.5">
-              <TrendingUp size={11} />+
-              {Object.values(MOCK_METRICS).reduce(
-                (sum, m) => sum + Math.max(0, m.followersDelta),
-                0,
-              )}{" "}
-              this week
+              <TrendingUp size={11} />
+              {t("a.week", {
+                n: `+${Object.values(MOCK_METRICS)
+                  .reduce((sum, m) => sum + Math.max(0, m.followersDelta), 0)
+                  .toLocaleString(locale)}`,
+              })}
             </div>
           </div>
           <div>
             <div className="text-[11px] text-ink-500 mb-1 flex items-center gap-1">
-              <Eye size={11} /> Total Views
+              <Eye size={11} /> {t("a.views")}
             </div>
             <div className="text-xl font-bold text-ink-100">
-              {Object.values(MOCK_METRICS)
-                .reduce((sum, m) => sum + m.views, 0)
-                .toLocaleString()}
+              {total("views")}
             </div>
           </div>
           <div>
             <div className="text-[11px] text-ink-500 mb-1 flex items-center gap-1">
-              <Heart size={11} /> Total Likes
+              <Heart size={11} /> {t("a.likes")}
             </div>
             <div className="text-xl font-bold text-ink-100">
-              {Object.values(MOCK_METRICS)
-                .reduce((sum, m) => sum + m.likes, 0)
-                .toLocaleString()}
+              {total("likes")}
             </div>
           </div>
           <div>
             <div className="text-[11px] text-ink-500 mb-1 flex items-center gap-1">
-              <Share2 size={11} /> Total Shares
+              <Share2 size={11} /> {t("a.shares")}
             </div>
             <div className="text-xl font-bold text-ink-100">
-              {Object.values(MOCK_METRICS)
-                .reduce((sum, m) => sum + m.shares, 0)
-                .toLocaleString()}
+              {total("shares")}
             </div>
           </div>
         </div>
@@ -169,7 +164,7 @@ export default function AnalyticsPage() {
             <div className="flex items-center gap-1">
               <Users size={12} className="text-ink-500" />
               <span className="text-sm font-semibold text-ink-300">
-                {metrics.followers.toLocaleString()}
+                {metrics.followers.toLocaleString(locale)}
               </span>
               <span
                 className={`text-[10px] font-medium ${
@@ -193,10 +188,10 @@ export default function AnalyticsPage() {
               >
                 <Icon size={14} className="text-ink-500 mx-auto mb-1" />
                 <div className="text-xs font-semibold text-ink-300">
-                  {(metrics[key] || 0).toLocaleString()}
+                  {(metrics[key] || 0).toLocaleString(locale)}
                 </div>
-                <div className="text-[9px] text-ink-600 capitalize">
-                  {key}
+                <div className="text-[9px] text-ink-600">
+                  {t(`a.${key}`)}
                 </div>
               </div>
             ))}
@@ -205,7 +200,7 @@ export default function AnalyticsPage() {
           {/* Top post */}
           {metrics.topPost && (
             <div className="text-[11px] text-ink-500 bg-ink-800/30 rounded-lg px-2.5 py-1.5">
-              Top: {metrics.topPost}
+              {t("a.top", { post: t(`a.top.${platform}`) })}
             </div>
           )}
         </Card>
