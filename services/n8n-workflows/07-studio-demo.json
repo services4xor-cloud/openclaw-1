@@ -35,12 +35,12 @@
       },
       "parameters": {
         "method": "POST",
-        "url": "https://claude-4xor-end-to-end.d201nclti8mlyp.amplifyapp.com/api/studio-demo",
+        "url": "https://map.4xor.de/api/studio-demo",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ flow: 'social', business: String($json.body.business || ''), detail: String($json.body.detail || ''), visitorIp: String($json.headers['x-forwarded-for'] || '').split(',')[0].trim() }) }}",
+        "jsonBody": "={{ JSON.stringify({ flow: 'social', business: String($json.body.business || ''), detail: String($json.body.detail || ''), lang: String($json.body.lang || 'en').slice(0, 5), image: $json.body.image && typeof $json.body.image === 'object' ? { mediaType: String($json.body.image.mediaType || ''), data: String($json.body.image.data || '') } : undefined, visitorIp: String($json.headers['x-forwarded-for'] || '').split(',')[0].trim() }) }}",
         "options": {
           "timeout": 75000,
           "response": {

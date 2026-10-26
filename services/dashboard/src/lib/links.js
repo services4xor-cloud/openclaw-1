@@ -10,8 +10,7 @@ export const PRODUCT_ANCHOR = {
 export const productUrl = (flow, lang) => `${siteHome(lang)}#${PRODUCT_ANCHOR[flow]}`;
 /** Packages and the free intro call on 4xor.de. */
 export const bookUrl = (lang) => `${siteHome(lang)}#pricing`;
-// The map's test address until map.4xor.de is set up; then VITE_MAP_ORIGIN switches it
-const MAP_ORIGIN = import.meta.env.VITE_MAP_ORIGIN || "https://claude-4xor-end-to-end.d201nclti8mlyp.amplifyapp.com";
+const MAP_ORIGIN = import.meta.env.VITE_MAP_ORIGIN || "https://map.4xor.de";
 export const MAP_URL = `${MAP_ORIGIN}/map`;
 /** The map with this service in focus, so the agent answers about it. */
 const MAP_CODE = { workflow: "4xor-workflow-automation", social: "4xor-social-media-automation" };

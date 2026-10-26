@@ -45,10 +45,10 @@
 		reverse_proxy n8n:5678
 	}
 
-	# ── Public visitor demo (small JSON body only) ──────────────────────
+	# ── Public visitor demo (JSON with one browser-shrunk photo) ────────
 	handle /webhook/studio-demo {
 		request_body {
-			max_size 16KB
+			max_size 512KB
 		}
 		reverse_proxy n8n:5678
 	}

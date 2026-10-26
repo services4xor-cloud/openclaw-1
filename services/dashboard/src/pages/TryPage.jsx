@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   Check, CalendarClock, CalendarDays, Image as ImageIcon, Inbox, Mail, NotebookPen,
-  PenLine, RotateCcw, Send, Sparkles, Stamp, Timer, UserRound,
+  PenLine, RotateCcw, Send, Sparkles, Stamp, Timer, UserRound, X,
 } from "lucide-react";
 import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
@@ -29,6 +29,35 @@ function readUsed(flow) {
     return localStorage.getItem(`studio-demo-${flow}`) === today();
   } catch {
     return false;
+  }
+}
+
+/**
+ * Shrinks a photo in the browser to a JPEG of at most 1024px, so the upload stays
+ * small (the server takes up to 400k base64 characters).
+ */
+async function shrinkPhoto(file) {
+  const src = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((resolve, reject) => {
+      const el = new Image();
+      el.onload = () => resolve(el);
+      el.onerror = reject;
+      el.src = src;
+    });
+    for (const [side, quality] of [[1024, 0.82], [800, 0.72], [640, 0.65]]) {
+      const scale = Math.min(1, side / Math.max(img.naturalWidth, img.naturalHeight));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(img.naturalWidth * scale);
+      canvas.height = Math.round(img.naturalHeight * scale);
+      canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+      const url = canvas.toDataURL("image/jpeg", quality);
+      const data = url.slice(url.indexOf(",") + 1);
+      if (data.length <= 390_000) return { mediaType: "image/jpeg", data, url };
+    }
+    throw new Error("too big");
+  } finally {
+    URL.revokeObjectURL(src);
   }
 }
 
@@ -68,13 +97,20 @@ function SocialStage({ step, input, result, approved, onApprove, t }) {
   return (
     <div className="space-y-4">
       <Panel>
-        <div className="relative overflow-hidden rounded-lg border border-ink-700 bg-gradient-to-br from-accent-700/60 via-ink-800 to-gold-600/30 p-5 pb-8">
-          <div className="flex items-center gap-3">
-            <ImageIcon className="shrink-0 text-ink-200" size={28} />
-            <p className="text-sm text-ink-100">{input.detail}</p>
-          </div>
+        <div className={`relative overflow-hidden rounded-lg border border-ink-700 ${input.photoUrl ? "" : "bg-gradient-to-br from-accent-700/60 via-ink-800 to-gold-600/30 p-5 pb-8"}`}>
+          {input.photoUrl ? (
+            <>
+              <img src={input.photoUrl} alt="" className="max-h-72 w-full object-cover" />
+              {input.detail && <p className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink-950/90 to-transparent px-4 pb-8 pt-8 text-sm text-ink-100">{input.detail}</p>}
+            </>
+          ) : (
+            <div className="flex items-center gap-3">
+              <ImageIcon className="shrink-0 text-ink-200" size={28} />
+              <p className="text-sm text-ink-100">{input.detail}</p>
+            </div>
+          )}
           {step >= 1 && (
-            <span className="absolute bottom-2 right-3 animate-[fadeUp_.4s_ease_both] font-brand text-[0.7rem] tracking-[0.2em] text-white/80">
+            <span className="absolute bottom-2 right-3 animate-[fadeUp_.4s_ease_both] font-brand text-[0.7rem] tracking-[0.2em] text-white/90 drop-shadow-[0_1px_2px_rgba(0,0,0,.8)]">
               {input.business.split(",")[0].toUpperCase()}
             </span>
           )}
@@ -205,6 +241,7 @@ export default function TryPage() {
   const [step, setStep] = useState(0);
   const [approved, setApproved] = useState(false);
   const [form, setForm] = useState({ business: "", detail: "" });
+  const [photo, setPhoto] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [usedToday, setUsedToday] = useState(false);
@@ -238,7 +275,7 @@ export default function TryPage() {
     e.preventDefault();
     setBusy(true);
     setError("");
-    const input = { ...form };
+    const input = { ...form, photoUrl: photo?.url };
     setRun({ input, result: { posts: [] }, live: true, pending: true });
     restart();
     document.getElementById("stage")?.scrollIntoView({ behavior: "smooth" });
@@ -250,7 +287,11 @@ export default function TryPage() {
         method: "POST",
         signal: ctrl.signal,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...input, lang }),
+        body: JSON.stringify({
+          ...form,
+          lang,
+          ...(photo && { image: { mediaType: photo.mediaType, data: photo.data } }),
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.result) {
@@ -277,6 +318,18 @@ export default function TryPage() {
   };
 
   const hints = t.hints[flowKey];
+  const pickPhoto = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setError("");
+    try {
+      setPhoto(await shrinkPhoto(file));
+    } catch {
+      setPhoto(null);
+      setError(t.photo.error);
+    }
+  };
 
   const stage = (
     <section id="stage" className="mt-10 scroll-mt-24">
@@ -399,9 +452,30 @@ export default function TryPage() {
               {t.business}
               <input required minLength={3} maxLength={300} value={form.business} onChange={(e) => setForm({ ...form, business: e.target.value })} placeholder={hints.business} className={inputClass} />
             </label>
+            <div className="grid gap-1.5 text-sm text-ink-300">
+              {t.photo.label}
+              {photo ? (
+                <div className="flex items-center gap-3 rounded-lg border border-ink-700 bg-ink-950 p-2">
+                  <img src={photo.url} alt="" className="h-16 w-16 shrink-0 rounded-md object-cover" />
+                  <label className="cursor-pointer text-sm text-accent-300 hover:text-accent-200">
+                    {t.photo.change}
+                    <input type="file" accept="image/jpeg,image/png,image/webp" onChange={pickPhoto} className="sr-only" />
+                  </label>
+                  <button type="button" onClick={() => setPhoto(null)} className="ml-auto inline-flex items-center gap-1 text-xs text-ink-400 hover:text-ink-200">
+                    <X size={14} /> {t.photo.remove}
+                  </button>
+                </div>
+              ) : (
+                <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-ink-600 bg-ink-950 px-3 py-4 text-ink-300 hover:border-accent-400 hover:text-ink-100">
+                  <ImageIcon size={18} /> {t.photo.add}
+                  <input type="file" accept="image/jpeg,image/png,image/webp" onChange={pickPhoto} className="sr-only" />
+                </label>
+              )}
+              <span className="text-xs text-ink-500">{t.photo.hint}</span>
+            </div>
             <label className="grid gap-1.5 text-sm text-ink-300">
               {hints.detailLabel}
-              <textarea required minLength={3} maxLength={1000} rows={3} value={form.detail} onChange={(e) => setForm({ ...form, detail: e.target.value })} placeholder={hints.detail} className={`resize-none ${inputClass}`} />
+              <textarea required={!photo} minLength={photo ? 0 : 3} maxLength={1000} rows={3} value={form.detail} onChange={(e) => setForm({ ...form, detail: e.target.value })} placeholder={hints.detail} className={`resize-none ${inputClass}`} />
             </label>
             {error && <p className="text-sm text-red-300">{error}</p>}
             <div className="flex flex-wrap items-center justify-between gap-3">
