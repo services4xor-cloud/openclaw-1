@@ -47,9 +47,10 @@ export default function SiteFooter() {
             </a>
             <p className="mt-4 max-w-sm text-[0.9rem] leading-relaxed text-white/80 sm:mt-5 sm:text-[0.95rem]">{c.footer.tagline}</p>
           </div>
-          <nav aria-label="Site" className="columns-2 gap-x-5 md:contents [&>div]:mb-5 [&>div]:break-inside-avoid md:[&>div]:mb-0">
+          <nav aria-label="Site" className="grid grid-cols-2 gap-x-5 gap-y-5 md:contents">
+            {/* Phones: What we do beside About us, Getting started below, as on 4xor.de */}
             {c.groups.map((g) => (
-              <div key={g.id}>
+              <div key={g.id} className={g.id === "start" ? "order-last md:order-none" : undefined}>
                 <h2 className={HEAD}>{g.label}</h2>
                 <ul className="grid md:gap-2">
                   {g.items.map((i) => (

@@ -11,7 +11,8 @@ import { Link, useLocation } from "react-router-dom";
 import AnimatedLogo from "./AnimatedLogo.jsx";
 import { LANGS, LANGUAGES, PRODUCT, useLang } from "../lib/i18n.jsx";
 import { chromeFor } from "../lib/site-chrome.js";
-import { LIVE_FLOWS } from "../lib/links.js";
+import { LIVE_FLOWS, MAP_ORIGIN } from "../lib/links.js";
+import { useMapAccount } from "../lib/account.js";
 
 function Chevron({ className = "" }) {
   return (
@@ -82,6 +83,12 @@ export default function SiteHeader({ workspace = false }) {
   const toSignIn = (e) => {
     e.currentTarget.href = `${c.signIn.href}${encodeURIComponent(window.location.href)}`;
   };
+  // Signed in: the first name where "Sign in" stands, leading to the Be[X] profile
+  const account = useMapAccount();
+  const firstName = account?.name?.split(" ")[0];
+  const accountLink = account
+    ? { href: `${MAP_ORIGIN}/profile`, label: firstName || "Be[X]", onClick: undefined }
+    : { href: c.signIn.href, label: c.signIn.label, onClick: toSignIn };
 
   return (
     <>
@@ -96,8 +103,8 @@ export default function SiteHeader({ workspace = false }) {
         </aside>
       )}
       <header className="sticky top-0 z-40 border-b border-white/10 border-t-[3px] border-t-accent-400 bg-deep text-[#f3f5f2]">
-        <div className="relative mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <div className="flex min-w-0 items-center gap-3">
+        <div className="relative mx-auto flex max-w-[76rem] items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6">
+          <div className="flex shrink-0 items-center gap-3">
             <a href={c.home} aria-label={c.homeLabel} className="flex shrink-0 text-[#f3f5f2]">
               <AnimatedLogo brand="4xor" size={44} />
             </a>
@@ -105,7 +112,7 @@ export default function SiteHeader({ workspace = false }) {
             <details ref={productRef} className="langs relative shrink-0">
               <summary
                 aria-label="4XOR Studio"
-                className="flex min-w-0 cursor-pointer list-none items-center gap-1.5 rounded-full border border-white/25 px-3 py-1 font-brand text-[0.72rem] font-medium uppercase tracking-[0.18em] text-[#e3ece7] hover:border-accent-400 hover:text-white"
+                className="flex min-w-0 cursor-pointer list-none items-center gap-1.5 rounded-full border border-white/25 px-2.5 py-1 font-brand text-[0.72rem] font-medium uppercase tracking-[0.14em] sm:px-3 sm:tracking-[0.18em] text-[#e3ece7] hover:border-accent-400 hover:text-white"
               >
                 <span className="truncate">Studio</span>
                 <Chevron />
@@ -126,9 +133,9 @@ export default function SiteHeader({ workspace = false }) {
             </details>
           </div>
 
-          <nav aria-label="Main" className="flex shrink-0 items-center gap-6 text-[0.95rem]">
+          <nav aria-label="Main" className="flex shrink-0 items-center gap-3 text-[0.95rem] sm:gap-5">
             {/* Desktop: the three 4xor.de groups; each opens its list on hover or focus */}
-            <ul className="hidden gap-7 lg:flex">
+            <ul className="hidden gap-5 xl:flex">
               {c.groups.map((g) => (
                 <li key={g.id} className="group relative">
                   <a href={g.items[0].href} className="nav-link inline-flex items-center gap-1.5">
@@ -151,9 +158,9 @@ export default function SiteHeader({ workspace = false }) {
               ))}
             </ul>
 
-            <a href={c.signIn.href} onClick={toSignIn} className="nav-link hidden items-center gap-1.5 lg:inline-flex">
-              <PersonIcon />
-              {c.signIn.label}
+            <a href={accountLink.href} onClick={accountLink.onClick} aria-label={accountLink.label} className="nav-link inline-flex items-center gap-1.5">
+              <PersonIcon size={18} />
+              <span className="hidden max-w-[9rem] truncate sm:inline">{accountLink.label}</span>
             </a>
 
             {/* The language list, from 640px; phones get it in the menu */}
@@ -182,18 +189,14 @@ export default function SiteHeader({ workspace = false }) {
               </ul>
             </details>
 
-            <a href={c.cta.href} target="_blank" rel="noopener noreferrer" className="btn btn-on-deep btn-sm hidden sm:inline-flex">
+            <a href={c.cta.href} target="_blank" rel="noopener noreferrer" className="btn btn-on-deep btn-sm hidden xl:inline-flex">
               {c.cta.label}
             </a>
 
             {/* Phones and tablets: the 4xor.de full-screen menu */}
-            <details ref={menuRef} className="menu group lg:hidden">
-              <summary role="button" aria-label={c.menu} className="cursor-pointer list-none rounded-md border-[1.5px] border-white/30 px-3.5 py-1.5 text-[0.92rem] font-semibold hover:border-accent-400 hover:text-accent-300">
-                {/* Both labels share one cell, so the button keeps its width when it opens */}
-                <span className="grid justify-items-center">
-                  <span className="col-start-1 row-start-1 group-open:invisible">{c.menu}</span>
-                  <span className="invisible col-start-1 row-start-1 group-open:visible">{t.close}</span>
-                </span>
+            <details ref={menuRef} className="menu group xl:hidden">
+              <summary role="button" aria-label={c.menu} className="cursor-pointer list-none rounded-md border-[1.5px] border-white/30 px-2.5 py-1.5 sm:px-3.5 text-[0.92rem] font-semibold hover:border-accent-400 hover:text-accent-300">
+                {c.menu}
               </summary>
               <div className="menu-panel" onClick={closeMenu}>
                 <div className="menu-group" style={{ "--n": 0 }}>
@@ -220,13 +223,13 @@ export default function SiteHeader({ workspace = false }) {
                 ))}
                 {/* Sign-in above the languages, as on 4xor.de */}
                 <a
-                  href={c.signIn.href}
-                  onClick={toSignIn}
-                  className="menu-group mt-1.5 flex min-h-[44px] items-center gap-2.5 border-b border-ink-700 text-[1.05rem] font-semibold"
+                  href={accountLink.href}
+                  onClick={accountLink.onClick}
+                  className="menu-group mt-1.5 flex min-h-[44px] items-center gap-2.5 border-b border-white/10 text-[1.05rem] font-semibold"
                   style={{ "--n": 4 }}
                 >
                   <PersonIcon size={18} />
-                  {c.signIn.label}
+                  {accountLink.label}
                 </a>
                 <p className="menu-langs" aria-label={c.langLabel}>
                   {LANGS.map((l) => (

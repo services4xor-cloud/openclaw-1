@@ -12,6 +12,7 @@ import {
 import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
 import { LIVE_FLOWS, bookUrl, mapAgentUrl } from "../lib/links.js";
+import { MAP_DEMO_API, useMapAccount } from "../lib/account.js";
 import { PRODUCT, useLang } from "../lib/i18n.jsx";
 import { SAMPLE_INPUT, SAMPLE_RESULT } from "../lib/demoSamples.js";
 
@@ -48,22 +49,6 @@ function save(key, value) {
     return true;
   } catch {
     return false;
-  }
-}
-/** The 4XOR team's tester key: once opened with ?key=…, this browser keeps it */
-function testerKey(params) {
-  const fromUrl = params.get("key");
-  if (fromUrl) {
-    save("studio-demo-key", fromUrl);
-    // Keep the key out of the address bar, history, shared links and access logs
-    const url = new URL(window.location.href);
-    url.searchParams.delete("key");
-    window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
-  }
-  try {
-    return fromUrl || localStorage.getItem("studio-demo-key") || "";
-  } catch {
-    return fromUrl || "";
   }
 }
 
@@ -296,7 +281,9 @@ export default function TryPage() {
   // Two separate demos: Social Media Automation unless the workflow one is asked for
   const flowKey = LIVE_FLOWS.includes(params.get("flow")) ? params.get("flow") : "social";
   const product = PRODUCT[flowKey];
-  const [tester] = useState(() => testerKey(params));
+  // Signed in on the Be[X] map: the run counts for the account, admins have no limit
+  const account = useMapAccount();
+  const unlimited = !!account?.admin;
   const stepLabels = t.steps[flowKey];
   const last = stepLabels.length - 1;
 
@@ -319,7 +306,7 @@ export default function TryPage() {
     const saved = readSaved(flowKey);
     setError("");
     setForm((f) => ({ business: f.business, detail: "" }));
-    setUsedToday(!tester && readUsed(flowKey));
+    setUsedToday(account ? !!account.used?.[flowKey] : readUsed(flowKey));
     if (saved) {
       setRun({ input: saved.input, result: saved.result, live: true });
       setStep(stepLabels.length - 1);
@@ -328,7 +315,7 @@ export default function TryPage() {
       setRun(sample());
       restart();
     }
-  }, [flowKey, lang]);
+  }, [flowKey, lang, account]);
 
   // One step at a time; social waits at "approve" for the visitor's click, and a
   // live run holds at "writing" until the workflow has answered
@@ -356,16 +343,16 @@ export default function TryPage() {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 75_000);
     try {
-      const res = await fetch("/webhook/studio-demo", {
+      const res = await fetch(account ? MAP_DEMO_API : "/webhook/studio-demo", {
         method: "POST",
         signal: ctrl.signal,
+        credentials: account ? "include" : "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
           flow: flowKey,
           lang,
           ...(withPhoto && { image: { mediaType: photo.mediaType, data: photo.data } }),
-          ...(tester && { testerKey: tester }),
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -390,7 +377,7 @@ export default function TryPage() {
     }
   };
   const markUsed = () => {
-    if (!tester) setUsedToday(true);
+    if (!unlimited) setUsedToday(true);
     save(`studio-demo-${flowKey}`, today());
   };
 
@@ -517,7 +504,7 @@ export default function TryPage() {
             <p className="mt-1 text-sm text-ink-400">{flowKey === "social" ? t.yourTurnText : t.yourTurnWorkflow}</p>
           </div>
         </div>
-        {run.live && !run.pending && !run.failed && !tester ? (
+        {run.live && !run.pending && !run.failed && !unlimited ? (
           <NextSteps text={t.liveDone} flow={flowKey} lang={lang} ui={ui} other={LIVE_FLOWS.find((f) => f !== flowKey)} />
         ) : usedToday && !run.pending ? (
           <div className="grid gap-4">

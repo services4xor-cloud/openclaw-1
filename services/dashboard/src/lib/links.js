@@ -10,7 +10,7 @@ export const PRODUCT_ANCHOR = {
 export const productUrl = (flow, lang) => `${siteHome(lang)}#${PRODUCT_ANCHOR[flow]}`;
 /** Packages and the free intro call on 4xor.de. */
 export const bookUrl = (lang) => `${siteHome(lang)}#pricing`;
-const MAP_ORIGIN = import.meta.env.VITE_MAP_ORIGIN || "https://map.4xor.de";
+export const MAP_ORIGIN = import.meta.env.VITE_MAP_ORIGIN || "https://map.4xor.de";
 export const MAP_URL = `${MAP_ORIGIN}/map`;
 /** Demos open to visitors. Agent Workflow Automation stays hidden until Tobias enables it. */
 export const LIVE_FLOWS = ["social"];

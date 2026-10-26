@@ -212,9 +212,9 @@ h2 {
   flex-direction: column;
   padding: 0.75rem 1rem calc(1.5rem + env(safe-area-inset-bottom));
   background:
-    radial-gradient(60% 40% at 0% 0%, rgb(var(--color-accent-rgb) / 0.14), transparent 70%),
-    var(--color-ink-950);
-  color: var(--color-ink-100);
+    radial-gradient(60% 40% at 0% 0%, rgb(255 255 255 / 0.07), transparent 70%),
+    linear-gradient(180deg, #17483c, #143f35);
+  color: #f3f5f2;
   animation: menuIn 0.25s ease;
 }
 html:has(details.menu[open]) {
@@ -256,7 +256,7 @@ html:has(details.menu[open]) {
   align-items: center;
   min-height: 44px;
   padding: 0.3rem 0;
-  border-bottom: 1px solid var(--color-ink-700);
+  border-bottom: 1px solid rgb(255 255 255 / 0.12);
   font-size: 1.05rem;
   font-weight: 600;
   line-height: 1.2;
@@ -279,7 +279,7 @@ html:has(details.menu[open]) {
   display: grid;
   place-items: center;
   min-height: 44px;
-  border: 1px solid var(--color-ink-600);
+  border: 1px solid rgb(255 255 255 / 0.3);
   border-radius: 999px;
   font-family: var(--font-mono, ui-monospace, monospace);
   font-size: 0.85rem;
@@ -287,7 +287,7 @@ html:has(details.menu[open]) {
   letter-spacing: 0.04em;
 }
 .menu-langs button[aria-current] {
-  background: var(--color-ink-100);
-  border-color: var(--color-ink-100);
+  background: #f3f5f2;
+  border-color: #f3f5f2;
   color: var(--color-deep);
 }
