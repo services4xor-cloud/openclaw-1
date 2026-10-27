@@ -1,7 +1,7 @@
 /**
  * The 4xor.de footer, the same on 4xor.de, the Be[X] map and Studio: the brand and
  * what it does, the site map in the header's three groups, contact, and a bottom
- * line with the legal pages, the languages and the local time in Aesch. On phones
+ * line with the legal pages, the languages and the local time in Switzerland. On phones
  * the groups sit in two balanced columns and the links stay finger-sized.
  */
 import { useEffect, useState } from "react";
@@ -122,7 +122,8 @@ export default function SiteFooter() {
               </button>
             ))}
           </div>
-          <span className="col-span-2 row-start-4 inline-flex items-center gap-2 md:col-auto">
+          {/* Invisible until the clock has a time, so the label never stands without one */}
+          <span className={`col-span-2 row-start-4 inline-flex items-center gap-2 md:col-auto ${time ? "" : "invisible"}`}>
             <i aria-hidden="true" className="h-[7px] w-[7px] rounded-full bg-[#f7d27a]" />
             {c.footer.localTime} <b className="font-semibold tabular-nums text-white">{time}</b>
           </span>

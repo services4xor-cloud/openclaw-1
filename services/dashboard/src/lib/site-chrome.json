@@ -123,7 +123,7 @@
         "tagline": "AI agents, knowledge assistants and automation, engineered to run in production. Based in Aesch, Switzerland. Swiss and EU data protection as standard.",
         "contact": "Contact",
         "legal": "Legal",
-        "localTime": "Local time in Aesch",
+        "localTime": "Local time in Switzerland",
         "top": "Back to top"
       },
       "legal": [
@@ -249,7 +249,7 @@
         "tagline": "KI-Agenten, Wissensassistenten und Automatisierung, gebaut für den Produktivbetrieb. Aus Aesch, Schweiz. Schweizer und EU-Datenschutz als Standard.",
         "contact": "Kontakt",
         "legal": "Rechtliches",
-        "localTime": "Ortszeit in Aesch",
+        "localTime": "Ortszeit Schweiz",
         "top": "Nach oben"
       },
       "legal": [
@@ -375,7 +375,7 @@
         "tagline": "Agents IA, assistants de connaissances et automatisation, conçus pour tourner en production. Basés à Aesch, en Suisse. Protection des données suisse et européenne en standard.",
         "contact": "Contact",
         "legal": "Informations légales",
-        "localTime": "Heure locale à Aesch",
+        "localTime": "Heure locale en Suisse",
         "top": "Retour en haut"
       },
       "legal": [
@@ -501,7 +501,7 @@
         "tagline": "Agenti IA, assistenti di conoscenza e automazione, sviluppati per funzionare in produzione. Con sede ad Aesch, in Svizzera. Protezione dei dati svizzera ed europea di serie.",
         "contact": "Contatto",
         "legal": "Informazioni legali",
-        "localTime": "Ora locale ad Aesch",
+        "localTime": "Ora locale in Svizzera",
         "top": "Torna su"
       },
       "legal": [
