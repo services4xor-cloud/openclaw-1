@@ -5,18 +5,18 @@ import { LANGS, useLang } from "./i18n.jsx";
 
 const ROWS = {
   // Create posts
-  "up.title": ["Create posts", "Beiträge erstellen", "Créer des publications", "Creare post", "Crear publicaciones", "创建帖子", "पोस्ट बनाएँ"],
+  "up.title": ["Create posts", "Beiträge erstellen", "Créer des publications", "Crea post", "Crear publicaciones", "创建帖子", "पोस्ट बनाएँ"],
   "up.sub": [
     "Upload photos or videos. You get ready-to-approve posts for every channel.",
     "Laden Sie Fotos oder Videos hoch. Sie erhalten freigabebereite Beiträge für jeden Kanal.",
-    "Téléversez des photos ou des vidéos. Vous recevez des publications prêtes à approuver pour chaque canal.",
+    "Importez des photos ou des vidéos. Vous recevez des publications prêtes à approuver pour chaque canal.",
     "Carichi foto o video. Riceve post pronti da approvare per ogni canale.",
     "Suba fotos o vídeos. Recibirá publicaciones listas para aprobar en cada canal.",
     "上传照片或视频，即可获得适合每个渠道、待您审批的帖子。",
-    "फ़ोटो या वीडियो अपलोड करें। आपको हर चैनल के लिए मंज़ूरी को तैयार पोस्ट मिलती हैं।",
+    "फ़ोटो या वीडियो अपलोड करें। आपको हर चैनल के लिए मंज़ूरी के लिए तैयार पोस्ट मिलती हैं।",
   ],
   "up.step0": ["Brand kit received", "Brand-Kit erhalten", "Kit de marque reçu", "Kit del marchio ricevuto", "Kit de marca recibido", "已收到品牌素材", "ब्रांड किट मिल गई"],
-  "up.step1": ["Media uploaded", "Medien hochgeladen", "Médias téléversés", "Contenuti caricati", "Archivos subidos", "媒体已上传", "मीडिया अपलोड हुआ"],
+  "up.step1": ["Media uploaded", "Medien hochgeladen", "Médias importés", "Contenuti caricati", "Archivos subidos", "媒体已上传", "मीडिया अपलोड हुआ"],
   "up.step2": ["AI writes a post for every channel", "KI schreibt einen Beitrag für jeden Kanal", "L’IA rédige une publication pour chaque canal", "L’IA scrive un post per ogni canale", "La IA redacta una publicación para cada canal", "AI 为每个渠道撰写帖子", "AI हर चैनल के लिए पोस्ट लिखता है"],
   "up.step3": ["Best posting times planned", "Beste Zeitpunkte eingeplant", "Meilleurs horaires planifiés", "Orari migliori pianificati", "Mejores horarios planificados", "已规划最佳发布时间", "पोस्ट के सबसे अच्छे समय तय हुए"],
   "up.step4": ["Ready for your approval", "Bereit für Ihre Freigabe", "Prêt pour votre approbation", "Pronto per la sua approvazione", "Listo para su aprobación", "等待您审批", "आपकी मंज़ूरी के लिए तैयार"],
@@ -31,7 +31,7 @@ const ROWS = {
     "此步骤未完成。{message} 未发布任何内容。",
     "यह चरण पूरा नहीं हुआ। {message} कुछ भी पोस्ट नहीं हुआ।",
   ],
-  "up.retry": ["Try again", "Erneut versuchen", "Réessayer", "Riprovare", "Intentar de nuevo", "重试", "फिर से प्रयास करें"],
+  "up.retry": ["Try again", "Erneut versuchen", "Réessayer", "Riprova", "Intentar de nuevo", "重试", "फिर से कोशिश करें"],
   "up.back": ["Back to the form", "Zurück zum Formular", "Retour au formulaire", "Torna al modulo", "Volver al formulario", "返回表单", "फ़ॉर्म पर वापस"],
   "up.drop": ["Tap to select or drop files", "Tippen zum Auswählen oder Dateien hierher ziehen", "Touchez pour choisir ou déposez des fichiers", "Tocchi per scegliere o trascini qui i file", "Toque para elegir o arrastre archivos aquí", "点按选择或拖放文件", "चुनने के लिए टैप करें या फ़ाइलें यहाँ छोड़ें"],
   "up.dropHint": ["Images and videos, up to 500 MB each", "Bilder und Videos, je bis 500 MB", "Images et vidéos, jusqu’à 500 Mo chacune", "Immagini e video, fino a 500 MB ciascuno", "Imágenes y vídeos, hasta 500 MB cada uno", "图片和视频，每个最大 500 MB", "चित्र और वीडियो, हर एक 500 MB तक"],
@@ -39,7 +39,7 @@ const ROWS = {
   "up.clear": ["Clear all", "Alle entfernen", "Tout retirer", "Rimuovi tutti", "Quitar todos", "全部清除", "सब हटाएँ"],
   "up.watermark": ["Watermark", "Wasserzeichen", "Filigrane", "Filigrana", "Marca de agua", "水印", "वॉटरमार्क"],
   "up.remove": ["Remove", "Entfernen", "Retirer", "Rimuovi", "Quitar", "移除", "हटाएँ"],
-  "up.addWatermark": ["Upload a watermark image (PNG recommended)", "Wasserzeichen-Bild hochladen (PNG empfohlen)", "Téléverser une image de filigrane (PNG recommandé)", "Carichi un’immagine per la filigrana (consigliato PNG)", "Subir una imagen de marca de agua (se recomienda PNG)", "上传水印图片（建议 PNG）", "वॉटरमार्क की छवि अपलोड करें (PNG बेहतर है)"],
+  "up.addWatermark": ["Upload a watermark image (PNG recommended)", "Wasserzeichen-Bild hochladen (PNG empfohlen)", "Importer une image de filigrane (PNG recommandé)", "Carichi un’immagine per la filigrana (consigliato PNG)", "Subir una imagen de marca de agua (se recomienda PNG)", "上传水印图片（建议 PNG）", "वॉटरमार्क की छवि अपलोड करें (PNG बेहतर है)"],
   "up.direction": ["Content direction", "Inhaltliche Richtung", "Orientation du contenu", "Direzione dei contenuti", "Orientación del contenido", "内容方向", "कंटेंट की दिशा"],
   "up.themePh": [
     "Describe the theme or direction, e.g. summer fitness campaign, energetic, beach look",
@@ -59,7 +59,7 @@ const ROWS = {
     "品牌语气，例如：轻松但专业，少用表情，始终附上行动号召",
     "ब्रांड की आवाज़, जैसे सहज पर पेशेवर, कम इमोजी, हमेशा एक कॉल टू एक्शन",
   ],
-  "up.generate": ["Generate posts", "Beiträge erstellen", "Générer les publications", "Generare i post", "Generar publicaciones", "生成帖子", "पोस्ट बनाएँ"],
+  "up.generate": ["Generate posts", "Beiträge erstellen", "Générer les publications", "Genera i post", "Generar publicaciones", "生成帖子", "पोस्ट बनाएँ"],
 
   // Posting schedule
   "cp.title": ["Posting schedule", "Veröffentlichungsplan", "Calendrier de publication", "Piano di pubblicazione", "Calendario de publicación", "发布计划", "पोस्टिंग शेड्यूल"],
@@ -76,12 +76,12 @@ const ROWS = {
   "cp.interval": ["Interval", "Abstand", "Intervalle", "Intervallo", "Intervalo", "间隔", "अंतराल"],
   "cp.every": ["Every {h}", "Alle {h}", "Toutes les {h}", "Ogni {h}", "Cada {h}", "每 {h}", "हर {h}"],
   "cp.times": ["Preferred times", "Bevorzugte Zeiten", "Horaires préférés", "Orari preferiti", "Horarios preferidos", "首选时间", "पसंदीदा समय"],
-  "cp.toggle": ["Turn {channel} on or off", "{channel} ein- oder ausschalten", "Activer ou désactiver {channel}", "Attivare o disattivare {channel}", "Activar o desactivar {channel}", "开启或关闭 {channel}", "{channel} चालू या बंद करें"],
+  "cp.toggle": ["Turn {channel} on or off", "{channel} ein- oder ausschalten", "Activer ou désactiver {channel}", "Attiva o disattiva {channel}", "Activar o desactivar {channel}", "开启或关闭 {channel}", "{channel} चालू या बंद करें"],
   "cp.saving": ["Saving…", "Wird gespeichert…", "Enregistrement…", "Salvataggio…", "Guardando…", "正在保存…", "सहेजा जा रहा है…"],
-  "cp.save": ["Save schedule", "Plan speichern", "Enregistrer le calendrier", "Salvare il piano", "Guardar calendario", "保存计划", "शेड्यूल सहेजें"],
+  "cp.save": ["Save schedule", "Plan speichern", "Enregistrer le calendrier", "Salva il piano", "Guardar calendario", "保存计划", "शेड्यूल सहेजें"],
 
   // Approve posts
-  "q.title": ["Approve posts", "Beiträge freigeben", "Approuver les publications", "Approvare i post", "Aprobar publicaciones", "审批帖子", "पोस्ट मंज़ूर करें"],
+  "q.title": ["Approve posts", "Beiträge freigeben", "Approuver les publications", "Approva i post", "Aprobar publicaciones", "审批帖子", "पोस्ट मंज़ूर करें"],
   "q.sub": [
     "One approval sends a post to every channel, scheduled for you.",
     "Eine Freigabe schickt einen Beitrag an jeden Kanal, für Sie eingeplant.",
@@ -107,10 +107,10 @@ const ROWS = {
   "q.tab.approved": ["Scheduled", "Eingeplant", "Planifiées", "Pianificati", "Programadas", "已排期", "शेड्यूल"],
   "q.tab.published": ["Published", "Veröffentlicht", "Publiées", "Pubblicati", "Publicadas", "已发布", "प्रकाशित"],
   "q.refresh": ["Refresh", "Aktualisieren", "Actualiser", "Aggiorna", "Actualizar", "刷新", "रीफ़्रेश"],
-  "q.approveAll": ["Approve all ({n})", "Alle freigeben ({n})", "Tout approuver ({n})", "Approvare tutti ({n})", "Aprobar todas ({n})", "全部批准（{n}）", "सभी मंज़ूर करें ({n})"],
-  "q.approve": ["Approve", "Freigeben", "Approuver", "Approvare", "Aprobar", "批准", "मंज़ूर करें"],
-  "q.approveTitle": ["Approve for every channel", "Für jeden Kanal freigeben", "Approuver pour chaque canal", "Approvare per ogni canale", "Aprobar para cada canal", "批准发布到每个渠道", "हर चैनल के लिए मंज़ूर करें"],
-  "q.discard": ["Discard", "Verwerfen", "Écarter", "Scartare", "Descartar", "舍弃", "हटाएँ"],
+  "q.approveAll": ["Approve all ({n})", "Alle freigeben ({n})", "Tout approuver ({n})", "Approva tutti ({n})", "Aprobar todas ({n})", "全部批准（{n}）", "सभी मंज़ूर करें ({n})"],
+  "q.approve": ["Approve", "Freigeben", "Approuver", "Approva", "Aprobar", "批准", "मंज़ूर करें"],
+  "q.approveTitle": ["Approve for every channel", "Für jeden Kanal freigeben", "Approuver pour chaque canal", "Approva per ogni canale", "Aprobar para cada canal", "批准发布到每个渠道", "हर चैनल के लिए मंज़ूर करें"],
+  "q.discard": ["Discard", "Verwerfen", "Écarter", "Scarta", "Descartar", "舍弃", "हटाएँ"],
   "q.show": ["Show all {n} channel versions", "Alle {n} Kanalversionen anzeigen", "Voir les {n} versions par canal", "Mostra tutte le {n} versioni per canale", "Ver las {n} versiones por canal", "查看全部 {n} 个渠道版本", "सभी {n} चैनल संस्करण दिखाएँ"],
   "q.hide": ["Hide the {n} channel versions", "Die {n} Kanalversionen ausblenden", "Masquer les {n} versions par canal", "Nascondi le {n} versioni per canale", "Ocultar las {n} versiones por canal", "收起 {n} 个渠道版本", "{n} चैनल संस्करण छिपाएँ"],
   "q.approvedOn": ["Approved {date}, being scheduled", "Freigegeben am {date}, wird eingeplant", "Approuvée le {date}, en cours de planification", "Approvato il {date}, in pianificazione", "Aprobada el {date}, en programación", "{date} 已批准，正在排期", "{date} को मंज़ूर, शेड्यूल हो रही है"],
@@ -120,7 +120,7 @@ const ROWS = {
   "q.empty.stash": [
     "Nothing to approve yet. Upload photos or videos to get new posts.",
     "Noch nichts freizugeben. Laden Sie Fotos oder Videos hoch, um neue Beiträge zu erhalten.",
-    "Rien à approuver pour l’instant. Téléversez des photos ou des vidéos pour obtenir de nouvelles publications.",
+    "Rien à approuver pour l’instant. Importez des photos ou des vidéos pour obtenir de nouvelles publications.",
     "Ancora nulla da approvare. Carichi foto o video per ricevere nuovi post.",
     "Aún no hay nada que aprobar. Suba fotos o vídeos para recibir publicaciones nuevas.",
     "暂无待审批内容。上传照片或视频即可获得新帖子。",
@@ -162,7 +162,7 @@ const ROWS = {
   "g.active": ["In progress", "In Arbeit", "En cours", "In corso", "En curso", "进行中", "जारी"],
   "g.done": ["Done", "Erledigt", "Terminé", "Fatto", "Hecho", "已完成", "पूरा"],
   "g.goals": ["Goals", "Ziele", "Objectifs", "Obiettivi", "Objetivos", "目标", "लक्ष्य"],
-  "g.add": ["Add goal", "Ziel hinzufügen", "Ajouter un objectif", "Aggiungere un obiettivo", "Añadir objetivo", "添加目标", "लक्ष्य जोड़ें"],
+  "g.add": ["Add goal", "Ziel hinzufügen", "Ajouter un objectif", "Aggiungi un obiettivo", "Añadir objetivo", "添加目标", "लक्ष्य जोड़ें"],
   "g.type.growth_kpi": ["Growth KPI", "Wachstums-KPI", "KPI de croissance", "KPI di crescita", "KPI de crecimiento", "增长指标", "ग्रोथ KPI"],
   "g.type.business": ["Business", "Geschäft", "Activité", "Attività", "Negocio", "业务", "कारोबार"],
   "g.type.custom": ["Custom", "Eigenes", "Personnalisé", "Personalizzato", "Personalizado", "自定义", "अपना"],
@@ -210,7 +210,7 @@ const ROWS = {
   // Your AI team
   "tr.working4u": ["Working for you", "Arbeitet für Sie", "Travaille pour vous", "Lavora per lei", "Trabajando para usted", "正在为您工作", "आपके लिए काम कर रहे हैं"],
   "tr.members": ["{n} workers", "{n} Mitarbeitende", "{n} membres", "{n} membri", "{n} miembros", "{n} 名成员", "{n} सदस्य"],
-  "tr.refresh": ["Refresh team status", "Teamstatus aktualisieren", "Actualiser l’état de l’équipe", "Aggiornare lo stato del team", "Actualizar el estado del equipo", "刷新团队状态", "टीम की स्थिति रीफ़्रेश करें"],
+  "tr.refresh": ["Refresh team status", "Teamstatus aktualisieren", "Actualiser l’état de l’équipe", "Aggiorna lo stato del team", "Actualizar el estado del equipo", "刷新团队状态", "टीम की स्थिति रीफ़्रेश करें"],
   "tr.count.working": ["{n} working", "{n} am Arbeiten", "{n} au travail", "{n} al lavoro", "{n} trabajando", "{n} 个工作中", "{n} काम पर"],
   "tr.count.idle": ["{n} ready", "{n} bereit", "{n} prêts", "{n} pronti", "{n} listos", "{n} 个就绪", "{n} तैयार"],
   "tr.count.sleeping": ["{n} sleeping", "{n} im Ruhemodus", "{n} en veille", "{n} in pausa", "{n} en reposo", "{n} 个休眠", "{n} आराम में"],
