@@ -13,6 +13,8 @@ export const productUrl = (flow, lang) => `${siteHome(lang)}#${PRODUCT_ANCHOR[fl
 export const bookUrl = (lang) => chromeFor(lang).cta.href;
 export const MAP_ORIGIN = import.meta.env.VITE_MAP_ORIGIN || "https://map.4xor.de";
 export const MAP_URL = `${MAP_ORIGIN}/map`;
+/** The privacy notice that covers the live demo: what happens to the entries. */
+export const PRIVACY_URL = `${MAP_ORIGIN}/privacy#what`;
 /** Demos open to visitors. Agent Workflow Automation stays hidden until Tobias enables it. */
 export const LIVE_FLOWS = ["social"];
 /** The map with this service in focus, so the agent answers about it. */
