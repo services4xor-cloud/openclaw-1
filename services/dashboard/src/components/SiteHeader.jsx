@@ -12,7 +12,7 @@ import AnimatedLogo from "./AnimatedLogo.jsx";
 import { LANGS, LANGUAGES, PRODUCT, useLang } from "../lib/i18n.jsx";
 import { chromeFor } from "../lib/site-chrome.js";
 import { LIVE_FLOWS, MAP_ORIGIN } from "../lib/links.js";
-import { useMapAccount } from "../lib/account.js";
+import { logoutHref, profileUrl, useMapMe } from "../lib/account.js";
 
 function Chevron({ className = "" }) {
   return (
@@ -38,7 +38,8 @@ export default function SiteHeader({ workspace = false }) {
   const menuRef = useRef(null);
   const productRef = useRef(null);
   const langRef = useRef(null);
-  const all = () => [menuRef.current, productRef.current, langRef.current];
+  const accountRef = useRef(null);
+  const all = () => [menuRef.current, productRef.current, langRef.current, accountRef.current];
 
   // Close the menus after navigation, on Escape and on a click elsewhere
   useEffect(() => {
@@ -49,7 +50,7 @@ export default function SiteHeader({ workspace = false }) {
       if (e.key === "Escape") for (const d of all()) if (d) d.open = false;
     };
     const onClick = (e) => {
-      for (const d of [productRef.current, langRef.current]) if (d?.open && !d.contains(e.target)) d.open = false;
+      for (const d of [productRef.current, langRef.current, accountRef.current]) if (d?.open && !d.contains(e.target)) d.open = false;
     };
     addEventListener("keydown", onKey);
     document.addEventListener("click", onClick);
@@ -79,15 +80,22 @@ export default function SiteHeader({ workspace = false }) {
           { to: `/try?flow=${flow}`, label: PRODUCT[flow] },
         ]
       : [{ to: "/", label: t.studioHome }, ...LIVE_FLOWS.map((f) => ({ to: `/try?flow=${f}`, label: PRODUCT[f] }))];
-  // Sign-in is the Be[X] account on the map, which sends the visitor back to this page
-  const signInHref = `${c.signIn.href}${encodeURIComponent(`${window.location.origin}${pathname}${search}${hash}`)}`;
-  // Signed in: the first name where "Sign in" stands, leading to the Be[X] profile
-  const account = useMapAccount();
-  const firstName = account?.name?.split(" ")[0];
-  const accountLink = account
-    ? { href: `${MAP_ORIGIN}/profile`, label: firstName || "Be[X]" }
+  // Sign-in is the Be[X] account on the map, which sends the visitor to Studio's profile
+  const signInHref = `${c.signIn.href}${encodeURIComponent(profileUrl())}`;
+  // Signed in: the first name where "Sign in" stands, opening the same account list as
+  // the map and 4xor.de (Profile here, Your listings, Bookings, Admin for admins, Sign out)
+  const me = useMapMe(lang);
+  const firstName = me?.name?.split(" ")[0];
+  const accountLink = me
+    ? { href: "/profile", label: firstName || me.labels?.profile || "Profile" }
     : { href: signInHref, label: c.signIn.label };
-
+  const accountItems = me
+    ? [
+        { href: "/profile", label: me.labels?.profile ?? "Profile" },
+        ...(me.links ?? []),
+        { href: logoutHref(`${pathname}${search}${hash}`), label: me.labels?.signOut ?? "Sign out" },
+      ]
+    : [];
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-white/10 border-t-[3px] border-t-accent-400 bg-deep text-[#f3f5f2]">
@@ -146,10 +154,33 @@ export default function SiteHeader({ workspace = false }) {
               ))}
             </ul>
 
-            <a href={accountLink.href} aria-label={accountLink.label} className="nav-link inline-flex items-center gap-1.5">
-              <PersonIcon size={18} />
-              <span className="hidden max-w-[9rem] truncate sm:inline">{accountLink.label}</span>
-            </a>
+            {me ? (
+              <details ref={accountRef} className="langs relative">
+                <summary aria-label={me.name ?? accountLink.label} className="nav-link flex cursor-pointer list-none items-center gap-1.5">
+                  <PersonIcon size={18} />
+                  <span className="hidden max-w-[9rem] truncate sm:inline">{accountLink.label}</span>
+                  <Chevron className="hidden sm:block" />
+                </summary>
+                <ul className="absolute -right-3 top-full z-10 mt-3.5 min-w-52 animate-[menuIn_.18s_ease] rounded-[10px] border border-ink-700 bg-ink-900 p-1.5 shadow-2xl">
+                  {accountItems.map((i) => (
+                    <li key={i.href}>
+                      <a
+                        href={i.href}
+                        aria-current={i.href === "/profile" && pathname === "/profile" ? "page" : undefined}
+                        className="block rounded-md px-3 py-2 text-sm font-semibold text-ink-100 hover:bg-accent-400/10 aria-[current=page]:text-accent-400"
+                      >
+                        {i.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            ) : (
+              <a href={accountLink.href} aria-label={accountLink.label} className="nav-link inline-flex items-center gap-1.5">
+                <PersonIcon size={18} />
+                <span className="hidden max-w-[9rem] truncate sm:inline">{accountLink.label}</span>
+              </a>
+            )}
 
             {/* The language list, from 640px; phones get it in the menu */}
             <details ref={langRef} className="langs relative hidden sm:block">
@@ -212,13 +243,21 @@ export default function SiteHeader({ workspace = false }) {
                 {/* Sign-in above the languages, as on 4xor.de */}
                 <a
                   href={accountLink.href}
-                 
                   className="menu-group mt-1.5 flex min-h-[44px] items-center gap-2.5 border-b border-white/10 text-[1.05rem] font-semibold"
                   style={{ "--n": 4 }}
                 >
                   <PersonIcon size={18} />
                   {accountLink.label}
                 </a>
+                {me && (
+                  <div className="menu-links menu-group" style={{ "--n": 4 }}>
+                    {accountItems.slice(1).map((i) => (
+                      <a key={i.href} href={i.href} className="menu-link">
+                        {i.label}
+                      </a>
+                    ))}
+                  </div>
+                )}
                 <p className="menu-langs" aria-label={c.langLabel}>
                   {LANGS.map((l) => (
                     <button key={l} onClick={() => setLang(l)} lang={l} aria-label={LANGUAGES[l]} aria-current={l === lang ? "true" : undefined}>

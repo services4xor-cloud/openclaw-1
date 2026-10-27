@@ -30,3 +30,30 @@ export function useMapAccount() {
   }, []);
   return account;
 }
+
+/** Studio's own profile page, where every sign-in from Studio lands. */
+export const profileUrl = () => `${window.location.origin}/profile`;
+/** Signs out on the map, then back to `path` on Studio. */
+export const logoutHref = (path) =>
+  `${MAP_ORIGIN}/logout?callbackUrl=${encodeURIComponent(`${window.location.origin}${path}`)}`;
+
+const meCache = {};
+/**
+ * The signed-in account with the map's account list in `lang` (Your listings,
+ * Bookings, Admin for admins), the same list the map and 4xor.de show.
+ * undefined while loading, null when signed out, else { name, email, admin, links, labels }.
+ */
+export function useMapMe(lang) {
+  const [me, setMe] = useState(undefined);
+  useEffect(() => {
+    let live = true;
+    meCache[lang] ??= fetch(`${MAP_ORIGIN}/api/me?lang=${lang}`, { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null);
+    meCache[lang].then((m) => live && setMe(m?.signedIn ? m : null));
+    return () => {
+      live = false;
+    };
+  }, [lang]);
+  return me;
+}
