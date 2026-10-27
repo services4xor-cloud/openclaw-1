@@ -11,7 +11,7 @@ import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
 import { useLang } from "../lib/i18n.jsx";
 import { chromeFor } from "../lib/site-chrome.js";
-import { MAP_ORIGIN } from "../lib/links.js";
+import { MAP_ORIGIN, withLang } from "../lib/links.js";
 import { logoutHref, profileUrl, useMapMe } from "../lib/account.js";
 
 // The map's own wording (profile.hello, profile.settings in its i18n)
@@ -51,15 +51,15 @@ export default function ProfilePage() {
 
   // Signed out: straight to the sign-in, which returns to this page
   useEffect(() => {
-    if (me === null) window.location.replace(`${c.signIn.href}${encodeURIComponent(profileUrl())}`);
-  }, [me, c.signIn.href]);
+    if (me === null) window.location.replace(`${c.signIn.href}${encodeURIComponent(profileUrl(lang))}`);
+  }, [me, c.signIn.href, lang]);
 
   // As on the map: Your bookings, Your listings, Settings; Sign out on the right
   const byId = Object.fromEntries((me?.links ?? []).map((l) => [l.id, l]));
   const links = [
     byId.bookings && { ...byId.bookings, label: bookings },
     byId.listings,
-    { id: "settings", label: settings, href: `${MAP_ORIGIN}/settings` },
+    { id: "settings", label: settings, href: withLang(`${MAP_ORIGIN}/settings`, lang) },
   ].filter(Boolean);
 
   return (
@@ -83,7 +83,7 @@ export default function ProfilePage() {
                   {l.label}
                 </a>
               ))}
-              <a href={logoutHref("/")} className="btn btn-sm ms-auto">
+              <a href={logoutHref("/", lang)} className="btn btn-sm ms-auto">
                 {me.labels?.signOut ?? "Sign out"}
               </a>
             </div>

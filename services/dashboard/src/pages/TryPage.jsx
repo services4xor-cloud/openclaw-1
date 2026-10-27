@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
-import { LIVE_FLOWS, PRIVACY_URL, bookUrl, mapAgentUrl } from "../lib/links.js";
+import { LIVE_FLOWS, bookUrl, mapAgentUrl, privacyUrl } from "../lib/links.js";
 import { MAP_DEMO_API, useMapAccount } from "../lib/account.js";
 import { PRODUCT, useLang } from "../lib/i18n.jsx";
 import { SAMPLE_INPUT, SAMPLE_RESULT } from "../lib/demoSamples.js";
@@ -271,7 +271,7 @@ function NextSteps({ text, flow, lang, ui, other }) {
       <p className="text-sm text-ink-300">{text}</p>
       <div className="grid gap-2 sm:flex sm:flex-wrap">
         <a href={bookUrl(lang)} className="btn btn-primary"><CalendarDays size={16} /> {ui.cta}</a>
-        <a href={mapAgentUrl(flow)} className="btn">{ui.askAgent}</a>
+        <a href={mapAgentUrl(flow, lang)} className="btn">{ui.askAgent}</a>
       </div>
       {other && (
         <Link to={`/try?flow=${other}`} className="text-sm text-ink-400 underline-offset-4 hover:text-ink-200 hover:underline">
@@ -575,7 +575,7 @@ export default function TryPage() {
               )}
               <span className="text-xs text-ink-500">
                 {t.photo.hint}{" "}
-                <a href={PRIVACY_URL} className="underline underline-offset-2 hover:text-ink-300">{t.photo.privacy}</a>
+                <a href={privacyUrl(lang)} className="underline underline-offset-2 hover:text-ink-300">{t.photo.privacy}</a>
               </span>
             </div>
             )}

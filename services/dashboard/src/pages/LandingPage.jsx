@@ -62,7 +62,7 @@ export default function LandingPage() {
                       <Play size={14} /> {t.tryLive}
                     </Link>
                   ) : (
-                    <a href={mapAgentUrl(flow)} className="btn btn-sm">{t.askAgent}</a>
+                    <a href={mapAgentUrl(flow, lang)} className="btn btn-sm">{t.askAgent}</a>
                   )}
                   <a href={bookUrl(lang)} className="btn btn-sm"><CalendarDays size={14} /> {t.cta}</a>
                 </div>
