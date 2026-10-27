@@ -10,7 +10,7 @@ export default function TeamPage() {
     <PageShell title={t.ws.tabs.team} subtitle={t.ws.teamSub}>
       <TeamRoster />
       <Link to="/goals" className="btn btn-sm">
-        {t.ws.weekPlan} <ArrowRight size={14} />
+        {t.ws.weekPlan} <ArrowRight size={14} className="flip-rtl" />
       </Link>
     </PageShell>
   );

@@ -3,8 +3,8 @@
  * button, contact and legal links. Copied from https://www.4xor.de/chrome.json,
  * so Studio shows exactly the same site chrome as 4xor.de and the Be[X] map.
  * To refresh: curl -s https://www.4xor.de/chrome.json > src/lib/site-chrome.json
- * Spanish, Chinese and Hindi come from site-chrome-more.json (the same file as the
- * map's) until 4xor.de has them; their links lead to the English 4xor.de pages.
+ * Spanish, Chinese, Hindi and Arabic come from site-chrome-more.json (the same file
+ * as the map's) until site-chrome.json is refreshed.
  */
 import chrome4xor from "./site-chrome.json";
 import more from "./site-chrome-more.json";

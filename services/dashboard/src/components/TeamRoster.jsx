@@ -205,7 +205,7 @@ export default function TeamRoster() {
               <div className={`relative w-10 h-10 rounded-xl ${colors.bg} flex items-center justify-center shrink-0`}>
                 <Icon size={18} className={colors.text} />
                 {/* Status dot */}
-                <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3">
+                <span className="absolute -top-0.5 -end-0.5 flex h-3 w-3">
                   {statusCfg.animate && (
                     <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${statusCfg.dot} opacity-50`} />
                   )}
@@ -237,7 +237,7 @@ export default function TeamRoster() {
               </div>
 
               {/* Stat */}
-              <div className="text-right shrink-0">
+              <div className="text-end shrink-0">
                 {data.stat != null && (
                   <div className="text-sm font-semibold text-ink-300">{data.stat}</div>
                 )}

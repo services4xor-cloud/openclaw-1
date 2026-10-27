@@ -23,6 +23,7 @@ const COPY = {
   es: ["Perfil", "Hola, {name}", "Sus reservas", "Ajustes y sus datos"],
   zh: ["个人资料", "您好，{name}", "您的预订", "设置与您的数据"],
   hi: ["प्रोफ़ाइल", "नमस्ते, {name}", "आपकी बुकिंग", "सेटिंग्स और आपका डेटा"],
+  ar: ["الملف الشخصي", "مرحبًا، {name}", "حجوزاتك", "الإعدادات وبياناتك"],
 };
 
 /** The account picture, or the initials in the same circle when there is none */
@@ -82,7 +83,7 @@ export default function ProfilePage() {
                   {l.label}
                 </a>
               ))}
-              <a href={logoutHref("/")} className="btn btn-sm ml-auto">
+              <a href={logoutHref("/")} className="btn btn-sm ms-auto">
                 {me.labels?.signOut ?? "Sign out"}
               </a>
             </div>

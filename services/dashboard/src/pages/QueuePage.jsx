@@ -317,7 +317,7 @@ export default function QueuePage() {
                     style={{ width: `${pct}%` }}
                   />
                 </div>
-                <span className="text-[11px] text-ink-500 w-12 text-right shrink-0">
+                <span className="text-[11px] text-ink-500 w-12 text-end shrink-0">
                   {days(r.days_remaining)}
                 </span>
               </div>
@@ -341,7 +341,7 @@ export default function QueuePage() {
               <Icon size={13} />
               {t(`q.tab.${key}`)}
               {count > 0 && (
-                <span className={`ml-0.5 text-[10px] px-1.5 rounded-full ${
+                <span className={`ms-0.5 text-[10px] px-1.5 rounded-full ${
                   activeTab === key ? "bg-accent-500/30 text-accent-300" : "bg-ink-800 text-ink-600"
                 }`}>
                   {count}
@@ -388,7 +388,7 @@ export default function QueuePage() {
                 ))}
               </div>
               {group.status === "stash" && (
-                <div className="flex gap-1.5 shrink-0 ml-2">
+                <div className="flex gap-1.5 shrink-0 ms-2">
                   <button
                     onClick={() => approveGroup(group.id)}
                     className="h-8 px-3 rounded-lg bg-accent-600/20 flex items-center gap-1.5 active:bg-accent-600/40"
@@ -448,7 +448,7 @@ export default function QueuePage() {
                     {v.hashtags.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-1">
                         {v.hashtags.map((tag, i) => (
-                          <span key={i} className="text-[9px] text-accent-400/70">{tag}</span>
+                          <span key={i} dir="auto" className="text-[9px] text-accent-400/70">{tag}</span>
                         ))}
                       </div>
                     )}
