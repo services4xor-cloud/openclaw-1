@@ -14,6 +14,9 @@ import { chromeFor } from "../lib/site-chrome.js";
 import { LIVE_FLOWS, MAP_ORIGIN } from "../lib/links.js";
 import { logoutHref, profileUrl, useMapMe } from "../lib/account.js";
 
+// The map's name for its agent (nav.agent)
+const AGENT = { en: "Agent", de: "Agent", fr: "Agent", it: "Agente", es: "Agente", zh: "智能助手", hi: "एजेंट" };
+
 function Chevron({ className = "" }) {
   return (
     <svg className={`chev shrink-0 ${className}`} viewBox="0 0 10 6" width="10" height="6" aria-hidden="true">
@@ -99,6 +102,8 @@ export default function SiteHeader({ workspace = false }) {
         { href: logoutHref(`${pathname}${search}${hash}`), label: me.labels?.signOut ?? "Sign out" },
       ]
     : [];
+  // Wide desktops keep the map's agent and, signed in, the account's two lists in view
+  const quick = [{ href: `${MAP_ORIGIN}/agent`, label: AGENT[lang] ?? AGENT.en }, ...links.filter((l) => l.id !== "admin")];
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-white/10 border-t-[3px] border-t-accent-400 bg-deep text-[#f3f5f2]">
@@ -153,6 +158,16 @@ export default function SiteHeader({ workspace = false }) {
                       ))}
                     </ul>
                   </div>
+                </li>
+              ))}
+            </ul>
+
+            <ul className="hidden gap-5 min-[1360px]:flex">
+              {quick.map((i) => (
+                <li key={i.href}>
+                  <a href={i.href} className="nav-link">
+                    {i.label}
+                  </a>
                 </li>
               ))}
             </ul>
