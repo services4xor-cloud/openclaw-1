@@ -173,13 +173,32 @@ body {
   background: currentColor;
   border-radius: 1px;
 }
+/* As on the map and 4xor.de: light text that turns white, with a rule sliding in below */
 .nav-link {
-  color: #dfe8e3;
-  transition: color 0.15s ease;
+  position: relative;
+  white-space: nowrap;
+  color: rgb(243 245 242 / 0.84);
+  transition: color 0.2s ease;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 2px;
+  background: #b8e4d5;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
 }
 .nav-link:hover,
-.nav-link[aria-current="page"] {
-  color: #b8e4d5;
+.nav-link[aria-current] {
+  color: #f3f5f2;
+}
+.nav-link:hover::after,
+.nav-link[aria-current]::after {
+  transform: scaleX(1);
 }
 .foot-link {
   color: rgb(243 245 242 / 0.8);
