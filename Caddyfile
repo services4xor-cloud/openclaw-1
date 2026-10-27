@@ -20,10 +20,11 @@
 
 {$DOMAIN::80} {
 	# ── Access gate until the shared Google login is wired ─────────────
-	# The front door (/), the live demo (/try), their assets, example photo, icon
-	# and robots.txt are public; the workspace and everything behind it asks for the Studio login.
+	# The front door (/), the live demo (/try), the profile sign-in returns to (/profile),
+	# their assets, example photo, icon and robots.txt are public; the workspace and
+	# everything behind it asks for the Studio login.
 	# The visitor demo webhook is public too; n8n limits it to one run a day.
-	@private not path / /try /assets/* /demo/* /favicon.svg /robots.txt /webhook/studio-demo
+	@private not path / /try /profile /assets/* /demo/* /favicon.svg /robots.txt /webhook/studio-demo
 	basic_auth @private bcrypt "4XOR Studio" {
 		{$STUDIO_USER:admin} {$STUDIO_PASS_HASH}
 	}
@@ -32,7 +33,7 @@
 	handle {
 		# Public pages are read-only (inside the handle: respond runs before reverse_proxy)
 		@publicWrite {
-			path / /try /assets/* /demo/* /favicon.svg /robots.txt
+			path / /try /profile /assets/* /demo/* /favicon.svg /robots.txt
 			not method GET HEAD
 		}
 		respond @publicWrite 405
