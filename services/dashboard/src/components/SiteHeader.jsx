@@ -89,10 +89,13 @@ export default function SiteHeader({ workspace = false }) {
   const accountLink = me
     ? { href: "/profile", label: firstName || me.labels?.profile || "Profile" }
     : { href: signInHref, label: c.signIn.label };
+  // In the map's order: Your listings, Bookings, Profile, Admin, Sign out
+  const links = me?.links ?? [];
   const accountItems = me
     ? [
+        ...links.filter((l) => l.id !== "admin"),
         { href: "/profile", label: me.labels?.profile ?? "Profile" },
-        ...(me.links ?? []),
+        ...links.filter((l) => l.id === "admin"),
         { href: logoutHref(`${pathname}${search}${hash}`), label: me.labels?.signOut ?? "Sign out" },
       ]
     : [];
@@ -157,9 +160,9 @@ export default function SiteHeader({ workspace = false }) {
             {me ? (
               <details ref={accountRef} className="langs relative">
                 <summary aria-label={me.name ?? accountLink.label} className="nav-link flex cursor-pointer list-none items-center gap-1.5">
-                  <PersonIcon size={18} />
+                  <PersonIcon />
                   <span className="hidden max-w-[9rem] truncate sm:inline">{accountLink.label}</span>
-                  <Chevron className="hidden sm:block" />
+                  <Chevron />
                 </summary>
                 <ul className="absolute -right-3 top-full z-10 mt-3.5 min-w-52 animate-[menuIn_.18s_ease] rounded-[10px] border border-ink-700 bg-ink-900 p-1.5 shadow-2xl">
                   {accountItems.map((i) => (
@@ -240,23 +243,33 @@ export default function SiteHeader({ workspace = false }) {
                     </div>
                   </div>
                 ))}
-                {/* Sign-in above the languages, as on 4xor.de */}
-                <a
-                  href={accountLink.href}
-                  className="menu-group mt-1.5 flex min-h-[44px] items-center gap-2.5 border-b border-white/10 text-[1.05rem] font-semibold"
-                  style={{ "--n": 4 }}
-                >
-                  <PersonIcon size={18} />
-                  {accountLink.label}
-                </a>
-                {me && (
-                  <div className="menu-links menu-group" style={{ "--n": 4 }}>
-                    {accountItems.slice(1).map((i) => (
-                      <a key={i.href} href={i.href} className="menu-link">
-                        {i.label}
-                      </a>
-                    ))}
+                {/* Sign-in above the languages, as on 4xor.de; signed in, the account
+                    as its own group under the first name, as on the map */}
+                {me ? (
+                  <div className="menu-group" style={{ "--n": 4 }}>
+                    <p className="menu-head">{accountLink.label}</p>
+                    <div className="menu-links">
+                      {accountItems.map((i) => (
+                        <a
+                          key={i.href}
+                          href={i.href}
+                          aria-current={i.href === "/profile" && pathname === "/profile" ? "page" : undefined}
+                          className="menu-link"
+                        >
+                          {i.label}
+                        </a>
+                      ))}
+                    </div>
                   </div>
+                ) : (
+                  <a
+                    href={accountLink.href}
+                    className="menu-group mt-1.5 flex min-h-[44px] items-center gap-2.5 border-b border-white/10 text-[1.05rem] font-semibold"
+                    style={{ "--n": 4 }}
+                  >
+                    <PersonIcon size={18} />
+                    {accountLink.label}
+                  </a>
                 )}
                 <p className="menu-langs" aria-label={c.langLabel}>
                   {LANGS.map((l) => (
