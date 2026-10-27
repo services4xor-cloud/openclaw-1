@@ -20,7 +20,15 @@ const STORE = "studio-lang";
 /** ?lang= wins (links from 4xor.de carry it), then the visitor's last pick, then the browser. */
 function initialLang() {
   const q = new URLSearchParams(window.location.search).get("lang");
-  if (LANGS.includes(q)) return q;
+  if (LANGS.includes(q)) {
+    // Keep the language a link brought, for the next visits too
+    try {
+      localStorage.setItem(STORE, q);
+    } catch {
+      // storage blocked: it lasts for this visit
+    }
+    return q;
+  }
   try {
     const saved = localStorage.getItem(STORE);
     if (LANGS.includes(saved)) return saved;
@@ -45,6 +53,12 @@ export function LangProvider({ children }) {
   }, [lang]);
   const setLang = (l) => {
     setLangState(l);
+    // A ?lang= in the address would bring the old language back on reload
+    const url = new URL(window.location.href);
+    if (url.searchParams.has("lang")) {
+      url.searchParams.set("lang", l);
+      window.history.replaceState(window.history.state, "", url);
+    }
     try {
       localStorage.setItem(STORE, l);
     } catch {

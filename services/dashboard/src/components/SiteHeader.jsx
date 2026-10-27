@@ -81,7 +81,7 @@ export default function SiteHeader({ workspace = false }) {
         ]
       : [{ to: "/", label: t.studioHome }, ...LIVE_FLOWS.map((f) => ({ to: `/try?flow=${f}`, label: PRODUCT[f] }))];
   // Sign-in is the Be[X] account on the map, which sends the visitor to Studio's profile
-  const signInHref = `${c.signIn.href}${encodeURIComponent(profileUrl())}`;
+  const signInHref = `${c.signIn.href}${encodeURIComponent(profileUrl(lang))}`;
   // Signed in: the first name where "Sign in" stands, opening the same account list as
   // the map and 4xor.de (Profile here, Your listings, Bookings, Admin for admins, Sign out)
   const me = useMapMe(lang);
@@ -96,7 +96,7 @@ export default function SiteHeader({ workspace = false }) {
         ...links.filter((l) => l.id !== "admin"),
         { href: "/profile", label: me.labels?.profile ?? "Profile" },
         ...links.filter((l) => l.id === "admin"),
-        { href: logoutHref(`${pathname}${search}${hash}`), label: me.labels?.signOut ?? "Sign out" },
+        { href: logoutHref(`${pathname}${search}${hash}`, lang), label: me.labels?.signOut ?? "Sign out" },
       ]
     : [];
   return (
