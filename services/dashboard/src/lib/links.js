@@ -13,10 +13,17 @@ export const productUrl = (flow, lang) => `${siteHome(lang)}#${PRODUCT_ANCHOR[fl
 export const bookUrl = (lang) => chromeFor(lang).cta.href;
 export const MAP_ORIGIN = import.meta.env.VITE_MAP_ORIGIN || "https://map.4xor.de";
 export const MAP_URL = `${MAP_ORIGIN}/map`;
+/** A link to the map (or anywhere that reads ?lang=) in the visitor's language, so the
+ *  language never falls back to English on the way between Studio, the map and 4xor.de. */
+export const withLang = (href, lang) => {
+  const url = new URL(href, window.location.origin);
+  url.searchParams.set("lang", lang);
+  return url.href;
+};
 /** The privacy notice that covers the live demo: what happens to the entries. */
-export const PRIVACY_URL = `${MAP_ORIGIN}/privacy#what`;
+export const privacyUrl = (lang) => withLang(`${MAP_ORIGIN}/privacy#what`, lang);
 /** Demos open to visitors. Agent Workflow Automation stays hidden until Tobias enables it. */
 export const LIVE_FLOWS = ["social"];
 /** The map with this service in focus, so the agent answers about it. */
 const MAP_CODE = { workflow: "4xor-workflow-automation", social: "4xor-social-media-automation" };
-export const mapAgentUrl = (flow) => `${MAP_URL}?select=${MAP_CODE[flow]}&country=CH`;
+export const mapAgentUrl = (flow, lang) => withLang(`${MAP_URL}?select=${MAP_CODE[flow]}&country=CH`, lang);
