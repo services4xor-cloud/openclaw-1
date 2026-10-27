@@ -66,7 +66,7 @@ const DE_INPUT = {
 const DE_RESULT = {
   social: {
     posts: [
-      { channel: "Instagram", caption: "6 Uhr früh und das erste Blech ist draussen 🥐 Goldig, blättrig und noch warm. Wer kommt vor der Arbeit vorbei?", hashtags: ["#Basel", "#Bäckerei", "#Gipfeli", "#FrischGebacken", "#GutenMorgen"], bestTime: "Di 07:15" },
+      { channel: "Instagram", caption: "6 Uhr früh und das erste Blech ist draussen 🥐 Goldbraun, blättrig und noch warm. Wer kommt vor der Arbeit vorbei?", hashtags: ["#Basel", "#Bäckerei", "#Gipfeli", "#FrischGebacken", "#GutenMorgen"], bestTime: "Di 07:15" },
       { channel: "Facebook", caption: "Jeden Morgen um 6 kommen unsere Gipfeli aus dem Ofen, gebacken wie seit 1987. Kommen Sie früh, sie sind schnell weg!", hashtags: ["#AlpenBäckerei", "#Basel", "#Gipfeli"], bestTime: "Di 08:00" },
       { channel: "LinkedIn", caption: "Hinter jedem Gipfeli steckt ein Start um 4 Uhr. Stolz auf unser Frühteam, das eine Basler Tradition lebendig hält, Blech für Blech.", hashtags: ["#KMU", "#Handwerk", "#Basel"], bestTime: "Mi 08:30" },
       { channel: "TikTok", caption: "POV: Du bist um 6 Uhr als Erste in der Bäckerei 🥐✨ hör dir dieses Knuspern an", hashtags: ["#bäckerei", "#gipfeli", "#asmr", "#basel"], bestTime: "Do 18:30" },
