@@ -1,9 +1,18 @@
-// Studio in the four languages of 4xor.de (English, German, French, Italian),
-// with the same wording where both sites say the same thing. The product names
-// stay in English in every language, as on 4xor.de.
+// Studio in the languages of the Be[X] map: the four of 4xor.de (English, German,
+// French, Italian) plus Spanish, Chinese and Hindi, with the same wording where the
+// sites say the same thing. The product names stay in English in every language.
+// Formal address everywhere: Sie, vous, Lei, usted, 您, आप.
 import { createContext, useContext, useEffect, useState } from "react";
 
-export const LANGUAGES = { en: "English", de: "Deutsch", fr: "Français", it: "Italiano" };
+export const LANGUAGES = {
+  en: "English",
+  de: "Deutsch",
+  fr: "Français",
+  it: "Italiano",
+  es: "Español",
+  zh: "中文",
+  hi: "हिन्दी",
+};
 export const LANGS = Object.keys(LANGUAGES);
 const STORE = "studio-lang";
 
@@ -17,8 +26,11 @@ function initialLang() {
   } catch {
     // storage blocked: fall through
   }
-  const nav = (navigator.language || "en").slice(0, 2);
-  return LANGS.includes(nav) ? nav : "en";
+  for (const l of navigator.languages ?? [navigator.language || "en"]) {
+    const base = l.toLowerCase().split("-")[0];
+    if (LANGS.includes(base)) return base;
+  }
+  return "en";
 }
 
 const LangContext = createContext({ lang: "en", setLang: () => {}, t: null });
@@ -26,7 +38,7 @@ const LangContext = createContext({ lang: "en", setLang: () => {}, t: null });
 export function LangProvider({ children }) {
   const [lang, setLangState] = useState(initialLang);
   useEffect(() => {
-    document.documentElement.lang = lang;
+    document.documentElement.lang = lang === "zh" ? "zh-Hans" : lang;
   }, [lang]);
   const setLang = (l) => {
     setLangState(l);
@@ -41,8 +53,10 @@ export function LangProvider({ children }) {
 
 export const useLang = () => useContext(LangContext);
 
-/** 4xor.de keeps English at / and the others under /de/, /fr/, /it/. */
-export const siteHome = (lang) => `https://www.4xor.de${lang === "en" ? "" : `/${lang}`}/`;
+/** 4xor.de keeps English at / and the others under /de/, /fr/, /it/ (Spanish, Chinese
+ *  and Hindi go to the English site until it has them). */
+export const siteHome = (lang) =>
+  `https://www.4xor.de${["de", "fr", "it"].includes(lang) ? `/${lang}` : ""}/`;
 
 const PRODUCT = { workflow: "Agent Workflow Automation", social: "Social Media Automation" };
 
@@ -500,6 +514,348 @@ export const UI = {
       },
       teamSub: "Ognuno ha un compito, lavora giorno e notte e riferisce cosa ha fatto.",
       weekPlan: "Vedere il piano della settimana",
+    },
+  },
+
+  es: {
+    promo: "Un producto de 4XOR.",
+    promoExtra: " Agentes de IA y automatización desde Suiza, visite 4xor.de",
+    homeLabel: "4XOR Studio, inicio",
+    menu: "Menú",
+    close: "Cerrar",
+    studioHome: "Resumen",
+    langLabel: "Idioma",
+    groups: { services: "Servicios", studio: "Studio" },
+    tryLive: "Abrir la demo en vivo",
+    demoSoon: "Demo muy pronto",
+    cta: "Reservar llamada gratuita",
+    request: "Solicitar este servicio",
+    askAgent: "Preguntar al agente en el mapa Be[X]",
+    footerPlace: "4XOR, Aesch, Suiza",
+    mapLink: "Mapa Be[X]",
+    landing: {
+      eyebrow: "4XOR Studio",
+      title: "Su negocio sigue funcionando mientras usted se dedica a sus clientes.",
+      sub: "Dos servicios de IA listos para usar, configurados y gestionados por 4XOR. Su espacio Studio muestra lo que hacen por usted, y usted aprueba lo que se publica.",
+      steps: "En marcha en 30 días",
+      stepNames: ["Descubrir", "Prototipo", "Construir", "Puesta en marcha"],
+    },
+    products: {
+      workflow: {
+        lead: "El trabajo rutinario se hace solo, y su equipo aprueba lo importante.",
+        outcomes: [
+          "Los nuevos contactos reciben respuesta en minutos",
+          "Las reservas llegan a su calendario",
+          "Correos e informes salen a tiempo",
+          "Sus herramientas se pasan los datos solas, sin copiar y pegar",
+        ],
+        note: "Empiece con un proceso y añada el siguiente cuando el primero ya rinda.",
+      },
+      social: {
+        lead: "Sus canales se mantienen activos cada semana mientras usted atiende a sus clientes.",
+        outcomes: [
+          "Una sola subida se convierte en publicaciones para cada canal",
+          "Textos y hashtags con su propio tono",
+          "Publicaciones programadas en el mejor momento",
+          "Nada se publica sin su aprobación",
+        ],
+        note: "Instagram, Facebook, LinkedIn y TikTok.",
+      },
+    },
+    try: {
+      eyebrow: "Pruébelo en vivo",
+      titles: { workflow: "Un nuevo contacto, respondido y agendado", social: "Una subida, una publicación para cada canal" },
+      steps: {
+        workflow: ["Llega el contacto", "La IA lo entiende", "Respuesta redactada", "Cita propuesta", "CRM y seguimiento"],
+        social: ["Usted sube", "Con su marca", "Textos redactados", "Aprueba una vez", "Programado"],
+      },
+      watch: (product, minutes) => [`Vea cómo ${product} hace en segundos lo que a una persona le lleva `, `${minutes} minutos`, ". Después, pruébelo una vez con su propio negocio."],
+      example: "Ejemplo: ",
+      liveFor: "Prueba en vivo para ",
+      replay: "Repetir",
+      newMessage: "Mensaje nuevo · ahora",
+      reply: "Respuesta",
+      urgency: "Urgencia",
+      urgencyLevels: { low: "baja", medium: "media", high: "alta" },
+      offered: "Horarios propuestos:",
+      crm: "CRM",
+      followUp: "Seguimiento",
+      approveAll: (n) => `Aprobar para los ${n} canales`,
+      done: (minutes) => ["Listo en menos de un minuto. A mano lleva unos ", `${minutes} minutos`, ", cada vez."],
+      yourTurn: "Su turno",
+      tryTitle: "Pruébelo con su negocio",
+      exampleTitle: "O vea un ejemplo",
+      liveTitle: "Su prueba en vivo",
+      yourTurnText: "Describa su negocio y añada una foto. Nuestro flujo de contenidos real redacta sus publicaciones para cada canal, en vivo.",
+      yourTurnWorkflow: "Pegue un mensaje que podría enviarle un cliente nuevo. Nuestro flujo real lo entiende, redacta la respuesta y propone horarios, en vivo.",
+      used: "¿Quiere que esto funcione cada día para su negocio?",
+      alsoSee: (p) => `Vea también la demo de ${p}`,
+      soon: "La prueba en vivo con su propio negocio llegará pronto. Mientras tanto, pregúntenos a nosotros o al agente del mapa qué haría por usted.",
+      liveDone: "Esa fue su prueba gratuita de hoy. Tras la reserva, funciona cada día con sus propias cuentas, y usted aprueba en su espacio Studio.",
+      business: "Su negocio",
+      hints: {
+        workflow: { business: "p. ej. consulta de fisioterapia en Zúrich", detailLabel: "Un mensaje que podría enviarle un cliente nuevo", detail: "p. ej. Hola, ¿tienen hueco esta semana para…" },
+        social: { business: "p. ej. panadería familiar en Basilea", detailLabel: "Qué muestra su foto", detail: "p. ej. Cruasanes recién salidos del horno" },
+      },
+      retry: "Intentar de nuevo",
+      usedNotice: "La prueba gratuita de hoy desde esta conexión ya se ha usado. La próxima estará lista mañana.",
+      freeRun: "1 prueba gratuita al día · sin registro",
+      photo: { label: "Su foto", add: "Añadir una foto", change: "Cambiar foto", remove: "Quitar", hint: "JPG, PNG o WebP. La IA la mira, no se guarda.", error: "No se pudo leer esta foto. Pruebe con un JPG o PNG." },
+      run: "Ejecutar en vivo",
+      running: "En curso…",
+      error: "Algo salió mal. Inténtelo de nuevo.",
+      unreachable: "La demo no respondió a tiempo. Inténtelo de nuevo en un minuto.",
+    },
+    ws: {
+      overview: "Resumen",
+      social: "Redes sociales",
+      workflows: "Flujos de agentes",
+      workflowsShort: "Flujos",
+      title: "Su espacio",
+      sub: "Todo lo que sus servicios de 4XOR hacen por usted, en un solo lugar.",
+      leads: {
+        social: "Suba una vez. Las publicaciones para cada canal se redactan, se programan y esperan su visto bueno.",
+        workflow: "Su equipo de IA se encarga cada día del trabajo rutinario y planifica la semana siguiente según los resultados.",
+      },
+      tabs: { create: "Crear", approve: "Aprobar", schedule: "Programar", results: "Resultados", team: "Su equipo de IA", goals: "Objetivos y plan semanal" },
+      actions: {
+        create: ["Crear publicaciones", "Subir fotos o vídeos"],
+        approve: ["Aprobar publicaciones", "Usted decide qué se publica"],
+        schedule: ["Calendario de publicación", "Con qué frecuencia por canal"],
+        results: ["Resultados", "Alcance e interacción"],
+        team: ["Su equipo de IA", "Quién hace qué, ahora mismo"],
+        goals: ["Objetivos y plan semanal", "Fije un objetivo, reciba un plan"],
+      },
+      teamSub: "Cada uno tiene una tarea, trabaja sin descanso e informa de lo que ha hecho.",
+      weekPlan: "Ver el plan de esta semana",
+    },
+  },
+
+  zh: {
+    promo: "4XOR 旗下产品。",
+    promoExtra: " 来自瑞士的 AI 智能体与自动化，详见 4xor.de",
+    homeLabel: "4XOR Studio 首页",
+    menu: "菜单",
+    close: "关闭",
+    studioHome: "概览",
+    langLabel: "语言",
+    groups: { services: "服务", studio: "Studio" },
+    tryLive: "打开在线演示",
+    demoSoon: "演示即将上线",
+    cta: "预约免费通话",
+    request: "咨询此服务",
+    askAgent: "在 Be[X] 地图上询问智能助手",
+    footerPlace: "4XOR，瑞士 Aesch",
+    mapLink: "Be[X] 地图",
+    landing: {
+      eyebrow: "4XOR Studio",
+      title: "您专心服务客户，业务照常运转。",
+      sub: "两项开箱即用的 AI 服务，由 4XOR 为您搭建和运营。Studio 工作台展示它们为您完成的工作，发布内容由您审批。",
+      steps: "30 天上线",
+      stepNames: ["了解需求", "原型", "开发", "上线"],
+    },
+    products: {
+      workflow: {
+        lead: "日常事务自动完成，关键事项由您的团队审批。",
+        outcomes: [
+          "新客户咨询几分钟内得到回复",
+          "预约自动进入您的日历",
+          "邮件和报告按时发出",
+          "各个工具自动互传数据，无需复制粘贴",
+        ],
+        note: "先从一个流程开始，见效后再增加下一个。",
+      },
+      social: {
+        lead: "您专心服务客户，您的各个渠道每周保持活跃。",
+        outcomes: [
+          "上传一次，生成适合每个渠道的帖子",
+          "文案和话题标签符合您的风格",
+          "在最佳时间自动排期发布",
+          "未经您批准，任何内容都不会发布",
+        ],
+        note: "Instagram、Facebook、LinkedIn 和 TikTok。",
+      },
+    },
+    try: {
+      eyebrow: "在线体验",
+      titles: { workflow: "新客户咨询：自动回复并预约", social: "上传一次，每个渠道都有帖子" },
+      steps: {
+        workflow: ["收到咨询", "AI 理解内容", "撰写回复", "提供时间", "CRM 与跟进"],
+        social: ["您上传", "套用品牌", "撰写帖子", "一次审批", "已排期"],
+      },
+      watch: (product, minutes) => [`看看 ${product} 如何在几秒内完成通常需要一个人花 `, `${minutes} 分钟`, " 的工作。然后用您自己的业务试一次。"],
+      example: "示例：",
+      liveFor: "在线运行：",
+      replay: "重播",
+      newMessage: "新消息 · 刚刚",
+      reply: "回复",
+      urgency: "紧急程度",
+      urgencyLevels: { low: "低", medium: "中", high: "高" },
+      offered: "可选时间：",
+      crm: "CRM",
+      followUp: "跟进",
+      approveAll: (n) => `批准全部 ${n} 个渠道`,
+      done: (minutes) => ["不到一分钟即完成。手动操作每次约需 ", `${minutes} 分钟`, "。"],
+      yourTurn: "轮到您了",
+      tryTitle: "用您的业务试一试",
+      exampleTitle: "或者先看一个示例",
+      liveTitle: "您的在线运行",
+      yourTurnText: "描述您的业务并添加一张照片。我们真实的内容工作流会现场为每个渠道撰写帖子。",
+      yourTurnWorkflow: "粘贴一条新客户可能发给您的消息。我们真实的工作流会现场理解它、撰写回复并提供预约时间。",
+      used: "希望每天为您的业务自动运行吗？",
+      alsoSee: (p) => `另请查看 ${p} 演示`,
+      soon: "用您自己业务进行在线运行的功能即将推出。在此之前，欢迎直接问我们，或问地图上的智能助手它能为您做什么。",
+      liveDone: "这是您今天的免费体验。预约后，它会每天在您自己的账户上运行，您在 Studio 工作台中审批。",
+      business: "您的业务",
+      hints: {
+        workflow: { business: "例如：苏黎世的理疗诊所", detailLabel: "新客户可能发给您的一条消息", detail: "例如：您好，这周有时间吗？我想…" },
+        social: { business: "例如：巴塞尔的家庭面包店", detailLabel: "您的照片拍的是什么", detail: "例如：刚出炉的牛角包" },
+      },
+      retry: "重试",
+      usedNotice: "此网络连接今天的免费体验已用完，明天可再次体验。",
+      freeRun: "每天 1 次免费体验 · 无需注册",
+      photo: { label: "您的照片", add: "添加照片", change: "更换照片", remove: "移除", hint: "支持 JPG、PNG 或 WebP。AI 仅查看照片，不会保存。", error: "无法读取这张照片，请尝试 JPG 或 PNG 格式。" },
+      run: "开始在线运行",
+      running: "运行中…",
+      error: "出了点问题，请重试。",
+      unreachable: "演示未能及时响应，请一分钟后再试。",
+    },
+    ws: {
+      overview: "概览",
+      social: "社交媒体",
+      workflows: "智能体工作流",
+      workflowsShort: "工作流",
+      title: "您的工作台",
+      sub: "4XOR 服务为您完成的一切，尽在一处。",
+      leads: {
+        social: "上传一次，每个渠道的帖子都会写好、排期，并等待您确认。",
+        workflow: "您的 AI 团队每天处理日常事务，并根据结果规划下一周。",
+      },
+      tabs: { create: "创建", approve: "审批", schedule: "排期", results: "效果", team: "您的 AI 团队", goals: "目标与周计划" },
+      actions: {
+        create: ["创建帖子", "上传照片或视频"],
+        approve: ["审批帖子", "发布什么由您决定"],
+        schedule: ["发布计划", "每个渠道的发布频率"],
+        results: ["效果", "覆盖与互动"],
+        team: ["您的 AI 团队", "谁在做什么，实时可见"],
+        goals: ["目标与周计划", "设定目标，获得计划"],
+      },
+      teamSub: "每位成员各司其职，全天候工作，并汇报完成的事项。",
+      weekPlan: "查看本周计划",
+    },
+  },
+
+  hi: {
+    promo: "4XOR का एक उत्पाद।",
+    promoExtra: " स्विट्ज़रलैंड से AI एजेंट और ऑटोमेशन, देखें 4xor.de",
+    homeLabel: "4XOR Studio, होम",
+    menu: "मेन्यू",
+    close: "बंद करें",
+    studioHome: "अवलोकन",
+    langLabel: "भाषा",
+    groups: { services: "सेवाएँ", studio: "Studio" },
+    tryLive: "लाइव डेमो खोलें",
+    demoSoon: "डेमो जल्द आ रहा है",
+    cta: "मुफ़्त कॉल बुक करें",
+    request: "यह सेवा माँगें",
+    askAgent: "Be[X] नक्शे पर एजेंट से पूछें",
+    footerPlace: "4XOR, Aesch, स्विट्ज़रलैंड",
+    mapLink: "Be[X] नक्शा",
+    landing: {
+      eyebrow: "4XOR Studio",
+      title: "आप ग्राहकों पर ध्यान दें, आपका कारोबार चलता रहे।",
+      sub: "दो तैयार AI सेवाएँ, जिन्हें 4XOR सेट अप करता और चलाता है। आपका Studio वर्कस्पेस दिखाता है कि वे आपके लिए क्या करती हैं, और जो भी बाहर जाता है उसे आप मंज़ूर करते हैं।",
+      steps: "30 दिनों में लाइव",
+      stepNames: ["समझना", "प्रोटोटाइप", "निर्माण", "लाइव"],
+    },
+    products: {
+      workflow: {
+        lead: "रोज़ का काम अपने-आप होता है, और ज़रूरी चीज़ें आपकी टीम मंज़ूर करती है।",
+        outcomes: [
+          "नई पूछताछ को मिनटों में जवाब मिलता है",
+          "बुकिंग सीधे आपके कैलेंडर में आती है",
+          "ईमेल और रिपोर्ट समय पर जाती हैं",
+          "आपके टूल आपस में डेटा भेजते हैं, कॉपी-पेस्ट की ज़रूरत नहीं",
+        ],
+        note: "एक प्रक्रिया से शुरू करें और फ़ायदा दिखने पर अगली जोड़ें।",
+      },
+      social: {
+        lead: "आप ग्राहकों पर ध्यान दें, आपके चैनल हर हफ़्ते सक्रिय रहें।",
+        outcomes: [
+          "एक अपलोड से हर चैनल के लिए पोस्ट",
+          "आपकी अपनी शैली में कैप्शन और हैशटैग",
+          "सही समय पर पोस्ट शेड्यूल",
+          "आपकी मंज़ूरी के बिना कुछ भी पोस्ट नहीं होता",
+        ],
+        note: "Instagram, Facebook, LinkedIn और TikTok.",
+      },
+    },
+    try: {
+      eyebrow: "लाइव आज़माएँ",
+      titles: { workflow: "नई पूछताछ, जवाब और बुकिंग के साथ", social: "एक अपलोड, हर चैनल के लिए एक पोस्ट" },
+      steps: {
+        workflow: ["पूछताछ आई", "AI ने समझा", "जवाब लिखा", "समय सुझाया", "CRM और फ़ॉलो-अप"],
+        social: ["आप अपलोड करें", "ब्रांड के साथ", "पोस्ट लिखी गईं", "एक बार मंज़ूरी", "शेड्यूल हुआ"],
+      },
+      watch: (product, minutes) => [`देखें कि ${product} कुछ सेकंड में वह काम कैसे करता है जिसमें आमतौर पर एक व्यक्ति को `, `${minutes} मिनट`, " लगते हैं। फिर इसे अपने कारोबार के साथ एक बार चलाएँ।"],
+      example: "उदाहरण: ",
+      liveFor: "लाइव रन: ",
+      replay: "फिर से चलाएँ",
+      newMessage: "नया संदेश · अभी",
+      reply: "जवाब",
+      urgency: "प्राथमिकता",
+      urgencyLevels: { low: "कम", medium: "मध्यम", high: "ज़्यादा" },
+      offered: "सुझाए गए समय:",
+      crm: "CRM",
+      followUp: "फ़ॉलो-अप",
+      approveAll: (n) => `सभी ${n} चैनलों के लिए मंज़ूर करें`,
+      done: (minutes) => ["एक मिनट से कम में पूरा। हाथ से हर बार लगभग ", `${minutes} मिनट`, " लगते हैं।"],
+      yourTurn: "अब आपकी बारी",
+      tryTitle: "अपने कारोबार के साथ आज़माएँ",
+      exampleTitle: "या एक उदाहरण देखें",
+      liveTitle: "आपका लाइव रन",
+      yourTurnText: "अपने कारोबार के बारे में बताएँ और एक फ़ोटो जोड़ें। हमारा असली कंटेंट वर्कफ़्लो लाइव ही हर चैनल के लिए आपकी पोस्ट लिखता है।",
+      yourTurnWorkflow: "कोई ऐसा संदेश पेस्ट करें जो नया ग्राहक आपको भेज सकता है। हमारा असली वर्कफ़्लो लाइव ही उसे समझता है, जवाब लिखता है और मिलने के समय सुझाता है।",
+      used: "क्या आप चाहते हैं कि यह हर दिन आपके कारोबार के लिए चले?",
+      alsoSee: (p) => `${p} का डेमो भी देखें`,
+      soon: "आपके अपने कारोबार के साथ लाइव रन जल्द आ रहा है। तब तक हमसे या नक्शे पर एजेंट से पूछें कि यह आपके लिए क्या करेगा।",
+      liveDone: "यह आज का आपका मुफ़्त रन था। बुकिंग के बाद यह हर दिन आपके अपने खातों पर चलता है, और आप अपने Studio वर्कस्पेस में मंज़ूरी देते हैं।",
+      business: "आपका कारोबार",
+      hints: {
+        workflow: { business: "जैसे ज़्यूरिख़ में फ़िज़ियोथेरेपी क्लिनिक", detailLabel: "कोई संदेश जो नया ग्राहक आपको भेज सकता है", detail: "जैसे नमस्ते, क्या इस हफ़्ते आपके पास समय है…" },
+        social: { business: "जैसे बाज़ल में पारिवारिक बेकरी", detailLabel: "आपकी फ़ोटो में क्या है", detail: "जैसे ओवन से निकले ताज़ा क्रोसाँ" },
+      },
+      retry: "फिर से प्रयास करें",
+      usedNotice: "इस कनेक्शन से आज का मुफ़्त रन इस्तेमाल हो चुका है। अगला कल तैयार होगा।",
+      freeRun: "हर दिन 1 मुफ़्त रन · साइन-अप की ज़रूरत नहीं",
+      photo: { label: "आपकी फ़ोटो", add: "फ़ोटो जोड़ें", change: "फ़ोटो बदलें", remove: "हटाएँ", hint: "JPG, PNG या WebP. AI इसे देखता है, इसे सहेजा नहीं जाता।", error: "यह फ़ोटो पढ़ी नहीं जा सकी। कृपया JPG या PNG आज़माएँ।" },
+      run: "लाइव चलाएँ",
+      running: "चल रहा है…",
+      error: "कुछ गड़बड़ हो गई। कृपया फिर से प्रयास करें।",
+      unreachable: "डेमो ने समय पर जवाब नहीं दिया। कृपया एक मिनट बाद फिर से प्रयास करें।",
+    },
+    ws: {
+      overview: "अवलोकन",
+      social: "सोशल मीडिया",
+      workflows: "एजेंट वर्कफ़्लो",
+      workflowsShort: "वर्कफ़्लो",
+      title: "आपका वर्कस्पेस",
+      sub: "आपकी 4XOR सेवाएँ आपके लिए जो कुछ करती हैं, सब एक जगह।",
+      leads: {
+        social: "एक बार अपलोड करें। हर चैनल की पोस्ट लिखी जाती हैं, शेड्यूल होती हैं और आपकी मंज़ूरी का इंतज़ार करती हैं।",
+        workflow: "आपकी AI टीम हर दिन रोज़ का काम संभालती है और नतीजों के आधार पर अगले हफ़्ते की योजना बनाती है।",
+      },
+      tabs: { create: "बनाएँ", approve: "मंज़ूर करें", schedule: "शेड्यूल", results: "नतीजे", team: "आपकी AI टीम", goals: "लक्ष्य और साप्ताहिक योजना" },
+      actions: {
+        create: ["पोस्ट बनाएँ", "फ़ोटो या वीडियो अपलोड करें"],
+        approve: ["पोस्ट मंज़ूर करें", "क्या जाएगा, यह आप तय करते हैं"],
+        schedule: ["पोस्टिंग शेड्यूल", "हर चैनल पर कितनी बार"],
+        results: ["नतीजे", "पहुँच और जुड़ाव"],
+        team: ["आपकी AI टीम", "कौन अभी क्या कर रहा है"],
+        goals: ["लक्ष्य और साप्ताहिक योजना", "लक्ष्य तय करें, योजना पाएँ"],
+      },
+      teamSub: "हर सदस्य का एक काम है, वह चौबीसों घंटे काम करता है और बताता है कि उसने क्या किया।",
+      weekPlan: "इस हफ़्ते की योजना देखें",
     },
   },
 };

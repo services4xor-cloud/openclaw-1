@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import PageShell from "../components/PageShell.jsx";
 import Card from "../components/Card.jsx";
+import { useText } from "../lib/i18n-workspace.js";
 
 const GOAL_TYPE_META = {
   growth_kpi: { icon: TrendingUp, color: "text-gold-400", bg: "bg-gold-500/10" },
@@ -29,17 +30,17 @@ const GOAL_TYPE_META = {
 
 // Mock goals — replaced by webhook data in production
 const MOCK_GOALS = [
-  { id: 1, type: "growth_kpi", title: "Instagram: 10K followers", target: 10000, current: 3200, status: "active" },
-  { id: 2, type: "growth_kpi", title: "TikTok: 50K views/week", target: 50000, current: 12400, status: "active" },
-  { id: 3, type: "business", title: "Website clicks: 500/month", target: 500, current: 180, status: "active" },
-  { id: 4, type: "custom", title: "Consistent posting streak: 30 days", target: 30, current: 8, status: "active" },
+  { id: 1, type: "growth_kpi", titleKey: "g.mock.1", target: 10000, current: 3200, status: "active" },
+  { id: 2, type: "growth_kpi", titleKey: "g.mock.2", target: 50000, current: 12400, status: "active" },
+  { id: 3, type: "business", titleKey: "g.mock.3", target: 500, current: 180, status: "active" },
+  { id: 4, type: "custom", titleKey: "g.mock.4", target: 30, current: 8, status: "active" },
 ];
 
 const MOCK_SPRINT_TASKS = [
-  { id: 1, title: "Create 5 Reels focused on product demos", platform: "instagram", status: "todo", priority: "high" },
-  { id: 2, title: "Post 3 behind-the-scenes TikToks", platform: "tiktok", status: "in_progress", priority: "medium" },
-  { id: 3, title: "Optimize hashtag strategy for reach", platform: null, status: "todo", priority: "high" },
-  { id: 4, title: "A/B test caption styles on Facebook", platform: "facebook", status: "done", priority: "low" },
+  { id: 1, titleKey: "g.task.1", platform: "instagram", status: "todo", priority: "high" },
+  { id: 2, titleKey: "g.task.2", platform: "tiktok", status: "in_progress", priority: "medium" },
+  { id: 3, titleKey: "g.task.3", platform: null, status: "todo", priority: "high" },
+  { id: 4, titleKey: "g.task.4", platform: "facebook", status: "done", priority: "low" },
 ];
 
 const PRIORITY_COLORS = {
@@ -54,7 +55,15 @@ const TASK_STATUS_STYLES = {
   done: "bg-emerald-600",
 };
 
+/** ISO week number, as on Swiss calendars */
+function isoWeek(d = new Date()) {
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  t.setUTCDate(t.getUTCDate() + 4 - (t.getUTCDay() || 7));
+  return Math.ceil(((t - Date.UTC(t.getUTCFullYear(), 0, 1)) / 86400000 + 1) / 7);
+}
+
 export default function GoalsPage() {
+  const { t, locale } = useText();
   const [goals, setGoals] = useState(MOCK_GOALS);
   const [tasks, setTasks] = useState(MOCK_SPRINT_TASKS);
   const [showAddGoal, setShowAddGoal] = useState(false);
@@ -84,24 +93,24 @@ export default function GoalsPage() {
 
   return (
     <PageShell
-      title="Goals and weekly plan"
-      subtitle="You set the targets. Your AI team plans the week and does the work."
+      title={t("g.title")}
+      subtitle={t("g.sub")}
     >
       {/* Sprint overview */}
       <Card className="mb-4 bg-gradient-to-br from-accent-900/30 to-gold-900/30 border-accent-500/20">
         <div className="flex items-center gap-2 mb-2">
           <Zap size={16} className="text-accent-400" />
           <span className="text-sm font-semibold text-ink-200">
-            This week's plan, week 13
+            {t("g.week", { n: isoWeek() })}
           </span>
         </div>
         <p className="text-xs text-ink-400 mb-3">
-          Planned from last week's results. Updated every Monday.
+          {t("g.weekSub")}
         </p>
         <div className="flex gap-4 text-center">
           {["todo", "in_progress", "done"].map((status) => {
-            const count = tasks.filter((t) => t.status === status).length;
-            const labels = { todo: "To Do", in_progress: "Active", done: "Done" };
+            const count = tasks.filter((task) => task.status === status).length;
+            const labels = { todo: t("g.todo"), in_progress: t("g.active"), done: t("g.done") };
             return (
               <div key={status} className="flex-1">
                 <div className="text-lg font-bold text-ink-200">{count}</div>
@@ -114,12 +123,12 @@ export default function GoalsPage() {
 
       {/* Goals */}
       <div className="flex items-center justify-between mb-3">
-        <span className="text-sm font-semibold text-ink-300">Goals</span>
+        <span className="text-sm font-semibold text-ink-300">{t("g.goals")}</span>
         <button
           onClick={() => setShowAddGoal(!showAddGoal)}
           className="flex items-center gap-1 text-xs text-accent-400 bg-accent-500/10 px-2.5 py-1.5 rounded-lg"
         >
-          <Plus size={14} /> Add Goal
+          <Plus size={14} /> {t("g.add")}
         </button>
       </div>
 
@@ -137,21 +146,21 @@ export default function GoalsPage() {
                     : "bg-ink-800 text-ink-500"
                 }`}
               >
-                {type === "growth_kpi" ? "Growth KPI" : type === "business" ? "Business" : "Custom"}
+                {t(`g.type.${type}`)}
               </button>
             ))}
           </div>
           <input
             value={newGoal.title}
             onChange={(e) => setNewGoal((p) => ({ ...p, title: e.target.value }))}
-            placeholder="Goal title..."
+            placeholder={t("g.titlePh")}
             className="w-full bg-ink-800 border border-ink-700 rounded-lg px-3 py-2 text-sm text-ink-200 placeholder:text-ink-600 mb-2 focus:outline-none focus:border-accent-500/50"
           />
           <div className="flex gap-2">
             <input
               value={newGoal.target}
               onChange={(e) => setNewGoal((p) => ({ ...p, target: e.target.value }))}
-              placeholder="Target number"
+              placeholder={t("g.targetPh")}
               type="number"
               className="flex-1 bg-ink-800 border border-ink-700 rounded-lg px-3 py-2 text-sm text-ink-200 placeholder:text-ink-600 focus:outline-none focus:border-accent-500/50"
             />
@@ -159,7 +168,7 @@ export default function GoalsPage() {
               onClick={addGoal}
               className="px-4 py-2 bg-accent-600 rounded-lg text-sm font-medium text-white"
             >
-              Add
+              {t("g.addBtn")}
             </button>
           </div>
         </Card>
@@ -178,7 +187,7 @@ export default function GoalsPage() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-ink-200 font-medium truncate">
-                  {goal.title}
+                  {goal.titleKey ? t(goal.titleKey) : goal.title}
                 </p>
                 <div className="flex items-center gap-2 mt-1.5">
                   <div className="flex-1 h-1.5 bg-ink-800 rounded-full overflow-hidden">
@@ -188,7 +197,7 @@ export default function GoalsPage() {
                     />
                   </div>
                   <span className="text-[11px] text-ink-500 shrink-0">
-                    {goal.current.toLocaleString()} / {goal.target.toLocaleString()}
+                    {goal.current.toLocaleString(locale)} / {goal.target.toLocaleString(locale)}
                   </span>
                 </div>
               </div>
@@ -199,8 +208,8 @@ export default function GoalsPage() {
 
       {/* Sprint tasks */}
       <div className="mt-6 mb-3">
-        <span className="text-sm font-semibold text-ink-300">This week's tasks</span>
-        <span className="text-xs text-ink-500 ml-2">Planned by your AI team</span>
+        <span className="text-sm font-semibold text-ink-300">{t("g.tasks")}</span>
+        <span className="text-xs text-ink-500 ml-2">{t("g.tasksBy")}</span>
       </div>
 
       {tasks.map((task) => (
@@ -213,11 +222,11 @@ export default function GoalsPage() {
               <p
                 className={`text-sm ${task.status === "done" ? "text-ink-500 line-through" : "text-ink-300"}`}
               >
-                {task.title}
+                {task.titleKey ? t(task.titleKey) : task.title}
               </p>
             </div>
             <span className={`text-[10px] font-medium ${PRIORITY_COLORS[task.priority]}`}>
-              {task.priority}
+              {t(`g.prio.${task.priority}`)}
             </span>
           </div>
         </Card>

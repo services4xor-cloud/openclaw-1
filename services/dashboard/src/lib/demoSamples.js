@@ -146,5 +146,95 @@ const IT_RESULT = {
   },
 };
 
-export const SAMPLE_INPUT = { en: EN_INPUT, de: DE_INPUT, fr: FR_INPUT, it: IT_INPUT };
-export const SAMPLE_RESULT = { en: EN_RESULT, de: DE_RESULT, fr: FR_RESULT, it: IT_RESULT };
+const ES_INPUT = {
+  social: { business: "Panadería Alpina, una panadería familiar en Basilea", detail: "Foto de cruasanes recién salidos del horno a las 6 de la mañana" },
+  workflow: {
+    business: "Keller Physio, una consulta de fisioterapia en Zúrich",
+    detail: "Hola, soy Laura. El fin de semana pasado me lastimé la rodilla esquiando y sigue hinchada. ¿Tienen una cita libre esta semana? Trabajo hasta las 17:00. Gracias, Laura Meier",
+  },
+};
+const ES_RESULT = {
+  social: {
+    posts: [
+      { channel: "Instagram", caption: "Son las 6 de la mañana y sale la primera bandeja 🥐 Dorados, hojaldrados y todavía calientes. ¿Quién se pasa antes del trabajo?", hashtags: ["#Basilea", "#Panadería", "#Cruasán", "#RecienHecho", "#BuenosDías"], bestTime: "mar 07:15" },
+      { channel: "Facebook", caption: "Cada mañana a las 6 nuestros cruasanes salen del horno, hechos igual que desde 1987. ¡Venga temprano, vuelan!", hashtags: ["#PanaderíaAlpina", "#Basilea", "#Cruasanes"], bestTime: "mar 08:00" },
+      { channel: "LinkedIn", caption: "Detrás de cada cruasán hay un despertador a las 4. Orgullosos de nuestro equipo de madrugada, que mantiene viva una tradición de Basilea, bandeja a bandeja.", hashtags: ["#Pymes", "#Artesanía", "#Basilea"], bestTime: "mié 08:30" },
+      { channel: "TikTok", caption: "POV: eres el primero en la panadería a las 6 🥐✨ escucha ese crujido", hashtags: ["#panadería", "#cruasán", "#asmr", "#basilea"], bestTime: "jue 18:30" },
+    ],
+    minutesSaved: 45,
+  },
+  workflow: {
+    lead: { name: "Laura Meier", need: "Lesión de rodilla esquiando, cita esta semana después de las 17:00", urgency: "high" },
+    reply: {
+      subject: "Su rodilla: cita esta semana",
+      body: "Estimada Sra. Meier:\n\nLamentamos lo de su rodilla. Una hinchazón una semana después de una caída conviene revisarla pronto, así que nos gustaría verla esta semana. Tenemos citas por la tarde después de las 17:00, vea abajo. Hasta entonces: reposo, hielo 15 minutos varias veces al día y la pierna en alto.\n\nElija un horario y se lo confirmamos enseguida.\n\nUn cordial saludo,\nKeller Physio",
+    },
+    slots: ["mar 17:30", "mié 18:00", "jue 17:15"],
+    crmNote: "Paciente nueva · rodilla (esquí) · urgente · prefiere después de las 17:00",
+    followUp: "jue 09:00: recordatorio amable si no elige horario",
+    minutesSaved: 25,
+  },
+};
+
+const ZH_INPUT = {
+  social: { business: "阿尔卑斯面包坊，巴塞尔的一家家庭面包店", detail: "清晨 6 点刚出炉的牛角包照片" },
+  workflow: {
+    business: "Keller Physio，苏黎世的一家理疗诊所",
+    detail: "您好，我是 Laura。上周末滑雪时伤了膝盖，现在还肿着。请问这周还有空的预约吗？我工作到下午 5 点。谢谢，Laura Meier",
+  },
+};
+const ZH_RESULT = {
+  social: {
+    posts: [
+      { channel: "Instagram", caption: "早上 6 点，第一盘出炉了 🥐 金黄酥脆，还冒着热气。上班前谁来尝一个？", hashtags: ["#巴塞尔", "#面包店", "#牛角包", "#现烤", "#早安"], bestTime: "周二 07:15" },
+      { channel: "Facebook", caption: "每天早上 6 点，我们的牛角包准时出炉，做法自 1987 年从未改变。早点来，卖得很快哦！", hashtags: ["#阿尔卑斯面包坊", "#巴塞尔", "#牛角包"], bestTime: "周二 08:00" },
+      { channel: "LinkedIn", caption: "每一个牛角包背后，都是凌晨 4 点的起床。为我们的早班团队骄傲，他们一盘一盘地延续着巴塞尔的传统。", hashtags: ["#中小企业", "#手艺", "#巴塞尔"], bestTime: "周三 08:30" },
+      { channel: "TikTok", caption: "第一视角：早上 6 点第一个走进面包店 🥐✨ 听听这酥脆的声音", hashtags: ["#面包店", "#牛角包", "#asmr", "#巴塞尔"], bestTime: "周四 18:30" },
+    ],
+    minutesSaved: 45,
+  },
+  workflow: {
+    lead: { name: "Laura Meier", need: "滑雪导致膝盖受伤，希望本周下午 5 点后预约", urgency: "high" },
+    reply: {
+      subject: "关于您的膝盖：本周预约",
+      body: "Meier 女士，您好：\n\n得知您膝盖受伤，我们深表关切。摔伤一周后仍有肿胀，建议尽快检查，因此我们希望本周为您安排就诊。我们在下午 5 点后有晚间时段，见下方。在此之前，请注意休息，每天多次冰敷 15 分钟，并抬高腿部。\n\n请直接选择一个时间，我们会立即确认。\n\n此致\nKeller Physio",
+    },
+    slots: ["周二 17:30", "周三 18:00", "周四 17:15"],
+    crmNote: "新患者 · 膝盖（滑雪）· 紧急 · 希望 17:00 以后",
+    followUp: "周四 09:00：如未选择时间，发送友好提醒",
+    minutesSaved: 25,
+  },
+};
+
+const HI_INPUT = {
+  social: { business: "अल्पाइन बेकरी, बाज़ल की एक पारिवारिक बेकरी", detail: "सुबह 6 बजे ओवन से निकले ताज़ा क्रोसाँ की फ़ोटो" },
+  workflow: {
+    business: "Keller Physio, ज़्यूरिख़ का एक फ़िज़ियोथेरेपी क्लिनिक",
+    detail: "नमस्ते, मैं Laura हूँ। पिछले हफ़्ते के अंत में स्कीइंग करते समय मेरे घुटने में चोट लग गई और उसमें अब भी सूजन है। क्या इस हफ़्ते कोई अपॉइंटमेंट खाली है? मैं शाम 5 बजे तक काम करती हूँ। धन्यवाद, Laura Meier",
+  },
+};
+const HI_RESULT = {
+  social: {
+    posts: [
+      { channel: "Instagram", caption: "सुबह के 6 बजे और पहली ट्रे बाहर 🥐 सुनहरे, परतदार और अभी भी गरम। काम से पहले कौन आ रहा है?", hashtags: ["#Basel", "#बेकरी", "#क्रोसाँ", "#ताज़ा", "#सुप्रभात"], bestTime: "मंगल 07:15" },
+      { channel: "Facebook", caption: "हर सुबह 6 बजे हमारे क्रोसाँ ओवन से निकलते हैं, 1987 से उसी तरीके से बने। जल्दी आइए, ये जल्दी ख़त्म हो जाते हैं!", hashtags: ["#अल्पाइनबेकरी", "#Basel", "#क्रोसाँ"], bestTime: "मंगल 08:00" },
+      { channel: "LinkedIn", caption: "हर क्रोसाँ के पीछे सुबह 4 बजे की शुरुआत है। हमें अपनी सुबह की टीम पर गर्व है, जो एक-एक ट्रे के साथ बाज़ल की परंपरा को ज़िंदा रखती है।", hashtags: ["#छोटाकारोबार", "#कारीगरी", "#Basel"], bestTime: "बुध 08:30" },
+      { channel: "TikTok", caption: "POV: सुबह 6 बजे बेकरी में सबसे पहले आप 🥐✨ यह कुरकुराहट सुनिए", hashtags: ["#बेकरी", "#क्रोसाँ", "#asmr", "#basel"], bestTime: "गुरु 18:30" },
+    ],
+    minutesSaved: 45,
+  },
+  workflow: {
+    lead: { name: "Laura Meier", need: "स्कीइंग में घुटने की चोट, इस हफ़्ते शाम 5 बजे के बाद अपॉइंटमेंट", urgency: "high" },
+    reply: {
+      subject: "आपका घुटना: इस हफ़्ते अपॉइंटमेंट",
+      body: "प्रिय Meier जी,\n\nआपके घुटने के बारे में जानकर हमें खेद है। गिरने के एक हफ़्ते बाद भी सूजन हो तो उसे जल्दी दिखाना चाहिए, इसलिए हम आपको इसी हफ़्ते देखना चाहेंगे। हमारे पास शाम 5 बजे के बाद के समय हैं, नीचे देखें। तब तक: आराम करें, दिन में कई बार 15 मिनट बर्फ़ लगाएँ और पैर ऊपर रखें।\n\nबस एक समय चुनें, हम तुरंत पुष्टि कर देंगे।\n\nसादर,\nKeller Physio",
+    },
+    slots: ["मंगल 17:30", "बुध 18:00", "गुरु 17:15"],
+    crmNote: "नई मरीज़ · घुटना (स्कीइंग) · अत्यावश्यक · 17:00 के बाद पसंद",
+    followUp: "गुरु 09:00: कोई समय न चुनने पर विनम्र रिमाइंडर",
+    minutesSaved: 25,
+  },
+};
+
+export const SAMPLE_INPUT = { en: EN_INPUT, de: DE_INPUT, fr: FR_INPUT, it: IT_INPUT, es: ES_INPUT, zh: ZH_INPUT, hi: HI_INPUT };
+export const SAMPLE_RESULT = { en: EN_RESULT, de: DE_RESULT, fr: FR_RESULT, it: IT_RESULT, es: ES_RESULT, zh: ZH_RESULT, hi: HI_RESULT };

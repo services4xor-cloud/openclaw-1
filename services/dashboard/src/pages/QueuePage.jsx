@@ -35,6 +35,7 @@ import {
 import PageShell from "../components/PageShell.jsx";
 import Card from "../components/Card.jsx";
 import PlatformBadge from "../components/PlatformBadge.jsx";
+import { unit, useText } from "../lib/i18n-workspace.js";
 
 // ── Mock data ───────────────────────────────────────────────────────────
 // Each "group" is one upload with platform-adapted variants
@@ -112,12 +113,15 @@ const DEFAULT_POSTS_PER_DAY = {
 const PLATFORMS = ["instagram", "tiktok", "youtube", "facebook", "whatsapp"];
 
 const TABS = [
-  { key: "stash", label: "To approve", icon: Inbox },
-  { key: "approved", label: "Scheduled", icon: CalendarClock },
-  { key: "published", label: "Published", icon: Send },
+  { key: "stash", icon: Inbox },
+  { key: "approved", icon: CalendarClock },
+  { key: "published", icon: Send },
 ];
 
 export default function QueuePage() {
+  const { t, locale } = useText();
+  const day = (iso) => new Date(iso).toLocaleDateString(locale, { month: "short", day: "numeric" });
+  const days = (n) => unit(locale, n, "day", "narrow", 1);
   const [groups, setGroups] = useState([]);
   const [activeTab, setActiveTab] = useState("stash");
   const [expandedGroup, setExpandedGroup] = useState(null);
@@ -216,7 +220,7 @@ export default function QueuePage() {
             grouped[key] = {
               id: `group-${key}`,
               upload_id: row.upload_id,
-              theme: row.theme || row.alt_text || "Content",
+              theme: row.theme || row.alt_text || t("q.content"),
               status: row.status === "stash" ? "stash" : row.status === "approved" ? "approved" : row.status === "published" ? "published" : "stash",
               created_at: row.created_at,
               approved_at: row.approved_at,
@@ -251,7 +255,7 @@ export default function QueuePage() {
   // ── Render ──────────────────────────────────────────────────────────────
 
   return (
-    <PageShell title="Approve posts" subtitle="One approval sends a post to every channel, scheduled for you.">
+    <PageShell title={t("q.title")} subtitle={t("q.sub")}>
       {/* Runway warning */}
       {lowestRunway < 3 && (
         <Card
@@ -269,8 +273,8 @@ export default function QueuePage() {
             <div>
               <p className="text-sm font-medium text-ink-200">
                 {lowestRunway < 1
-                  ? "Posts run out today. Approve more to keep your channels active."
-                  : `~${Math.ceil(lowestRunway)} day${Math.ceil(lowestRunway) !== 1 ? "s" : ""} of content left`}
+                  ? t("q.runsOut")
+                  : t("q.left", { d: unit(locale, Math.ceil(lowestRunway), "day") })}
               </p>
               <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5">
                 {runway.map((r) => (
@@ -280,7 +284,7 @@ export default function QueuePage() {
                       r.days_remaining < 1 ? "text-red-400" : r.days_remaining < 3 ? "text-amber-400" : "text-ink-500"
                     }`}
                   >
-                    {r.platform}: {r.days_remaining.toFixed(1)}d
+                    {r.platform}: {days(r.days_remaining)}
                   </span>
                 ))}
               </div>
@@ -292,8 +296,8 @@ export default function QueuePage() {
       {/* Runway bars */}
       <Card className="mb-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-medium text-ink-400">Posts ready</span>
-          <span className="text-[10px] text-ink-600">days remaining per platform</span>
+          <span className="text-xs font-medium text-ink-400">{t("q.ready")}</span>
+          <span className="text-[10px] text-ink-600">{t("q.perChannel")}</span>
         </div>
         <div className="space-y-2">
           {runway.map((r) => {
@@ -313,8 +317,8 @@ export default function QueuePage() {
                     style={{ width: `${pct}%` }}
                   />
                 </div>
-                <span className="text-[11px] text-ink-500 w-8 text-right shrink-0">
-                  {r.days_remaining.toFixed(1)}d
+                <span className="text-[11px] text-ink-500 w-12 text-right shrink-0">
+                  {days(r.days_remaining)}
                 </span>
               </div>
             );
@@ -324,7 +328,7 @@ export default function QueuePage() {
 
       {/* Tabs */}
       <div className="flex gap-1 mb-4 bg-ink-900 rounded-xl p-1">
-        {TABS.map(({ key, label, icon: Icon }) => {
+        {TABS.map(({ key, icon: Icon }) => {
           const count = groups.filter((g) => g.status === key).length;
           return (
             <button
@@ -335,7 +339,7 @@ export default function QueuePage() {
               }`}
             >
               <Icon size={13} />
-              {label}
+              {t(`q.tab.${key}`)}
               {count > 0 && (
                 <span className={`ml-0.5 text-[10px] px-1.5 rounded-full ${
                   activeTab === key ? "bg-accent-500/30 text-accent-300" : "bg-ink-800 text-ink-600"
@@ -356,14 +360,14 @@ export default function QueuePage() {
             className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-ink-800 rounded-xl text-xs text-ink-300 active:bg-ink-700"
           >
             <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
-            Refresh
+            {t("q.refresh")}
           </button>
           <button
             onClick={approveAll}
             className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-accent-600/20 rounded-xl text-xs text-accent-400 active:bg-accent-600/30 font-medium"
           >
             <CheckCheck size={14} />
-            Approve all ({stashCount})
+            {t("q.approveAll", { n: stashCount })}
           </button>
         </div>
       )}
@@ -388,13 +392,15 @@ export default function QueuePage() {
                   <button
                     onClick={() => approveGroup(group.id)}
                     className="h-8 px-3 rounded-lg bg-accent-600/20 flex items-center gap-1.5 active:bg-accent-600/40"
-                    title="Approve for every channel"
+                    title={t("q.approveTitle")}
                   >
                     <Check size={14} className="text-accent-400" />
-                    <span className="text-[11px] text-accent-400 font-medium">Approve</span>
+                    <span className="text-[11px] text-accent-400 font-medium">{t("q.approve")}</span>
                   </button>
                   <button
                     onClick={() => skipGroup(group.id)}
+                    aria-label={t("q.discard")}
+                    title={t("q.discard")}
                     className="w-8 h-8 rounded-lg bg-ink-800 flex items-center justify-center active:bg-red-600/20"
                   >
                     <X size={14} className="text-ink-500" />
@@ -419,7 +425,7 @@ export default function QueuePage() {
               className="flex items-center gap-1 text-[11px] text-ink-500 hover:text-ink-300 mb-1"
             >
               {isExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
-              {isExpanded ? "Hide" : "Show"} all {group.variants.length} platform versions
+              {t(isExpanded ? "q.hide" : "q.show", { n: group.variants.length })}
             </button>
 
             {/* Expanded: all variants */}
@@ -432,7 +438,7 @@ export default function QueuePage() {
                       {v.scheduled_at && (
                         <span className="text-[10px] text-blue-400 flex items-center gap-1">
                           <CalendarClock size={10} />
-                          {new Date(v.scheduled_at).toLocaleString("en-US", {
+                          {new Date(v.scheduled_at).toLocaleString(locale, {
                             month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
                           })}
                         </span>
@@ -455,10 +461,10 @@ export default function QueuePage() {
             <div className="mt-2 text-[11px] text-ink-600 flex items-center gap-1">
               <Clock size={11} />
               {group.status === "approved" && group.approved_at
-                ? `Approved ${new Date(group.approved_at).toLocaleString("en-US", { month: "short", day: "numeric" })} — system is scheduling`
+                ? t("q.approvedOn", { date: day(group.approved_at) })
                 : group.status === "published" && group.published_at
-                  ? `Published ${new Date(group.published_at).toLocaleString("en-US", { month: "short", day: "numeric" })}`
-                  : `Added ${new Date(group.created_at).toLocaleString("en-US", { month: "short", day: "numeric" })}`}
+                  ? t("q.publishedOn", { date: day(group.published_at) })
+                  : t("q.addedOn", { date: day(group.created_at) })}
             </div>
           </Card>
         );
@@ -469,11 +475,7 @@ export default function QueuePage() {
         <div className="text-center py-12">
           <Archive size={32} className="mx-auto mb-3 text-ink-700" />
           <p className="text-sm text-ink-500">
-            {activeTab === "stash"
-              ? "Nothing to approve yet. Upload photos or videos to get new posts."
-              : activeTab === "approved"
-                ? "Nothing scheduled yet. Approve posts to fill the schedule."
-                : "No posts published yet."}
+            {t(`q.empty.${activeTab}`)}
           </p>
         </div>
       )}

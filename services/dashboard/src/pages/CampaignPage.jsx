@@ -10,6 +10,7 @@ import { Clock, ToggleLeft, ToggleRight, Music, Save } from "lucide-react";
 import PageShell from "../components/PageShell.jsx";
 import Card from "../components/Card.jsx";
 import PlatformBadge from "../components/PlatformBadge.jsx";
+import { unit, useText } from "../lib/i18n-workspace.js";
 
 const DEFAULT_PLATFORMS = [
   { id: "instagram", enabled: true, postsPerDay: 3, intervalHours: 8, bestTimes: ["09:00", "13:00", "19:00"] },
@@ -20,6 +21,7 @@ const DEFAULT_PLATFORMS = [
 ];
 
 export default function CampaignPage() {
+  const { t, locale } = useText();
   const [platforms, setPlatforms] = useState(DEFAULT_PLATFORMS);
   const [saving, setSaving] = useState(false);
 
@@ -51,15 +53,20 @@ export default function CampaignPage() {
 
   return (
     <PageShell
-      title="Posting schedule"
-      subtitle="Choose how often each channel gets a new post. Scheduling happens automatically."
+      title={t("cp.title")}
+      subtitle={t("cp.sub")}
     >
       {/* Platform cards */}
       {platforms.map((platform) => (
         <Card key={platform.id} className="mb-3">
           <div className="flex items-center justify-between mb-3">
             <PlatformBadge platform={platform.id} size="md" />
-            <button onClick={() => togglePlatform(platform.id)}>
+            <button
+              onClick={() => togglePlatform(platform.id)}
+              role="switch"
+              aria-checked={platform.enabled}
+              aria-label={t("cp.toggle", { channel: platform.id })}
+            >
               {platform.enabled ? (
                 <ToggleRight size={28} className="text-accent-400" />
               ) : (
@@ -72,7 +79,7 @@ export default function CampaignPage() {
             <div className="space-y-3">
               {/* Posts per day */}
               <div className="flex items-center justify-between">
-                <span className="text-xs text-ink-400">Posts / day</span>
+                <span className="text-xs text-ink-400">{t("cp.perDay")}</span>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() =>
@@ -99,17 +106,17 @@ export default function CampaignPage() {
               {/* Interval */}
               <div className="flex items-center justify-between">
                 <span className="text-xs text-ink-400 flex items-center gap-1.5">
-                  <Clock size={12} /> Interval
+                  <Clock size={12} /> {t("cp.interval")}
                 </span>
                 <span className="text-sm text-ink-300">
-                  Every {platform.intervalHours}h
+                  {t("cp.every", { h: unit(locale, platform.intervalHours, "hour", "short") })}
                 </span>
               </div>
 
               {/* Best times */}
               <div>
                 <span className="text-xs text-ink-400 block mb-1.5">
-                  Preferred times
+                  {t("cp.times")}
                 </span>
                 <div className="flex flex-wrap gap-1.5">
                   {platform.bestTimes.map((time, i) => (
@@ -134,7 +141,7 @@ export default function CampaignPage() {
         className="w-full py-3.5 rounded-2xl font-semibold text-sm bg-gradient-to-r from-accent-600 to-gold-600 text-white active:scale-[0.98] transition-transform shadow-lg shadow-accent-500/20 flex items-center justify-center gap-2"
       >
         <Save size={16} />
-        {saving ? "Saving..." : "Save Campaign Settings"}
+        {saving ? t("cp.saving") : t("cp.save")}
       </button>
     </PageShell>
   );

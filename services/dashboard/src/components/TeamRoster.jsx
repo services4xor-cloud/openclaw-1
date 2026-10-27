@@ -25,6 +25,16 @@ import {
   RefreshCw,
 } from "lucide-react";
 import Card from "./Card.jsx";
+import { timeAgo, useText } from "../lib/i18n-workspace.js";
+
+/** Each worker's name and job in the site language */
+const TEXT_KEY = {
+  caption_writer: "caption",
+  media_processor: "media",
+  sprint_planner: "planner",
+  scheduler: "scheduler",
+  publisher: "publisher",
+};
 
 const AGENTS = [
   {
@@ -83,26 +93,15 @@ const COLOR_MAP = {
 };
 
 const STATUS_CONFIG = {
-  working:  { dot: "bg-accent-400", label: "Working", animate: true },
-  idle:     { dot: "bg-emerald-400", label: "Ready", animate: false },
-  sleeping: { dot: "bg-amber-400",  label: "Sleeping", animate: false },
-  error:    { dot: "bg-red-400",    label: "Error", animate: true },
-  offline:  { dot: "bg-ink-600",  label: "Offline", animate: false },
+  working:  { dot: "bg-accent-400", animate: true },
+  idle:     { dot: "bg-emerald-400", animate: false },
+  sleeping: { dot: "bg-amber-400", animate: false },
+  error:    { dot: "bg-red-400", animate: true },
+  offline:  { dot: "bg-ink-600", animate: false },
 };
 
-function timeAgo(ts) {
-  if (!ts) return "never";
-  const diff = Date.now() - new Date(ts).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m ago`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  return `${days}d ago`;
-}
-
 export default function TeamRoster() {
+  const { t, locale } = useText();
   const [teamData, setTeamData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(null);
@@ -146,15 +145,15 @@ export default function TeamRoster() {
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-ink-300">Working for you</span>
+          <span className="text-sm font-semibold text-ink-300">{t("tr.working4u")}</span>
           <span className="text-[10px] text-ink-600 bg-ink-800 px-1.5 py-0.5 rounded">
-            {AGENTS.length} workers
+            {t("tr.members", { n: AGENTS.length })}
           </span>
         </div>
         <button
           onClick={() => { setLoading(true); fetchStatus(); }}
           className="text-ink-500 hover:text-ink-300 transition-colors"
-          aria-label="Refresh team status"
+          aria-label={t("tr.refresh")}
         >
           <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
         </button>
@@ -164,22 +163,22 @@ export default function TeamRoster() {
       <div className="flex gap-3 mb-3 text-[11px]">
         {counts.working > 0 && (
           <span className="text-accent-400 bg-accent-500/10 px-2 py-1 rounded-lg">
-            {counts.working} working
+            {t("tr.count.working", { n: counts.working })}
           </span>
         )}
         {counts.idle > 0 && (
           <span className="text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-lg">
-            {counts.idle} ready
+            {t("tr.count.idle", { n: counts.idle })}
           </span>
         )}
         {counts.sleeping > 0 && (
           <span className="text-amber-400 bg-amber-500/10 px-2 py-1 rounded-lg">
-            {counts.sleeping} sleeping
+            {t("tr.count.sleeping", { n: counts.sleeping })}
           </span>
         )}
         {(counts.error > 0 || counts.offline > 0) && (
           <span className="text-red-400 bg-red-500/10 px-2 py-1 rounded-lg">
-            {(counts.error || 0) + (counts.offline || 0)} down
+            {t("tr.count.down", { n: (counts.error || 0) + (counts.offline || 0) })}
           </span>
         )}
       </div>
@@ -192,6 +191,8 @@ export default function TeamRoster() {
         const Icon = agent.icon;
         const SysIcon = agent.SystemIcon;
         const isExpanded = expanded === agent.key;
+        const statusKey = STATUS_CONFIG[data.status] ? data.status : "offline";
+        const textKey = TEXT_KEY[agent.key];
 
         return (
           <Card
@@ -216,7 +217,7 @@ export default function TeamRoster() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-ink-200 truncate">
-                    {agent.name}
+                    {textKey ? t(`tr.name.${textKey}`) : agent.name}
                   </span>
                   <span className={`text-[10px] px-1.5 py-0.5 rounded ${
                     data.status === "working"
@@ -227,11 +228,11 @@ export default function TeamRoster() {
                       ? "bg-amber-500/20 text-amber-300"
                       : "bg-ink-700 text-ink-400"
                   }`}>
-                    {statusCfg.label}
+                    {t(`tr.status.${statusKey}`)}
                   </span>
                 </div>
                 <p className="text-[11px] text-ink-500 truncate mt-0.5">
-                  {data.activity || agent.role}
+                  {data.activity || (textKey ? t(`tr.role.${textKey}`) : agent.role)}
                 </p>
               </div>
 
@@ -241,7 +242,7 @@ export default function TeamRoster() {
                   <div className="text-sm font-semibold text-ink-300">{data.stat}</div>
                 )}
                 <div className="text-[10px] text-ink-600">
-                  {timeAgo(data.lastAction)}
+                  {timeAgo(locale, data.lastAction)}
                 </div>
               </div>
             </div>
@@ -265,7 +266,7 @@ export default function TeamRoster() {
                 )}
                 {!data.details && (
                   <p className="text-[11px] text-ink-600 italic">
-                    No detailed metrics available yet
+                    {t("tr.noDetails")}
                   </p>
                 )}
               </div>

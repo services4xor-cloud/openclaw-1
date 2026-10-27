@@ -21,27 +21,29 @@ import {
 } from "lucide-react";
 import PageShell from "../components/PageShell.jsx";
 import Card from "../components/Card.jsx";
+import { useText } from "../lib/i18n-workspace.js";
 
 /** What happens after "Generate", one line per stage, ticked off as it completes. */
 const RUN_STEPS = [
-  { icon: Stamp, label: "Brand kit received" },
-  { icon: CloudUpload, label: "Media uploaded" },
-  { icon: Sparkles, label: "AI writes a post for every channel" },
-  { icon: CalendarClock, label: "Best posting times planned" },
-  { icon: CheckCircle2, label: "Ready for your approval" },
+  { icon: Stamp, label: "up.step0" },
+  { icon: CloudUpload, label: "up.step1" },
+  { icon: Sparkles, label: "up.step2" },
+  { icon: CalendarClock, label: "up.step3" },
+  { icon: CheckCircle2, label: "up.step4" },
 ];
 
 /** fetch that fails loudly: a non-2xx or a non-JSON answer (an error page) is an error. */
-async function callJson(url, init) {
+async function callJson(url, init, t) {
   const res = await fetch(url, init);
   const type = res.headers.get("content-type") || "";
   if (!res.ok || !type.includes("json")) {
-    throw new Error(res.status === 404 ? "The service didn't answer (404)." : `The service answered ${res.status}.`);
+    throw new Error(res.status === 404 ? t("up.err404") : t("up.errStatus", { status: res.status }));
   }
   return res.json();
 }
 
 function RunSteps({ phase, error, onRetry, onCancel }) {
+  const { t } = useText();
   return (
     <Card className="mt-1">
       <ol>
@@ -67,17 +69,17 @@ function RunSteps({ phase, error, onRetry, onCancel }) {
                 {state === "done" ? <Check size={15} /> : state === "failed" ? <X size={15} /> : <Icon size={15} />}
                 {state === "active" && <span className="absolute inset-0 animate-ping rounded-full border border-gold-500/60" />}
               </span>
-              <span className={`text-sm ${state === "todo" ? "text-ink-500" : "text-ink-100"}`}>{label}</span>
+              <span className={`text-sm ${state === "todo" ? "text-ink-500" : "text-ink-100"}`}>{t(label)}</span>
             </li>
           );
         })}
       </ol>
       {error && (
         <div className="mt-4 rounded-lg border border-red-400/30 bg-red-400/5 p-3">
-          <p className="text-sm text-red-200">This step didn't finish. {error.message} Nothing was posted.</p>
+          <p className="text-sm text-red-200">{t("up.failed", { message: error.message })}</p>
           <div className="mt-3 flex gap-2">
-            <button onClick={onRetry} className="btn btn-primary btn-sm">Try again</button>
-            <button onClick={onCancel} className="btn btn-sm">Back to the form</button>
+            <button onClick={onRetry} className="btn btn-primary btn-sm">{t("up.retry")}</button>
+            <button onClick={onCancel} className="btn btn-sm">{t("up.back")}</button>
           </div>
         </div>
       )}
@@ -86,6 +88,7 @@ function RunSteps({ phase, error, onRetry, onCancel }) {
 }
 
 export default function UploadPage() {
+  const { t } = useText();
   const [files, setFiles] = useState([]);
   const [theme, setTheme] = useState("");
   const [brandVoice, setBrandVoice] = useState("");
@@ -130,7 +133,7 @@ export default function UploadPage() {
       if (watermark) {
         const wfData = new FormData();
         wfData.append("watermark", watermark);
-        const wData = await callJson("/media-api/api/upload-watermark", { method: "POST", body: wfData });
+        const wData = await callJson("/media-api/api/upload-watermark", { method: "POST", body: wfData }, t);
         if (wData.ok) watermarkPath = wData.serverPath;
       }
 
@@ -140,7 +143,7 @@ export default function UploadPage() {
       if (files.length > 0) {
         const formData = new FormData();
         files.forEach((f) => formData.append("files", f));
-        const uData = await callJson("/media-api/api/upload", { method: "POST", body: formData });
+        const uData = await callJson("/media-api/api/upload", { method: "POST", body: formData }, t);
         if (uData.ok) uploadedFiles = uData.files;
       }
 
@@ -157,7 +160,7 @@ export default function UploadPage() {
           watermarkPath,
           uploadId: `upload-${Date.now()}`,
         }),
-      });
+      }, t);
       clearTimeout(tick);
       go(RUN_STEPS.length - 1);
       setTimeout(() => window.location.assign("/queue"), 1400);
@@ -170,8 +173,8 @@ export default function UploadPage() {
 
   return (
     <PageShell
-      title="Create posts"
-      subtitle="Upload photos or videos. You get ready-to-approve posts for every channel."
+      title={t("up.title")}
+      subtitle={t("up.sub")}
     >
       {/* Drop zone */}
       <Card className="mb-4">
@@ -187,10 +190,10 @@ export default function UploadPage() {
             strokeWidth={1.5}
           />
           <p className="text-sm text-ink-300 font-medium">
-            Tap to select or drop files
+            {t("up.drop")}
           </p>
           <p className="text-xs text-ink-500 mt-1">
-            Images & videos — up to 500MB each
+            {t("up.dropHint")}
           </p>
         </div>
         <input
@@ -208,13 +211,13 @@ export default function UploadPage() {
         <Card className="mb-4">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-medium text-ink-300">
-              {files.length} file{files.length !== 1 ? "s" : ""} selected
+              {t("up.selected", { n: files.length })}
             </span>
             <button
               onClick={() => setFiles([])}
               className="text-xs text-ink-500 hover:text-red-400"
             >
-              Clear all
+              {t("up.clear")}
             </button>
           </div>
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
@@ -250,13 +253,13 @@ export default function UploadPage() {
       <Card className="mb-4">
         <div className="flex items-center gap-3 mb-2">
           <Stamp size={18} className="text-accent-400" />
-          <span className="text-sm font-medium text-ink-200">Watermark</span>
+          <span className="text-sm font-medium text-ink-200">{t("up.watermark")}</span>
         </div>
         {watermark ? (
           <div className="flex items-center gap-3">
             <img
               src={URL.createObjectURL(watermark)}
-              alt="Watermark"
+              alt={t("up.watermark")}
               className="w-12 h-12 rounded-lg object-contain bg-ink-800 p-1"
             />
             <span className="text-xs text-ink-400 flex-1 truncate">
@@ -266,7 +269,7 @@ export default function UploadPage() {
               onClick={() => setWatermark(null)}
               className="text-xs text-red-400"
             >
-              Remove
+              {t("up.remove")}
             </button>
           </div>
         ) : (
@@ -274,7 +277,7 @@ export default function UploadPage() {
             onClick={() => watermarkInputRef.current?.click()}
             className="w-full py-2.5 border border-dashed border-ink-700 rounded-xl text-xs text-ink-400 hover:border-accent-500/50"
           >
-            Upload watermark image (PNG recommended)
+            {t("up.addWatermark")}
           </button>
         )}
         <input
@@ -291,20 +294,20 @@ export default function UploadPage() {
         <div className="flex items-center gap-3 mb-3">
           <Sparkles size={18} className="text-gold-400" />
           <span className="text-sm font-medium text-ink-200">
-            Content Direction
+            {t("up.direction")}
           </span>
         </div>
         <textarea
           value={theme}
           onChange={(e) => setTheme(e.target.value)}
-          placeholder="Describe the theme or direction... e.g. 'Summer fitness campaign, energetic vibe, beach aesthetics'"
+          placeholder={t("up.themePh")}
           className="w-full bg-ink-800 border border-ink-700 rounded-xl px-3 py-2.5 text-sm text-ink-200 placeholder:text-ink-600 resize-none focus:outline-none focus:border-accent-500/50 mb-3"
           rows={3}
         />
         <textarea
           value={brandVoice}
           onChange={(e) => setBrandVoice(e.target.value)}
-          placeholder="Brand voice notes... e.g. 'Casual but professional, use emoji sparingly, always include call-to-action'"
+          placeholder={t("up.voicePh")}
           className="w-full bg-ink-800 border border-ink-700 rounded-xl px-3 py-2.5 text-sm text-ink-200 placeholder:text-ink-600 resize-none focus:outline-none focus:border-accent-500/50"
           rows={2}
         />
@@ -317,7 +320,8 @@ export default function UploadPage() {
       ) : (
         <button onClick={handleUpload} disabled={!theme.trim()} className="btn btn-primary w-full py-3.5">
           <Sparkles size={16} />
-          Generate posts{files.length ? ` (${files.length} file${files.length !== 1 ? "s" : ""})` : ""}
+          {t("up.generate")}
+          {files.length ? ` (${files.length})` : ""}
         </button>
       )}
     </PageShell>
