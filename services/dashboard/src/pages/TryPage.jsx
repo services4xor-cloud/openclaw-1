@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
-import { LIVE_FLOWS, bookUrl, mapAgentUrl } from "../lib/links.js";
+import { LIVE_FLOWS, PRIVACY_URL, bookUrl, mapAgentUrl } from "../lib/links.js";
 import { MAP_DEMO_API, useMapAccount } from "../lib/account.js";
 import { PRODUCT, useLang } from "../lib/i18n.jsx";
 import { SAMPLE_INPUT, SAMPLE_RESULT } from "../lib/demoSamples.js";
@@ -568,7 +568,10 @@ export default function TryPage() {
                   <input type="file" accept="image/jpeg,image/png,image/webp" onChange={pickPhoto} className="sr-only" />
                 </label>
               )}
-              <span className="text-xs text-ink-500">{t.photo.hint}</span>
+              <span className="text-xs text-ink-500">
+                {t.photo.hint}{" "}
+                <a href={PRIVACY_URL} className="underline underline-offset-2 hover:text-ink-300">{t.photo.privacy}</a>
+              </span>
             </div>
             )}
             <label className="grid gap-1.5 text-sm text-ink-300">
