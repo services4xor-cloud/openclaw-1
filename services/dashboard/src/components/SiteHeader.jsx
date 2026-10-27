@@ -17,6 +17,34 @@ import { logoutHref, profileUrl, useMapMe } from "../lib/account.js";
 // The map's name for its agent (nav.agent)
 const AGENT = { en: "Agent", de: "Agent", fr: "Agent", it: "Agente", es: "Agente", zh: "智能助手", hi: "एजेंट" };
 
+/** The dock's icons, the same as the map's: the agent's spark, a list, a calendar */
+function QuickIcon({ name }) {
+  return (
+    <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      {name === "agent" && (
+        <>
+          <path d="M7 2.5c.45 2.7 1.3 3.55 4 4-2.7.45-3.55 1.3-4 4-.45-2.7-1.3-3.55-4-4 2.7-.45 3.55-1.3 4-4z" />
+          <path d="M12.5 10v3M11 11.5h3" />
+        </>
+      )}
+      {name === "listings" && (
+        <>
+          <path d="M6 4.5h7M6 8h7M6 11.5h7" />
+          <circle cx="3" cy="4.5" r=".6" fill="currentColor" />
+          <circle cx="3" cy="8" r=".6" fill="currentColor" />
+          <circle cx="3" cy="11.5" r=".6" fill="currentColor" />
+        </>
+      )}
+      {name === "bookings" && (
+        <>
+          <rect x="2.5" y="3.5" width="11" height="10" rx="1.75" />
+          <path d="M2.5 6.75h11M5.5 2v3M10.5 2v3" />
+        </>
+      )}
+    </svg>
+  );
+}
+
 function Chevron({ className = "" }) {
   return (
     <svg className={`chev shrink-0 ${className}`} viewBox="0 0 10 6" width="10" height="6" aria-hidden="true">
@@ -102,8 +130,8 @@ export default function SiteHeader({ workspace = false }) {
         { href: logoutHref(`${pathname}${search}${hash}`), label: me.labels?.signOut ?? "Sign out" },
       ]
     : [];
-  // Wide desktops keep the map's agent and, signed in, the account's two lists in view
-  const quick = [{ href: `${MAP_ORIGIN}/agent`, label: AGENT[lang] ?? AGENT.en }, ...links.filter((l) => l.id !== "admin")];
+  // Desktops keep the map's agent and, signed in, the account's two lists in view, as icons
+  const quick = [{ id: "agent", href: `${MAP_ORIGIN}/agent`, label: AGENT[lang] ?? AGENT.en }, ...links.filter((l) => l.id !== "admin")];
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-white/10 border-t-[3px] border-t-accent-400 bg-deep text-[#f3f5f2]">
@@ -162,12 +190,23 @@ export default function SiteHeader({ workspace = false }) {
               ))}
             </ul>
 
-            <ul className="hidden gap-5 min-[1360px]:flex">
+            {/* Desktop: Agent, Your listings, Bookings as a small icon dock, as on the map */}
+            <ul className="hidden items-center rounded-full border border-white/20 p-0.5 xl:flex">
               {quick.map((i) => (
-                <li key={i.href}>
-                  <a href={i.href} className="nav-link">
-                    {i.label}
+                <li key={i.href} className="group/tip relative">
+                  <a
+                    href={i.href}
+                    aria-label={i.label}
+                    className="grid h-8 w-8 place-items-center rounded-full text-[rgb(243_245_242/0.84)] transition hover:bg-white/10 hover:text-white"
+                  >
+                    <QuickIcon name={i.id} />
                   </a>
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute left-1/2 top-full z-10 mt-2.5 -translate-x-1/2 translate-y-1 whitespace-nowrap rounded-md border border-ink-700 bg-ink-900 px-2.5 py-1 text-xs font-semibold text-ink-100 opacity-0 shadow-xl transition group-focus-within/tip:translate-y-0 group-focus-within/tip:opacity-100 group-hover/tip:translate-y-0 group-hover/tip:opacity-100"
+                  >
+                    {i.label}
+                  </span>
                 </li>
               ))}
             </ul>
