@@ -119,7 +119,7 @@ function Failed({ message, t }) {
     <Panel>
       <div className="rounded-lg border border-red-400/40 bg-red-500/10 p-4 text-sm text-red-200" role="alert">
         {message}
-        <a href="#live" className="ml-2 font-semibold text-red-100 underline underline-offset-4">{t.retry}</a>
+        <a href="#live" className="ms-2 font-semibold text-red-100 underline underline-offset-4">{t.retry}</a>
       </div>
     </Panel>
   );
@@ -160,7 +160,7 @@ function SocialStage({ step, input, result, approved, onApprove, failed, t }) {
             </div>
           )}
           {step >= 1 && (
-            <span className="absolute bottom-2 right-3 animate-[fadeUp_.4s_ease_both] font-brand text-[0.7rem] tracking-[0.2em] text-white/90 drop-shadow-[0_1px_2px_rgba(0,0,0,.8)]">
+            <span className="absolute bottom-2 end-3 animate-[fadeUp_.4s_ease_both] font-brand text-[0.7rem] tracking-[0.2em] text-white/90 drop-shadow-[0_1px_2px_rgba(0,0,0,.8)]">
               {input.business.split(",")[0].toUpperCase()}
             </span>
           )}
@@ -193,7 +193,12 @@ function SocialStage({ step, input, result, approved, onApprove, failed, t }) {
                   {approved && <Chip tone="gold"><CalendarClock size={12} />{p.bestTime}</Chip>}
                 </div>
                 <p className="text-sm leading-relaxed text-ink-200"><Typed text={p.caption} /></p>
-                <p className="mt-1.5 text-xs text-ink-400">{p.hashtags.join(" ")}</p>
+                {/* Each tag keeps its own direction: #Basel reads left to right inside Arabic text */}
+                <p className="mt-1.5 flex flex-wrap gap-x-1.5 text-xs text-ink-400">
+                  {p.hashtags.map((tag) => (
+                    <span key={tag} dir="auto">{tag}</span>
+                  ))}
+                </p>
               </div>
             ))}
           </div>
@@ -270,7 +275,7 @@ function NextSteps({ text, flow, lang, ui, other }) {
       </div>
       {other && (
         <Link to={`/try?flow=${other}`} className="text-sm text-ink-400 underline-offset-4 hover:text-ink-200 hover:underline">
-          {ui.try.alsoSee(PRODUCT[other])} →
+          {ui.try.alsoSee(PRODUCT[other])} <span className="flip-rtl">→</span>
         </Link>
       )}
     </div>
@@ -442,7 +447,7 @@ export default function TryPage() {
           return (
             <li key={label} className="relative flex items-center gap-3 pb-6 last:pb-0">
               {i < last && (
-                <span className="absolute left-[17px] top-9 h-[calc(100%-2.25rem)] w-0.5 bg-ink-700">
+                <span className="absolute start-[17px] top-9 h-[calc(100%-2.25rem)] w-0.5 bg-ink-700">
                   <span className="block w-full bg-accent-400 transition-all duration-700" style={{ height: i < step ? "100%" : "0%" }} />
                 </span>
               )}
@@ -493,7 +498,7 @@ export default function TryPage() {
             })}
           </ol>
           <p key={step} className="mt-3 animate-[fadeUp_.35s_ease_both] text-sm text-ink-100">
-            <span className="mr-2 font-mono text-xs text-gold-400">{Math.min(step + 1, last + 1)}/{last + 1}</span>
+            <span className="me-2 font-mono text-xs text-gold-400">{Math.min(step + 1, last + 1)}/{last + 1}</span>
             {stepLabels[Math.min(step, last)]}
           </p>
         </div>
@@ -558,7 +563,7 @@ export default function TryPage() {
                     {t.photo.change}
                     <input type="file" accept="image/jpeg,image/png,image/webp" onChange={pickPhoto} className="sr-only" />
                   </label>
-                  <button type="button" onClick={() => setPhoto(null)} className="ml-auto inline-flex items-center gap-1 text-xs text-ink-400 hover:text-ink-200">
+                  <button type="button" onClick={() => setPhoto(null)} className="ms-auto inline-flex items-center gap-1 text-xs text-ink-400 hover:text-ink-200">
                     <X size={14} /> {t.photo.remove}
                   </button>
                 </div>

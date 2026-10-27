@@ -209,7 +209,7 @@ export default function GoalsPage() {
       {/* Sprint tasks */}
       <div className="mt-6 mb-3">
         <span className="text-sm font-semibold text-ink-300">{t("g.tasks")}</span>
-        <span className="text-xs text-ink-500 ml-2">{t("g.tasksBy")}</span>
+        <span className="text-xs text-ink-500 ms-2">{t("g.tasksBy")}</span>
       </div>
 
       {tasks.map((task) => (

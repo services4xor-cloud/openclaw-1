@@ -54,7 +54,7 @@ function RunSteps({ phase, error, onRetry, onCancel }) {
           return (
             <li key={label} className="relative flex items-center gap-3 pb-5 last:pb-0">
               {!last && (
-                <span className="absolute left-[15px] top-8 h-[calc(100%-2rem)] w-0.5 bg-ink-700">
+                <span className="absolute start-[15px] top-8 h-[calc(100%-2rem)] w-0.5 bg-ink-700">
                   <span className="block w-full bg-accent-400 transition-all duration-700" style={{ height: i < phase ? "100%" : "0%" }} />
                 </span>
               )}
@@ -239,7 +239,7 @@ export default function UploadPage() {
                 )}
                 <button
                   onClick={(e) => { e.stopPropagation(); removeFile(i); }}
-                  className="absolute top-1 right-1 w-5 h-5 bg-black/60 rounded-full flex items-center justify-center"
+                  className="absolute top-1 end-1 w-5 h-5 bg-black/60 rounded-full flex items-center justify-center"
                 >
                   <X size={12} className="text-white" />
                 </button>

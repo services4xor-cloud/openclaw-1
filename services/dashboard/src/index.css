@@ -50,11 +50,22 @@ html:lang(hi) {
   --font-display:
     "Newsreader Variable", "Noto Serif Devanagari", "Kohinoor Devanagari", "Nirmala UI", serif;
 }
-/* Neither script has italics: keep the letters upright instead of slanting them */
+/* Arabic (right to left): Noto Sans Arabic for text and Noto Naskh Arabic for headings,
+   then the system's Arabic faces */
+html:lang(ar) {
+  --font-sans:
+    "Schibsted Grotesk Variable", "Noto Sans Arabic Variable", "SF Arabic", "Geeza Pro",
+    "Segoe UI", system-ui, sans-serif;
+  --font-display:
+    "Newsreader Variable", "Noto Naskh Arabic Variable", "Geeza Pro", "Times New Roman", serif;
+}
+/* None of these scripts has italics: keep the letters upright instead of slanting them */
 html:lang(zh) em,
 html:lang(zh) .italic,
 html:lang(hi) em,
-html:lang(hi) .italic {
+html:lang(hi) .italic,
+html:lang(ar) em,
+html:lang(ar) .italic {
   font-style: normal;
 }
 /* Small mono labels: the mono font has no CJK/Devanagari, and its wide spaces split the words */
@@ -63,12 +74,16 @@ html:lang(hi) .menu-head,
 html:lang(zh) .font-mono.uppercase,
 html:lang(hi) .font-mono.uppercase,
 html:lang(zh) main [class*="tracking-"],
-html:lang(hi) main [class*="tracking-"] {
+html:lang(hi) main [class*="tracking-"],
+html:lang(ar) .menu-head,
+html:lang(ar) .font-mono.uppercase,
+html:lang(ar) main [class*="tracking-"] {
   font-family: var(--font-sans);
   letter-spacing: normal;
 }
-/* Devanagari vowel marks reach above and below the line */
-html:lang(hi) body {
+/* Devanagari and Arabic marks reach above and below the line */
+html:lang(hi) body,
+html:lang(ar) body {
   line-height: 1.6;
 }
 
@@ -190,6 +205,9 @@ body {
   background: #b8e4d5;
   transform: scaleX(0);
   transform-origin: left;
+}
+[dir="rtl"] .nav-link::after {
+  transform-origin: right;
   transition: transform 0.25s ease;
 }
 .nav-link:hover,
@@ -322,7 +340,7 @@ html:has(details.menu[open]) {
 .menu-link.active,
 .menu-link[aria-current] {
   box-shadow: inset 3px 0 0 var(--color-accent-400);
-  padding-left: 0.7rem;
+  padding-inline-start: 0.7rem;
   color: var(--color-accent-400);
 }
 .menu-langs {
@@ -348,4 +366,19 @@ html:has(details.menu[open]) {
   background: #f3f5f2;
   border-color: #f3f5f2;
   color: var(--color-deep);
+}
+
+/* Right to left (Arabic): the active menu line sits on the start side, glyph arrows point
+   the way the text runs, and phone numbers keep reading left to right. */
+[dir="rtl"] .menu-link.active,
+[dir="rtl"] .menu-link[aria-current] {
+  box-shadow: inset -3px 0 0 var(--color-accent-400);
+}
+[dir="rtl"] .flip-rtl {
+  display: inline-block;
+  transform: scaleX(-1);
+}
+a[href^="tel:"] {
+  direction: ltr;
+  unicode-bidi: isolate;
 }

@@ -116,7 +116,7 @@ export default function SiteHeader({ workspace = false }) {
                 <span className="truncate">Studio</span>
                 <Chevron />
               </summary>
-              <ul className="absolute left-0 top-full z-10 mt-3 min-w-[15rem] animate-[menuIn_.18s_ease] rounded-[10px] border border-ink-700 bg-ink-900 p-1.5 text-ink-100 shadow-2xl">
+              <ul className="absolute start-0 top-full z-10 mt-3 min-w-[15rem] animate-[menuIn_.18s_ease] rounded-[10px] border border-ink-700 bg-ink-900 p-1.5 text-ink-100 shadow-2xl">
                 {product.map((i) => (
                   <li key={i.to}>
                     <Link
@@ -141,7 +141,7 @@ export default function SiteHeader({ workspace = false }) {
                     {g.label}
                     <Chevron className="group-focus-within:rotate-180 group-hover:rotate-180" />
                   </a>
-                  <div className="invisible absolute -left-3.5 top-full translate-y-1 pt-3.5 opacity-0 transition-all duration-150 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                  <div className="invisible absolute -start-3.5 top-full translate-y-1 pt-3.5 opacity-0 transition-all duration-150 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
                     <ul className="min-w-[17.5rem] rounded-[10px] border border-ink-700 bg-ink-900 p-1.5 shadow-2xl">
                       {g.items.map((i) => (
                         <li key={i.id}>
@@ -164,7 +164,7 @@ export default function SiteHeader({ workspace = false }) {
                   <span className="hidden max-w-[9rem] truncate sm:inline">{accountLink.label}</span>
                   <Chevron />
                 </summary>
-                <ul className="absolute -right-3 top-full z-10 mt-3.5 min-w-52 animate-[menuIn_.18s_ease] rounded-[10px] border border-ink-700 bg-ink-900 p-1.5 shadow-2xl">
+                <ul className="absolute -end-3 top-full z-10 mt-3.5 min-w-52 animate-[menuIn_.18s_ease] rounded-[10px] border border-ink-700 bg-ink-900 p-1.5 shadow-2xl">
                   {accountItems.map((i) => (
                     <li key={i.href}>
                       <a
@@ -194,14 +194,14 @@ export default function SiteHeader({ workspace = false }) {
                 {lang}
                 <Chevron />
               </summary>
-              <ul className="absolute -right-3 top-full z-10 mt-3.5 min-w-44 animate-[menuIn_.18s_ease] rounded-[10px] border border-ink-700 bg-ink-900 p-1.5 shadow-2xl">
+              <ul className="absolute -end-3 top-full z-10 mt-3.5 min-w-44 animate-[menuIn_.18s_ease] rounded-[10px] border border-ink-700 bg-ink-900 p-1.5 shadow-2xl">
                 {LANGS.map((l) => (
                   <li key={l}>
                     <button
                       onClick={() => setLang(l)}
                       lang={l}
                       aria-current={l === lang ? "true" : undefined}
-                      className="flex w-full items-baseline justify-between gap-4 rounded-md px-3 py-2 text-left font-semibold text-ink-100 hover:bg-accent-400/10 aria-[current]:text-accent-400"
+                      className="flex w-full items-baseline justify-between gap-4 rounded-md px-3 py-2 text-start font-semibold text-ink-100 hover:bg-accent-400/10 aria-[current]:text-accent-400"
                     >
                       <span>{LANGUAGES[l]}</span>
                       <span className="font-mono text-[0.74rem] font-medium uppercase text-ink-400">{l}</span>

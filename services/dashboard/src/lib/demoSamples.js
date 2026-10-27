@@ -236,5 +236,35 @@ const HI_RESULT = {
   },
 };
 
-export const SAMPLE_INPUT = { en: EN_INPUT, de: DE_INPUT, fr: FR_INPUT, it: IT_INPUT, es: ES_INPUT, zh: ZH_INPUT, hi: HI_INPUT };
-export const SAMPLE_RESULT = { en: EN_RESULT, de: DE_RESULT, fr: FR_RESULT, it: IT_RESULT, es: ES_RESULT, zh: ZH_RESULT, hi: HI_RESULT };
+const AR_INPUT = {
+  social: { business: "مخبز ألبين، مخبز عائلي في بازل", detail: "صورة كرواسون طازج يخرج من الفرن في السادسة صباحًا" },
+  workflow: {
+    business: "Keller Physio، عيادة علاج طبيعي في زيورخ",
+    detail: "مرحبًا، أنا لورا. أُصيبت ركبتي أثناء التزلج في عطلة نهاية الأسبوع الماضية وما زالت متورّمة. هل لديكم موعد هذا الأسبوع؟ أعمل حتى الخامسة مساءً. شكرًا، Laura Meier",
+  },
+};
+const AR_RESULT = {
+  social: {
+    posts: [
+      { channel: "Instagram", caption: "السادسة صباحًا وأول صينية خرجت 🥐 ذهبية، هشّة وما زالت دافئة. من سيمرّ قبل العمل؟", hashtags: ["#Basel", "#مخبز", "#كرواسون", "#طازج", "#صباح_الخير"], bestTime: "الثلاثاء 07:15" },
+      { channel: "Facebook", caption: "كل صباح في السادسة يخرج الكرواسون من الفرن، بالطريقة نفسها منذ 1987. تعالوا مبكرًا، فهو ينفد بسرعة!", hashtags: ["#مخبز_ألبين", "#Basel", "#كرواسون"], bestTime: "الثلاثاء 08:00" },
+      { channel: "LinkedIn", caption: "وراء كل كرواسون بداية في الرابعة فجرًا. فخورون بفريقنا الصباحي الذي يحافظ على تقليد من بازل، صينيةً بعد صينية.", hashtags: ["#الأعمال_الصغيرة", "#حرفة", "#Basel"], bestTime: "الأربعاء 08:30" },
+      { channel: "TikTok", caption: "POV: أنت أول من يدخل المخبز في السادسة صباحًا 🥐✨ استمع إلى هذه القرمشة", hashtags: ["#مخبز", "#كرواسون", "#asmr", "#basel"], bestTime: "الخميس 18:30" },
+    ],
+    minutesSaved: 45,
+  },
+  workflow: {
+    lead: { name: "Laura Meier", need: "إصابة في الركبة أثناء التزلج، موعد هذا الأسبوع بعد الخامسة مساءً", urgency: "high" },
+    reply: {
+      subject: "ركبتك: موعد هذا الأسبوع",
+      body: "عزيزتي السيدة Meier،\n\nيؤسفنا ما حدث لركبتك. التورّم بعد أسبوع من السقوط يستحق الفحص قريبًا، لذا نودّ رؤيتك هذا الأسبوع. لدينا مواعيد مسائية بعد الخامسة، انظري أدناه. وحتى ذلك الحين: استريحي، وضعي الثلج 15 دقيقة عدة مرات يوميًا، وأبقي الساق مرفوعة.\n\nاختاري موعدًا فقط وسنؤكده فورًا.\n\nمع أطيب التحيات،\nKeller Physio",
+    },
+    slots: ["الثلاثاء 17:30", "الأربعاء 18:00", "الخميس 17:15"],
+    crmNote: "مريضة جديدة · الركبة (تزلج) · عاجل · يُفضَّل بعد 17:00",
+    followUp: "الخميس 09:00: تذكير لطيف إن لم يُختر موعد",
+    minutesSaved: 25,
+  },
+};
+
+export const SAMPLE_INPUT = { en: EN_INPUT, de: DE_INPUT, fr: FR_INPUT, it: IT_INPUT, es: ES_INPUT, zh: ZH_INPUT, hi: HI_INPUT, ar: AR_INPUT };
+export const SAMPLE_RESULT = { en: EN_RESULT, de: DE_RESULT, fr: FR_RESULT, it: IT_RESULT, es: ES_RESULT, zh: ZH_RESULT, hi: HI_RESULT, ar: AR_RESULT };

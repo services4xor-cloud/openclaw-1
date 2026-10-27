@@ -80,7 +80,7 @@ export default function LandingPage() {
                 {t.landing.stepNames.map((s, i, all) => (
                   <li key={s} className="flex items-center gap-3">
                     <span>
-                      <span className="mr-1.5 font-brand text-sm text-gold-500">{i + 1}</span>
+                      <span className="me-1.5 font-brand text-sm text-gold-500">{i + 1}</span>
                       {s}
                     </span>
                     {i < all.length - 1 && <span aria-hidden="true" className="text-ink-600">/</span>}

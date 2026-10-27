@@ -87,7 +87,7 @@ export default function AnimatedLogo({ size = 32, brand = "bex" }) {
         <circle className="dot" cx="26.5" cy="5.5" r="3.75" fill="url(#bx-logo-sun)" />
       </svg>
       {is4xor ? (
-        <span className="ml-3 shrink-0 font-brand font-medium tracking-[0.22em] max-[460px]:hidden" style={{ fontSize: size * 0.5 }}>
+        <span className="ms-3 shrink-0 font-brand font-medium tracking-[0.22em] max-[460px]:hidden" style={{ fontSize: size * 0.5 }}>
           4XOR
         </span>
       ) : (

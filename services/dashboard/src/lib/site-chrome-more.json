@@ -2,7 +2,8 @@
   "languages": {
     "es": "Español",
     "zh": "中文",
-    "hi": "हिन्दी"
+    "hi": "हिन्दी",
+    "ar": "العربية"
   },
   "lang": {
     "es": {
@@ -379,6 +380,132 @@
         },
         {
           "label": "शर्तें",
+          "href": "https://www.4xor.de/terms/"
+        }
+      ]
+    },
+    "ar": {
+      "home": "https://www.4xor.de/ar/",
+      "homeLabel": "الصفحة الرئيسية لـ 4XOR",
+      "promo": {
+        "bold": "مكالمة تعارف مجانية لمدة 15 دقيقة",
+        "extra": "، ثم باقات بسعر ثابت ابتداءً من CHF 330",
+        "href": "https://www.4xor.de/ar/#pricing"
+      },
+      "groups": [
+        {
+          "id": "offer",
+          "label": "ماذا نقدّم",
+          "items": [
+            {
+              "id": "industries",
+              "label": "حالات الاستخدام",
+              "note": "ما يتولاه الذكاء الاصطناعي عنك",
+              "href": "https://www.4xor.de/ar/#industries"
+            },
+            {
+              "id": "solutions",
+              "label": "الحلول",
+              "note": "أتمتة، وكلاء، مساعدون، برمجيات",
+              "href": "https://www.4xor.de/ar/#solutions"
+            },
+            {
+              "id": "website",
+              "label": "المواقع الإلكترونية",
+              "note": "موقع تسويقي بسعر ثابت",
+              "href": "https://www.4xor.de/ar/website/"
+            },
+            {
+              "id": "studio",
+              "label": "Studio",
+              "note": "جرّب خدمات الذكاء الاصطناعي مباشرة",
+              "href": "https://studio.4xor.de/?lang=ar"
+            },
+            {
+              "id": "map",
+              "label": "خريطة Be[X]",
+              "note": "دول وشركاء وعروض",
+              "href": "https://map.4xor.de/map?lang=ar"
+            }
+          ]
+        },
+        {
+          "id": "start",
+          "label": "كيف تبدأ",
+          "items": [
+            {
+              "id": "process",
+              "label": "تجربة 30 يومًا",
+              "note": "ما يحدث أسبوعًا بأسبوع",
+              "href": "https://www.4xor.de/ar/#process"
+            },
+            {
+              "id": "pricing",
+              "label": "الأسعار",
+              "note": "باقات بسعر ثابت",
+              "href": "https://www.4xor.de/ar/#pricing"
+            }
+          ]
+        },
+        {
+          "id": "company",
+          "label": "من نحن",
+          "items": [
+            {
+              "id": "about",
+              "label": "الفريق",
+              "note": "من يبني: فريق دولي",
+              "href": "https://www.4xor.de/ar/#about"
+            },
+            {
+              "id": "insights",
+              "label": "مقالات",
+              "note": "ملاحظات من العمل",
+              "href": "https://www.4xor.de/ar/insights/"
+            },
+            {
+              "id": "faq",
+              "label": "الأسئلة الشائعة",
+              "note": "البيانات، ملكية الكود، أنظمتك",
+              "href": "https://www.4xor.de/ar/faq/"
+            },
+            {
+              "id": "security",
+              "label": "الأمان",
+              "note": "كيف نتعامل مع بياناتك",
+              "href": "https://www.4xor.de/ar/security/"
+            }
+          ]
+        }
+      ],
+      "cta": {
+        "label": "احجز مكالمة مجانية",
+        "href": "https://cal.com/tobias-c3llle/intro"
+      },
+      "menu": "القائمة",
+      "signIn": {
+        "label": "تسجيل الدخول",
+        "href": "https://map.4xor.de/login?lang=ar&callbackUrl="
+      },
+      "langLabel": "اللغة",
+      "footer": {
+        "tagline": "وكلاء ذكاء اصطناعي ومساعدو معرفة وأتمتة، مصمّمة لتعمل بثبات في بيئة الإنتاج. من آيش، مع فريق دولي. حماية البيانات وفق المعايير السويسرية والأوروبية أساس عملنا.",
+        "contact": "تواصل",
+        "legal": "قانوني",
+        "localTime": "التوقيت المحلي في آيش",
+        "top": "العودة إلى الأعلى"
+      },
+      "legal": [
+        {
+          "label": "البيانات القانونية",
+          "href": "https://www.4xor.de/ar/legal-notice/"
+        },
+        {
+          "label": "الخصوصية",
+          "href": "https://www.4xor.de/ar/privacy/"
+        },
+        {
+          "label": "الشروط",
           "href": "https://www.4xor.de/terms/"
         }
       ]

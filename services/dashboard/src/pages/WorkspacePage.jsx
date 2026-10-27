@@ -55,7 +55,7 @@ export default function WorkspacePage() {
                       <span className="block text-sm font-medium text-ink-100">{label}</span>
                       <span className="block truncate text-xs text-ink-400">{hint}</span>
                     </span>
-                    <ArrowRight size={14} className="text-ink-500 transition-colors group-hover:text-accent-400" />
+                    <ArrowRight size={14} className="flip-rtl text-ink-500 transition-colors group-hover:text-accent-400" />
                   </Link>
                 );
               })}

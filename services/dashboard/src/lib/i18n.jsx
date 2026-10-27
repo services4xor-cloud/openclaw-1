@@ -1,7 +1,7 @@
-// Studio in the languages of the Be[X] map: the four of 4xor.de (English, German,
-// French, Italian) plus Spanish, Chinese and Hindi, with the same wording where the
+// Studio in the eight languages of 4xor.de and the Be[X] map (English, German,
+// French, Italian, Spanish, Chinese, Hindi, Arabic), with the same wording where the
 // sites say the same thing. The product names stay in English in every language.
-// Formal address everywhere: Sie, vous, Lei, usted, 您, आप.
+// Formal address everywhere: Sie, vous, Lei, usted, 您, आप. Arabic runs right to left.
 import { createContext, useContext, useEffect, useState } from "react";
 
 export const LANGUAGES = {
@@ -12,6 +12,7 @@ export const LANGUAGES = {
   es: "Español",
   zh: "中文",
   hi: "हिन्दी",
+  ar: "العربية",
 };
 export const LANGS = Object.keys(LANGUAGES);
 const STORE = "studio-lang";
@@ -39,6 +40,8 @@ export function LangProvider({ children }) {
   const [lang, setLangState] = useState(initialLang);
   useEffect(() => {
     document.documentElement.lang = lang === "zh" ? "zh-Hans" : lang;
+    // Arabic mirrors the layout (start/end in the CSS)
+    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
   }, [lang]);
   const setLang = (l) => {
     setLangState(l);
@@ -53,10 +56,8 @@ export function LangProvider({ children }) {
 
 export const useLang = () => useContext(LangContext);
 
-/** 4xor.de keeps English at / and the others under /de/, /fr/, /it/ (Spanish, Chinese
- *  and Hindi go to the English site until it has them). */
-export const siteHome = (lang) =>
-  `https://www.4xor.de${["de", "fr", "it"].includes(lang) ? `/${lang}` : ""}/`;
+/** 4xor.de keeps English at / and every other language under its code (/de/, /ar/, …). */
+export const siteHome = (lang) => `https://www.4xor.de${lang === "en" ? "" : `/${lang}`}/`;
 
 const PRODUCT = { workflow: "Agent Workflow Automation", social: "Social Media Automation" };
 
@@ -849,6 +850,119 @@ export const UI = {
       },
       teamSub: "हर सदस्य का एक काम है, वह चौबीसों घंटे काम करता है और बताता है कि उसने क्या किया।",
       weekPlan: "इस हफ़्ते की योजना देखें",
+    },
+  },
+  ar: {
+    promo: "منتج من 4XOR.",
+    promoExtra: " وكلاء ذكاء اصطناعي وأتمتة من سويسرا، انظر 4xor.de",
+    homeLabel: "4XOR Studio، الصفحة الرئيسية",
+    menu: "القائمة",
+    close: "إغلاق",
+    studioHome: "نظرة عامة",
+    langLabel: "اللغة",
+    groups: { services: "الخدمات", studio: "Studio" },
+    tryLive: "افتح العرض المباشر",
+    demoSoon: "العرض قريبًا",
+    cta: "احجز مكالمة تعارف مجانية",
+    request: "اطلب هذه الخدمة",
+    askAgent: "اسأل الوكيل على خريطة Be[X]",
+    footerPlace: "4XOR، آيش، سويسرا",
+    mapLink: "خريطة Be[X]",
+    landing: {
+      eyebrow: "4XOR Studio",
+      title: "عملك يستمر بينما تركّز على عملائك.",
+      sub: "خدمتا ذكاء اصطناعي جاهزتان، تُعدّهما 4XOR وتشغّلهما. تُظهر لك مساحة عملك في Studio ما تفعلانه لك، وأنت تعتمد ما يُنشر.",
+      steps: "جاهز خلال 30 يومًا",
+      stepNames: ["الاستكشاف", "النموذج الأولي", "البناء", "الإطلاق"],
+    },
+    products: {
+      workflow: {
+        lead: "عملك الروتيني يسير من تلقاء نفسه، وفريقك يعتمد ما يهمّ.",
+        outcomes: [
+          "يتلقى العملاء المحتملون الجدد ردًا خلال دقائق",
+          "تصل الحجوزات إلى تقويمك",
+          "تُرسل الرسائل والتقارير في موعدها",
+          "تتبادل أدواتك البيانات فيما بينها، دون نسخ ولصق",
+        ],
+        note: "ابدأ بعملية واحدة وأضف التالية حين تؤتي ثمارها.",
+      },
+      social: {
+        lead: "تبقى قنواتك نشطة كل أسبوع بينما تعمل مع عملائك.",
+        outcomes: [
+          "رفع واحد يتحول إلى منشورات لكل قناة",
+          "تعليقات ووسوم مكتوبة بأسلوبك",
+          "منشورات مجدولة في الأوقات المناسبة",
+          "لا يُنشر شيء قبل أن تعتمده",
+        ],
+        note: "إنستغرام وفيسبوك ولينكدإن وتيك توك.",
+      },
+    },
+    try: {
+      eyebrow: "جرّبه مباشرة",
+      titles: { workflow: "عميل محتمل جديد، يُرد عليه ويُحجز له", social: "رفع واحد، ومنشور لكل قناة" },
+      steps: {
+        workflow: ["يصل العميل", "الذكاء الاصطناعي يفهمه", "الرد مكتوب", "موعد مقترح", "CRM والمتابعة"],
+        social: ["أنت ترفع", "بهويتك", "المنشورات مكتوبة", "تعتمد مرة واحدة", "مجدولة"],
+      },
+      watch: (product, minutes) => [`شاهد ${product} ينجز في ثوانٍ ما يستغرق عادةً من شخص `, `${minutes} دقيقة`, ". ثم شغّله مرة واحدة مع عملك أنت."],
+      example: "مثال: ",
+      liveFor: "تشغيل مباشر لـ ",
+      replay: "إعادة",
+      newMessage: "رسالة جديدة · الآن",
+      reply: "الرد",
+      urgency: "الأولوية",
+      urgencyLevels: { low: "منخفضة", medium: "متوسطة", high: "عالية" },
+      offered: "المواعيد المقترحة:",
+      crm: "CRM",
+      followUp: "المتابعة",
+      approveAll: (n) => `اعتماد لجميع القنوات (${n})`,
+      done: (minutes) => ["تم في أقل من دقيقة. يدويًا يستغرق ذلك نحو ", `${minutes} دقيقة`, "، في كل مرة."],
+      yourTurn: "دورك",
+      tryTitle: "جرّبه مع عملك",
+      exampleTitle: "أو شاهد مثالًا",
+      liveTitle: "تشغيلك المباشر",
+      yourTurnText: "صِف عملك وأضف صورة. يكتب سير عمل المحتوى الحقيقي لدينا منشوراتك لكل قناة، مباشرة.",
+      yourTurnWorkflow: "الصق رسالة قد يرسلها إليك عميل جديد. يفهمها سير العمل الحقيقي لدينا، ويكتب الرد ويقترح مواعيد للقاء، مباشرة.",
+      used: "تريد أن يعمل هذا لعملك كل يوم؟",
+      alsoSee: (p) => `شاهد أيضًا عرض ${p}`,
+      soon: "التشغيل المباشر مع عملك أنت قريبًا. حتى ذلك الحين، اسألنا أو اسأل الوكيل على الخريطة عمّا سيفعله لك.",
+      liveDone: "كان هذا تشغيلك المجاني لهذا اليوم. بعد الحجز، يعمل على حساباتك أنت كل يوم، وتعتمد ما يُنشر في مساحة عملك في Studio.",
+      business: "عملك",
+      hints: {
+        workflow: { business: "مثال: عيادة علاج طبيعي في زيورخ", detailLabel: "رسالة قد يرسلها إليك عميل جديد", detail: "مثال: مرحبًا، هل لديكم وقت هذا الأسبوع لـ…" },
+        social: { business: "مثال: مخبز عائلي في بازل", detailLabel: "ما الذي تُظهره صورتك", detail: "مثال: كرواسون طازج يخرج من الفرن" },
+      },
+      retry: "حاول مرة أخرى",
+      usedNotice: "استُخدم التشغيل المجاني لهذا اليوم من هذا الاتصال. التشغيل التالي جاهز غدًا.",
+      freeRun: "تشغيل مجاني واحد يوميًا · دون تسجيل",
+      photo: { label: "صورتك", add: "أضف صورة", change: "غيّر الصورة", remove: "إزالة", hint: "JPG أو PNG أو WebP. يطّلع عليها الذكاء الاصطناعي، ولا تُخزَّن.", error: "تعذّرت قراءة هذه الصورة. يُرجى تجربة JPG أو PNG." },
+      run: "شغّله مباشرة",
+      running: "جارٍ التشغيل…",
+      error: "حدث خطأ ما. يُرجى المحاولة مرة أخرى.",
+      unreachable: "لم يستجب العرض في الوقت المحدد. يُرجى المحاولة بعد دقيقة.",
+    },
+    ws: {
+      overview: "نظرة عامة",
+      social: "وسائل التواصل",
+      workflows: "سير عمل الوكلاء",
+      workflowsShort: "سير العمل",
+      title: "مساحة عملك",
+      sub: "كل ما تفعله خدمات 4XOR لك، في مكان واحد.",
+      leads: {
+        social: "ارفع مرة واحدة. تُكتب المنشورات لكل قناة وتُجدول وتنتظر موافقتك.",
+        workflow: "يتولى فريق الذكاء الاصطناعي لديك العمل الروتيني كل يوم، ويخطط للأسبوع التالي بناءً على النتائج.",
+      },
+      tabs: { create: "إنشاء", approve: "اعتماد", schedule: "الجدول", results: "النتائج", team: "فريق الذكاء الاصطناعي", goals: "الأهداف والخطة الأسبوعية" },
+      actions: {
+        create: ["إنشاء منشورات", "ارفع صورًا أو مقاطع فيديو"],
+        approve: ["اعتماد المنشورات", "أنت تقرر ما يُنشر"],
+        schedule: ["جدول النشر", "كم مرة لكل قناة"],
+        results: ["النتائج", "الوصول والتفاعل"],
+        team: ["فريق الذكاء الاصطناعي", "من يفعل ماذا، الآن"],
+        goals: ["الأهداف والخطة الأسبوعية", "حدّد هدفًا، واحصل على خطة"],
+      },
+      teamSub: "لكل عضو مهمة، يعمل على مدار الساعة ويُبلغ بما أنجزه.",
+      weekPlan: "اطّلع على خطة هذا الأسبوع",
     },
   },
 };
