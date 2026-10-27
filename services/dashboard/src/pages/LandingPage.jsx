@@ -7,7 +7,7 @@ import { CalendarDays, Check, Play, Workflow, Megaphone } from "lucide-react";
 import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
 import { PRODUCT, useLang } from "../lib/i18n.jsx";
-import { LIVE_FLOWS, bookUrl } from "../lib/links.js";
+import { LIVE_FLOWS, bookUrl, mapAgentUrl } from "../lib/links.js";
 
 const PRODUCTS = [
   { id: "agent-workflow", flow: "workflow", icon: Workflow },
@@ -62,7 +62,7 @@ export default function LandingPage() {
                       <Play size={14} /> {t.tryLive}
                     </Link>
                   ) : (
-                    <span className="inline-flex items-center rounded-full border border-ink-700 px-3.5 py-1.5 text-sm text-ink-400">{t.demoSoon}</span>
+                    <a href={mapAgentUrl(flow)} className="btn btn-sm">{t.askAgent}</a>
                   )}
                   <a href={bookUrl(lang)} className="btn btn-sm"><CalendarDays size={14} /> {t.cta}</a>
                 </div>
