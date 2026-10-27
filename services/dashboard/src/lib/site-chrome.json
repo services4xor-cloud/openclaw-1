@@ -156,7 +156,7 @@
           "items": [
             {
               "id": "industries",
-              "label": "Use Cases",
+              "label": "Anwendungsfälle",
               "note": "Was KI Ihnen abnimmt",
               "href": "https://www.4xor.de/de/#industries"
             },
@@ -216,7 +216,7 @@
             },
             {
               "id": "insights",
-              "label": "Insights",
+              "label": "Fachbeiträge",
               "note": "Notizen aus der Arbeit",
               "href": "https://www.4xor.de/de/insights/"
             },
@@ -342,7 +342,7 @@
             },
             {
               "id": "insights",
-              "label": "Insights",
+              "label": "Articles",
               "note": "Notes tirées du terrain",
               "href": "https://www.4xor.de/fr/insights/"
             },
@@ -468,7 +468,7 @@
             },
             {
               "id": "insights",
-              "label": "Insights",
+              "label": "Articoli",
               "note": "Appunti dal lavoro",
               "href": "https://www.4xor.de/it/insights/"
             },
