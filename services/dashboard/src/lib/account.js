@@ -37,6 +37,26 @@ export const profileUrl = () => `${window.location.origin}/profile`;
 export const logoutHref = (path) =>
   `${MAP_ORIGIN}/logout?callbackUrl=${encodeURIComponent(`${window.location.origin}${path}`)}`;
 
+// The map's own wording (nav.listings, nav.bookings, nav.profile, nav.signOut in its
+// i18n), kept here so the menu is in Studio's language whatever the map answers in
+const LABELS = {
+  en: { listings: "Your listings", bookings: "Bookings", profile: "Profile", signOut: "Sign out" },
+  de: { listings: "Ihre Angebote", bookings: "Buchungen", profile: "Profil", signOut: "Abmelden" },
+  fr: { listings: "Vos offres", bookings: "Réservations", profile: "Profil", signOut: "Se déconnecter" },
+  it: { listings: "Le sue offerte", bookings: "Prenotazioni", profile: "Profilo", signOut: "Esci" },
+  es: { listings: "Sus ofertas", bookings: "Reservas", profile: "Perfil", signOut: "Cerrar sesión" },
+  zh: { listings: "我的发布", bookings: "预订", profile: "个人资料", signOut: "退出登录" },
+  hi: { listings: "आपकी पेशकशें", bookings: "बुकिंग", profile: "प्रोफ़ाइल", signOut: "साइन आउट" },
+};
+const localized = (me, lang) => {
+  const own = LABELS[lang] ?? LABELS.en;
+  return {
+    ...me,
+    links: (me.links ?? []).map((l) => ({ ...l, label: own[l.id] ?? l.label })),
+    labels: { profile: own.profile, signOut: own.signOut },
+  };
+};
+
 const meCache = {};
 /**
  * The signed-in account with the map's account list in `lang` (Your listings,
@@ -50,7 +70,7 @@ export function useMapMe(lang) {
     meCache[lang] ??= fetch(`${MAP_ORIGIN}/api/me?lang=${lang}`, { credentials: "include" })
       .then((r) => (r.ok ? r.json() : null))
       .catch(() => null);
-    meCache[lang].then((m) => live && setMe(m?.signedIn ? m : null));
+    meCache[lang].then((m) => live && setMe(m?.signedIn ? localized(m, lang) : null));
     return () => {
       live = false;
     };
