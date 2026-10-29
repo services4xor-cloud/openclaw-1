@@ -14,6 +14,9 @@ import { chromeFor } from "../lib/site-chrome.js";
 import { LIVE_FLOWS, MAP_ORIGIN } from "../lib/links.js";
 import { logoutHref, profileUrl, useMapMe } from "../lib/account.js";
 
+/** Our two products glow softly in the nav (and the group that holds them) */
+const GLOWING = new Set(["studio", "map"]);
+
 function Chevron({ className = "" }) {
   return (
     <svg className={`chev shrink-0 ${className}`} viewBox="0 0 10 6" width="10" height="6" aria-hidden="true">
@@ -137,7 +140,7 @@ export default function SiteHeader({ workspace = false }) {
             <ul className="hidden gap-5 xl:flex">
               {c.groups.map((g) => (
                 <li key={g.id} className="group relative">
-                  <a href={g.items[0].href} className="nav-link inline-flex items-center gap-1.5">
+                  <a href={g.items[0].href} className={`nav-link inline-flex items-center gap-1.5 ${g.id === "offer" ? "nav-glow" : ""}`}>
                     {g.label}
                     <Chevron className="group-focus-within:rotate-180 group-hover:rotate-180" />
                   </a>
@@ -146,7 +149,7 @@ export default function SiteHeader({ workspace = false }) {
                       {g.items.map((i) => (
                         <li key={i.id}>
                           <a href={i.href} className="flex flex-col gap-0.5 rounded-md px-3 py-2.5 hover:bg-accent-400/10">
-                            <span className="font-semibold text-ink-100">{i.label}</span>
+                            <span className={`font-semibold text-ink-100 ${GLOWING.has(i.id) ? "nav-glow" : ""}`}>{i.label}</span>
                             <span className="text-[0.86rem] leading-snug text-ink-400">{i.note}</span>
                           </a>
                         </li>
@@ -233,11 +236,11 @@ export default function SiteHeader({ workspace = false }) {
                 </div>
                 {c.groups.map((g, n) => (
                   <div key={g.id} className="menu-group" style={{ "--n": n + 1 }}>
-                    <p className="menu-head">{g.label}</p>
+                    <p className={`menu-head ${g.id === "offer" ? "nav-glow" : ""}`}>{g.label}</p>
                     <div className="menu-links">
                       {g.items.map((i) => (
                         <a key={i.id} href={i.href} className="menu-link">
-                          {i.label}
+                          <span className={GLOWING.has(i.id) ? "nav-glow" : undefined}>{i.label}</span>
                         </a>
                       ))}
                     </div>
