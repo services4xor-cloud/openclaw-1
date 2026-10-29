@@ -14,39 +14,6 @@ import { chromeFor } from "../lib/site-chrome.js";
 import { LIVE_FLOWS, MAP_ORIGIN } from "../lib/links.js";
 import { logoutHref, profileUrl, useMapMe } from "../lib/account.js";
 
-// The phone row's three paths: the live social demo, the workflow service (its demo is
-// not public yet), the intro call
-const PHONE_ROW = {
-  en: ["Social demo", "Agent workflows", "Free intro call"],
-  de: ["Social-Demo", "Workflows", "Erstgespräch"],
-  fr: ["Démo social", "Workflows", "Appel découverte"],
-  it: ["Demo social", "Workflow di agenti", "Call conoscitiva"],
-  es: ["Demo social", "Flujos de agentes", "Llamada inicial"],
-  zh: ["社媒演示", "智能体工作流", "免费初次通话"],
-  hi: ["सोशल डेमो", "एजेंट वर्कफ़्लो", "मुफ़्त परिचय कॉल"],
-  ar: ["عرض التواصل", "سير عمل الوكلاء", "مكالمة تعريفية"],
-};
-const rowIcon = { viewBox: "0 0 16 16", width: 16, height: 16, "aria-hidden": true, fill: "none", stroke: "currentColor", strokeWidth: 1.5, strokeLinecap: "round", strokeLinejoin: "round", className: "shrink-0" };
-const PlayIcon = () => (
-  <svg {...rowIcon}>
-    <circle cx="8" cy="8" r="5.5" />
-    <path d="M6.75 5.75v4.5L10.5 8z" />
-  </svg>
-);
-const FlowIcon = () => (
-  <svg {...rowIcon}>
-    <rect x="2" y="2.5" width="4.5" height="4" rx="1" />
-    <rect x="9.5" y="9.5" width="4.5" height="4" rx="1" />
-    <path d="M4.25 6.5v2.5a2 2 0 0 0 2 2h3.25" />
-  </svg>
-);
-const CalIcon = () => (
-  <svg {...rowIcon}>
-    <rect x="2.5" y="3.5" width="11" height="10" rx="1.75" />
-    <path d="M2.5 6.75h11M5.5 2v3M10.5 2v3" />
-  </svg>
-);
-
 function Chevron({ className = "" }) {
   return (
     <svg className={`chev shrink-0 ${className}`} viewBox="0 0 10 6" width="10" height="6" aria-hidden="true">
@@ -101,7 +68,6 @@ export default function SiteHeader({ workspace = false }) {
   const flow = LIVE_FLOWS.includes(asked) ? asked : "social";
   const current = pathname === "/try" ? `/try?flow=${flow}` : pathname;
   const here = (to) => (to === current ? "page" : undefined);
-  const ROW = PHONE_ROW[lang] ?? PHONE_ROW.en;
   const product = workspace
     ? [
         { to: "/workspace", label: t.ws.overview },
@@ -319,35 +285,6 @@ export default function SiteHeader({ workspace = false }) {
             </details>
           </nav>
         </div>
-        {/* Phones and tablets: Studio's three paths in a row under the bar, as on the map
-            and 4xor.de (each with its own three) */}
-        <nav aria-label={c.menu} className="border-t border-white/10 xl:hidden">
-          <ul className="grid grid-cols-3">
-            {[
-              { to: "/try?flow=social", label: ROW[0], icon: <PlayIcon />, current: here("/try?flow=social") },
-              { to: "/#agent-workflow", label: ROW[1], icon: <FlowIcon /> },
-              { href: c.cta.href, label: ROW[2], icon: <CalIcon /> },
-            ].map((i) => {
-              const cls =
-                "flex h-full min-h-12 flex-col items-center justify-center gap-1 px-1 py-1.5 text-center text-[0.76rem] font-semibold leading-tight text-[rgb(243_245_242/0.84)] transition hover:text-white aria-[current=page]:text-white aria-[current=page]:shadow-[inset_0_-2px_0_var(--color-accent-400)]";
-              return (
-                <li key={i.label}>
-                  {i.href ? (
-                    <a href={i.href} target="_blank" rel="noopener noreferrer" className={cls}>
-                      {i.icon}
-                      <span>{i.label}</span>
-                    </a>
-                  ) : (
-                    <Link to={i.to} aria-current={i.current} className={cls}>
-                      {i.icon}
-                      <span>{i.label}</span>
-                    </Link>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
       </header>
     </>
   );
