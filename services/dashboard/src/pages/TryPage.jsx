@@ -590,6 +590,8 @@ export default function TryPage() {
                 {busy ? <><span className="h-4 w-4 animate-spin rounded-full border-2 border-ink-950/30 border-t-ink-950" /> {t.running}</> : <><Send size={16} /> {t.run}</>}
               </button>
             </div>
+            {/* Says the result comes from an AI and whose (EU AI Act transparency) */}
+            <p className="text-xs text-ink-500">{t.aiNote}</p>
           </form>
         )}
       </div>
