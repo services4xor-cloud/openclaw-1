@@ -19,7 +19,7 @@ const COPY = {
   en: ["Profile", "Hello, {name}", "Your bookings", "Settings & your data"],
   de: ["Profil", "Hallo, {name}", "Ihre Buchungen", "Einstellungen & Ihre Daten"],
   fr: ["Profil", "Bonjour, {name}", "Vos réservations", "Réglages et vos données"],
-  it: ["Profilo", "Salve, {name}", "Le sue prenotazioni", "Impostazioni e dati"],
+  it: ["Profilo", "Ciao, {name}", "Le tue prenotazioni", "Impostazioni e dati"],
   es: ["Perfil", "Hola, {name}", "Sus reservas", "Ajustes y sus datos"],
   zh: ["个人资料", "您好，{name}", "您的预订", "设置与您的数据"],
   hi: ["प्रोफ़ाइल", "नमस्ते, {name}", "आपकी बुकिंग", "सेटिंग्स और आपका डेटा"],
