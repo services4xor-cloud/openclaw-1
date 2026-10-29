@@ -286,7 +286,9 @@ h2 {
   overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
-  padding: 0.75rem 1rem calc(1.5rem + env(safe-area-inset-bottom));
+  /* Everything fits on one screen, down to an iPhone SE (667px tall): rows and gaps
+     shrink with the screen's height instead of the panel scrolling */
+  padding: clamp(4px, 1dvh, 12px) 1rem calc(clamp(0.5rem, 2dvh, 1.5rem) + env(safe-area-inset-bottom));
   background:
     radial-gradient(60% 40% at 0% 0%, rgb(255 255 255 / 0.07), transparent 70%),
     linear-gradient(180deg, #17483c, #143f35);
@@ -303,7 +305,7 @@ html:has(details.menu[open]) {
   }
 }
 .menu-group {
-  padding: 0.6rem 0 0.35rem;
+  padding: clamp(2px, 0.9dvh, 10px) 0 clamp(2px, 0.5dvh, 6px);
   animation: menuLink 0.4s ease both;
   animation-delay: calc(var(--n, 0) * 60ms);
 }
@@ -330,10 +332,10 @@ html:has(details.menu[open]) {
 .menu-link {
   display: flex;
   align-items: center;
-  min-height: 44px;
-  padding: 0.3rem 0;
+  min-height: clamp(28px, 4.4dvh, 44px);
+  padding: 0.2rem 0;
   border-bottom: 1px solid rgb(255 255 255 / 0.12);
-  font-size: 1.05rem;
+  font-size: clamp(0.95rem, 2.4dvh, 1.05rem);
   font-weight: 600;
   line-height: 1.2;
 }
@@ -346,7 +348,7 @@ html:has(details.menu[open]) {
 .menu-langs {
   display: flex;
   gap: 0.5rem;
-  margin: 0.9rem 0 1rem;
+  margin: clamp(6px, 1.2dvh, 14px) 0 clamp(6px, 1.4dvh, 16px);
   animation: menuLink 0.4s ease both;
   animation-delay: 180ms;
 }
@@ -354,13 +356,33 @@ html:has(details.menu[open]) {
   flex: 1;
   display: grid;
   place-items: center;
-  min-height: 44px;
+  min-height: clamp(30px, 4.4dvh, 44px);
   border: 1px solid rgb(255 255 255 / 0.3);
   border-radius: 999px;
   font-family: var(--font-mono, ui-monospace, monospace);
   font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.04em;
+}
+/* Studio and the Be[X] map (and their group's name) glow softly in the nav, a slow pulse
+   of the promo gold that nudges people there; held still for less motion. */
+.nav-glow {
+  animation: nav-glow 3.6s ease-in-out infinite;
+}
+@keyframes nav-glow {
+  0%,
+  100% {
+    text-shadow: 0 0 0 rgb(241 194 90 / 0);
+  }
+  50% {
+    text-shadow: 0 0 10px rgb(241 194 90 / 0.55), 0 0 2px rgb(241 194 90 / 0.5);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-glow {
+    animation: none;
+    text-shadow: 0 0 8px rgb(241 194 90 / 0.4);
+  }
 }
 .menu-langs button[aria-current] {
   background: #f3f5f2;
