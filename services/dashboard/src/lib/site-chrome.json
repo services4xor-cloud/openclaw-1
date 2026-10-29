@@ -413,7 +413,7 @@
             {
               "id": "industries",
               "label": "Casi d’uso",
-              "note": "Il lavoro che l’IA le toglie",
+              "note": "Il lavoro che l’IA ti toglie",
               "href": "https://www.4xor.de/it/#industries"
             },
             {
@@ -479,20 +479,20 @@
             {
               "id": "faq",
               "label": "FAQ",
-              "note": "Dati, proprietà del codice, la sua IT",
+              "note": "Dati, proprietà del codice, la tua IT",
               "href": "https://www.4xor.de/it/faq/"
             },
             {
               "id": "security",
               "label": "Sicurezza",
-              "note": "Come trattiamo i suoi dati",
+              "note": "Come trattiamo i tuoi dati",
               "href": "https://www.4xor.de/it/security/"
             }
           ]
         }
       ],
       "cta": {
-        "label": "Prenoti un colloquio gratuito",
+        "label": "Prenota un colloquio gratuito",
         "href": "https://cal.com/tobias-c3llle/intro"
       },
       "menu": "Menu",
