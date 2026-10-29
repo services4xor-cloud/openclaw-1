@@ -43,7 +43,7 @@ const LABELS = {
   en: { listings: "Your listings", bookings: "Bookings", profile: "Profile", signOut: "Sign out" },
   de: { listings: "Ihre Angebote", bookings: "Buchungen", profile: "Profil", signOut: "Abmelden" },
   fr: { listings: "Vos offres", bookings: "Réservations", profile: "Profil", signOut: "Se déconnecter" },
-  it: { listings: "Le sue offerte", bookings: "Prenotazioni", profile: "Profilo", signOut: "Esci" },
+  it: { listings: "Le tue offerte", bookings: "Prenotazioni", profile: "Profilo", signOut: "Esci" },
   es: { listings: "Sus ofertas", bookings: "Reservas", profile: "Perfil", signOut: "Cerrar sesión" },
   zh: { listings: "我的发布", bookings: "预订", profile: "个人资料", signOut: "退出登录" },
   hi: { listings: "आपकी पेशकशें", bookings: "बुकिंग", profile: "प्रोफ़ाइल", signOut: "साइन आउट" },
